@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm:*)",
+      "Bash(find:*)",
+      "Bash(npm run build:*)",
+      "Bash(chmod:*)",
+      "Bash(npx tsc:*)",
+      "Bash(grep:*)",
+      "Bash(xattr:*)",
+      "Bash(pod deintegrate:*)",
+      "Bash(pod install:*)",
+      "Bash(mkdir:*)",
+      "Bash(tree:*)",
+      "Bash(xcodebuild:*)",
+      "Bash(xcrun simctl list:*)",
+      "Bash(killall:*)",
+      "Bash(plutil:*)",
+      "Bash(codesign:*)",
+      "Bash(xcrun simctl install:*)",
+      "Bash(sips:*)",
+      "Bash(cp:*)",
+      "Bash(xcrun:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "mcp__ide__getDiagnostics",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm run deploy:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
