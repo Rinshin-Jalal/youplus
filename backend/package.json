@@ -1,0 +1,33 @@
+{
+  "name": "bigbruh-mvp-backend",
+  "version": "1.0.0",
+  "description": "BigBruh MVP Backend - Cloudflare Workers + Hono + Supabase",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.7.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "hono": "^4.6.8",
+    "openai": "^4.24.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "typescript": "^5.3.3",
+    "wrangler": "^4.25.0"
+  },
+  "keywords": [
+    "accountability",
+    "ai",
+    "voice",
+    "cloudflare",
+    "bigbruh"
+  ],
+  "author": "BigBruh Team",
+  "license": "MIT"
+}

@@ -28,7 +28,12 @@
       "Bash(cat:*)",
       "Bash(ls:*)",
       "Bash(npm run type-check:*)",
-      "Bash(npm run deploy:*)"
+      "Bash(npm run deploy:*)",
+      "mcp__sequential-thinking__sequentialthinking",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git worktree:*)",
+      "Bash(test:*)"
     ],
     "deny": [],
     "ask": []

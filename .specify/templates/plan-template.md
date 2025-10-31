@@ -31,7 +31,16 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+Verify feature compliance with BigBruh Constitution (`.specify/memory/constitution.md`):
+
+- [ ] **I. Simplicity-First Development**: Does this feature use the simplest solution? Are abstractions justified?
+- [ ] **II. Mobile-First Experience**: Is mobile UX prioritized? Does VoIP functionality work reliably?
+- [ ] **III. Edge-Native Architecture**: Does backend respect Cloudflare Workers constraints (stateless, cold start, limits)?
+- [ ] **IV. API-First Design**: Is business logic in backend? Are endpoints RESTful and independently testable?
+- [ ] **V. Security & Privacy**: Is sensitive data protected? No API keys in code? Authentication/authorization implemented?
+- [ ] **VI. Testable Critical Paths**: Are critical flows (VoIP, payments, onboarding, auth) tested?
+
+If any principle is violated, document justification in Complexity Tracking section below.
 
 ## Project Structure
 
