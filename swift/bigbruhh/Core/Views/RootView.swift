@@ -151,6 +151,19 @@ struct RootView: View {
             print("🚀 Current navigator screen: \(navigator.currentScreen)")
             print("🚀 AuthService state - loading: \(authService.loading), authenticated: \(authService.isAuthenticated)")
             determineInitialScreen()
+
+            // Listen for incoming call notifications
+            NotificationCenter.default.addObserver(
+                forName: .showCallScreen,
+                object: nil,
+                queue: .main
+            ) { notification in
+                Config.log("📞 RootView: Received showCallScreen notification", category: "Navigation")
+                if let callUUID = notification.userInfo?["callUUID"] as? String {
+                    Config.log("📞 Call UUID: \(callUUID)", category: "Navigation")
+                }
+                navigator.showCall()
+            }
         }
         .onChange(of: authService.loading) { _, loading in
             print("🔄 AuthService loading changed to: \(loading)")

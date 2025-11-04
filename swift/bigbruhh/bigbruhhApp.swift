@@ -9,6 +9,9 @@ import SwiftUI
 
 @main
 struct bigbruhhApp: App {
+    // Wire AppDelegate for VoIP lifecycle
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     // Initialize RevenueCat service
     @StateObject private var revenueCat = RevenueCatService.shared
     @StateObject private var authService = AuthService.shared
@@ -19,7 +22,7 @@ struct bigbruhhApp: App {
             Config.log("⚠️ App: Skipping initialization in preview mode", category: "App")
             return
         }
-        
+
         Config.log("🔥 BigBruh launching...", category: "App")
         Config.log("Supabase URL: \(Config.supabaseURL)", category: "Config")
         Config.log("RevenueCat Key: \(String(Config.revenueCatAPIKey.prefix(20)))...", category: "Config")
@@ -38,6 +41,11 @@ struct bigbruhhApp: App {
                 .environmentObject(OnboardingDataManager.shared)
                 .environmentObject(revenueCat)
                 .environmentObject(authService)
+                // Provide call managers as environment objects
+                .environmentObject(appDelegate.voipManager)
+                .environmentObject(appDelegate.callKitManager)
+                .environmentObject(appDelegate.callStateStore)
+                .environmentObject(appDelegate.sessionController)
                 .preferredColorScheme(.dark)
         }
     }
