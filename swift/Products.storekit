@@ -1,0 +1,176 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "BigBruhProducts",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_disableDialogs" : false,
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_renewalBillingIssuesEnabled" : false,
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ],
+    "_timeRate" : 0
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21509691",
+      "localizations" : [
+
+      ],
+      "name" : "BigBruh Subscriptions",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "5.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6670836859",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "BigBruh weekly accountability calls",
+              "displayName" : "BigBruh Weekly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "bigbruh_599_week",
+          "recurringSubscriptionPeriod" : "P1W",
+          "referenceName" : "BigBruh Weekly",
+          "subscriptionGroupID" : "21509691",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "89.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6670836860",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "BigBruh 6-month accountability calls - Best value",
+              "displayName" : "BigBruh 6 Months",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "bigbruhh_6899_sixmonth",
+          "recurringSubscriptionPeriod" : "P6M",
+          "referenceName" : "BigBruh 6 Months",
+          "subscriptionGroupID" : "21509691",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    },
+    {
+      "id" : "21509692",
+      "localizations" : [
+
+      ],
+      "name" : "Secret Plan",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "3.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6670836861",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Weekly Membership Secret",
+              "displayName" : "Weekly Membership Secret",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "bigbruhh_399_weekly",
+          "recurringSubscriptionPeriod" : "P1W",
+          "referenceName" : "Secret Plan",
+          "subscriptionGroupID" : "21509692",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

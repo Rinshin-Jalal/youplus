@@ -1,0 +1,19 @@
+//
+//  Config.xcconfig
+//  bigbruhh
+//
+//  Created by Rinshin on 01/10/25.
+//
+
+// Supabase Configuration
+PUBLIC_SUPABASE_URL = https:/$()/mpicqllpqtwfafqppwal.supabase.co
+PUBLIC_SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1waWNxbGxwcXR3ZmFmcXBwd2FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAzMzE3MjAsImV4cCI6MjA2NTkwNzcyMH0._fDXGCSWd3c9_pylJnhux_Jh0sp3vD8aJUApYxs1_sI
+
+// Backend (if you have separate backend)
+PUBLIC_BACKEND_URL=http:/$()/localhost:8787
+
+EXPO_POSTHOG_API_KEY=phc_q2nfDe9rtrBMLSlWxOtfFhnMQ1oPJyvg5J1qfB3SF6D
+EXPO_POSTHOG_PROJECT_ID=172949
+
+// RevenueCat Configuration (Add your actual keys from RevenueCat dashboard)
+PUBLIC_REVENUECAT_IOS_API_KEY=appl_upPcrmmpQDsAyaXMQhJMhHrABuZ

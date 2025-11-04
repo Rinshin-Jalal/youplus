@@ -1,0 +1,146 @@
+//
+//  OnboardingDataManager.swift
+//  BigBruh
+//
+//  Manages completed onboarding data that can be accessed across the app
+//  (Paywall, Signup, etc.) without resuming in-progress onboarding state
+//
+
+import Foundation
+import Combine
+
+class OnboardingDataManager: ObservableObject {
+    static let shared = OnboardingDataManager()
+
+    // MARK: - Keys
+
+    private enum Keys {
+        static let completedOnboardingData = "completed_onboarding_data"
+        static let inProgressState = "onboarding_v3_state"
+        static let twoFuturesData = "two_futures_onboarding_data"
+        static let conversionData = "conversion_onboarding_data"
+    }
+
+    // MARK: - Published Properties
+
+    @Published var completedData: OnboardingState?
+    @Published var twoFuturesData: TwoFuturesOnboardingResponse?
+    @Published var conversionData: ConversionOnboardingResponse?
+
+    // MARK: - Initialization
+
+    private init() {
+        loadCompletedData()
+        loadTwoFuturesData()
+        loadConversionData()
+    }
+
+    // MARK: - Public Methods
+
+    /// Save completed onboarding data (called when user finishes all 45 steps)
+    func saveCompletedData(_ state: OnboardingState) {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(state) {
+            UserDefaults.standard.set(encoded, forKey: Keys.completedOnboardingData)
+            print("💾 Completed onboarding data saved")
+            loadCompletedData() // Update published property
+        }
+    }
+
+    /// Save Two Futures onboarding data (new 30-step flow)
+    func saveTwoFuturesData(_ response: TwoFuturesOnboardingResponse) {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(response) {
+            UserDefaults.standard.set(encoded, forKey: Keys.twoFuturesData)
+            print("💾 Two Futures onboarding data saved")
+            loadTwoFuturesData() // Update published property
+        }
+    }
+
+    /// Load Two Futures onboarding data from storage
+    func loadTwoFuturesData() {
+        if let savedData = UserDefaults.standard.data(forKey: Keys.twoFuturesData),
+           let decoded = try? JSONDecoder().decode(TwoFuturesOnboardingResponse.self, from: savedData) {
+            twoFuturesData = decoded
+            print("📂 Two Futures onboarding data loaded")
+        }
+    }
+
+    /// Save Conversion onboarding data (42-step flow)
+    func saveConversionData(_ response: ConversionOnboardingResponse) {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(response) {
+            UserDefaults.standard.set(encoded, forKey: Keys.conversionData)
+            print("💾 Conversion onboarding data saved")
+            print("   Goal: \(response.goal)")
+            print("   Time spent: \(Int(response.totalTimeSpent / 60)) minutes")
+            print("   Voice recordings: 3 (whyItMatters, costOfQuitting, commitment)")
+            loadConversionData() // Update published property
+        }
+    }
+
+    /// Load Conversion onboarding data from storage
+    func loadConversionData() {
+        if let savedData = UserDefaults.standard.data(forKey: Keys.conversionData),
+           let decoded = try? JSONDecoder().decode(ConversionOnboardingResponse.self, from: savedData) {
+            conversionData = decoded
+            print("📂 Conversion onboarding data loaded")
+        }
+    }
+
+    /// Load completed onboarding data from storage
+    func loadCompletedData() {
+        if let savedData = UserDefaults.standard.data(forKey: Keys.completedOnboardingData),
+           let decoded = try? JSONDecoder().decode(OnboardingState.self, from: savedData) {
+            completedData = decoded
+            print("📂 Completed onboarding data loaded")
+        }
+    }
+
+    /// Clear in-progress onboarding state (call on app init to force fresh start)
+    func clearInProgressState() {
+        UserDefaults.standard.removeObject(forKey: Keys.inProgressState)
+        print("🧹 In-progress onboarding state cleared - user will start fresh")
+    }
+
+    /// Clear all onboarding data (for logout/reset)
+    func clearAllData() {
+        UserDefaults.standard.removeObject(forKey: Keys.completedOnboardingData)
+        UserDefaults.standard.removeObject(forKey: Keys.inProgressState)
+        completedData = nil
+        print("🗑️ All onboarding data cleared")
+    }
+
+    // MARK: - Computed Properties for Quick Access
+
+    var userName: String? {
+        return completedData?.userName
+    }
+
+    var brotherName: String {
+        return completedData?.brotherName ?? ""
+    }
+
+    var allResponses: [Int: UserResponse] {
+        return completedData?.responses ?? [:]
+    }
+
+    func getResponse(for stepId: Int) -> UserResponse? {
+        return completedData?.responses[stepId]
+    }
+
+    // Get all voice responses (with base64 audio data)
+    var voiceResponses: [UserResponse] {
+        return allResponses.values.filter { $0.type == .voice }
+    }
+
+    // Get all text responses
+    var textResponses: [UserResponse] {
+        return allResponses.values.filter { $0.type == .text }
+    }
+
+    // Check if onboarding was completed
+    var hasCompletedOnboarding: Bool {
+        return completedData?.isCompleted ?? false
+    }
+}
