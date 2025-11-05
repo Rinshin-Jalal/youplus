@@ -297,10 +297,26 @@ All in `be/src/features/trigger/handlers/`:
 
 ### **LOW PRIORITY** (Documentation)
 
-7. **Update API Documentation**
-   - Document the 8 active production endpoints
-   - Create separate docs for debug/admin endpoints
-   - Add schema version to each endpoint
+7. ✅ **Update API Documentation** ~~📝~~ **COMPLETED**
+   - File: `API_REFERENCE.md` (NEW)
+   - **CREATED**: Comprehensive API reference with only working endpoints
+   - **DOCUMENTED**: All 8 production endpoints with examples
+   - **DOCUMENTED**: 21 debug/test/admin endpoints (marked as non-production)
+   - **DOCUMENTED**: 15 removed dead endpoints
+   - **DOCUMENTED**: Super MVP schema changes
+   - **DOCUMENTED**: iOS client implementation
+   - Result: Accurate, production-ready API documentation
+
+8. ✅ **Create Migration Guide** ~~📝~~ **COMPLETED**
+   - File: `MIGRATION_GUIDE_SUPER_MVP.md` (NEW)
+   - **DOCUMENTED**: Complete migration from bloated to Super MVP schema
+   - **DOCUMENTED**: Database schema changes (60+ fields → 12 + JSONB)
+   - **DOCUMENTED**: All removed fields and replacements
+   - **DOCUMENTED**: API endpoint changes (15 removed, 1 fixed)
+   - **DOCUMENTED**: Backend + iOS migration steps
+   - **DOCUMENTED**: Breaking changes checklist
+   - **DOCUMENTED**: Testing & troubleshooting guides
+   - Result: Complete developer migration guide
 
 ---
 
