@@ -225,6 +225,34 @@ class APIService {
         return try await put("/api/settings/schedule", body: body)
     }
 
+    /// Fetch user promises
+    /// GET /api/promises/:userId
+    func fetchPromises(userId: String) async throws -> APIResponse<[Promise]> {
+        Config.log("Fetching promises for user: \(userId)", category: "API")
+        return try await get("/api/promises/\(userId)")
+    }
+
+    /// Fetch call history
+    /// GET /api/calls/history/:userId
+    func fetchCallHistory(userId: String) async throws -> APIResponse<[CallLogEntry]> {
+        Config.log("Fetching call history for user: \(userId)", category: "API")
+        return try await get("/api/calls/history/\(userId)")
+    }
+
+    /// Fetch schedule settings
+    /// GET /api/settings/schedule/:userId
+    func fetchSchedule(userId: String) async throws -> APIResponse<ScheduleSettings> {
+        Config.log("Fetching schedule for user: \(userId)", category: "API")
+        return try await get("/api/settings/schedule/\(userId)")
+    }
+
+    /// Fetch countdown data
+    /// GET /api/countdown/:userId
+    func fetchCountdown(userId: String) async throws -> APIResponse<CountdownData> {
+        Config.log("Fetching countdown for user: \(userId)", category: "API")
+        return try await get("/api/countdown/\(userId)")
+    }
+
     // MARK: - Health Check
 
     /// Test API connectivity

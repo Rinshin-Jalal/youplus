@@ -53,7 +53,9 @@ extension AppDelegate: VoIPPushManagerDelegate {
                     request: VOIPTokenRequest(
                         userId: userId,
                         voipToken: tokenString,
-                        platform: "ios"
+                        platform: "ios",
+                        deviceModel: UIDevice.current.model,
+                        osVersion: UIDevice.current.systemVersion
                     )
                 )
                 Config.log("✅ VoIP token registered with backend", category: "VoIP")

@@ -40,7 +40,7 @@ class OnboardingDataPushService {
         }
 
         // Get VOIP token if available
-        let voipToken = UserDefaultsManager.get("voip_token") ?? ""
+        let voipToken = UserDefaultsManager.get<String>("voip_token") ?? ""
 
         // Get onboarding data
         let onboardingData = OnboardingDataManager.shared

@@ -316,7 +316,7 @@ struct ControlView: View {
                         }
                     }
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(Color.neonGreen)
+                    .foregroundColor(.success)
                 }
                 .padding(20)
                 .background(Color(white: 0.1, opacity: 1.0))

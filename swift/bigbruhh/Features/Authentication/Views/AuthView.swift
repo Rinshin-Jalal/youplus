@@ -36,7 +36,7 @@ struct AuthView: View {
     private var loadingView: some View {
         VStack(spacing: Spacing.lg) {
             ProgressView()
-                .tint(.brutalRedLight)
+                .tint(.brutalRed)
                 .scaleEffect(1.5)
 
             Text("Initializing...")

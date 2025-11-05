@@ -18,12 +18,12 @@ struct LoadingView: View {
             VStack(spacing: Spacing.xl) {
                 Text("BIG BRUH")
                     .font(.headline)
-                    .foregroundColor(.brutalRedLight)
+                    .foregroundColor(.brutalRed)
                     .brutalStyle()
                     .scaleEffect(pulse)
 
                 ProgressView()
-                    .tint(.neonGreen)
+                    .tint(.success)
                     .scaleEffect(1.5)
             }
         }

@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftUI
+import UIKit
 
 enum ConversionOnboardingError: Error {
     case userNotAuthenticated
@@ -63,14 +64,14 @@ class ConversionOnboardingService {
         response: ConversionOnboardingResponse,
         progressCallback: UploadProgressCallback? = nil
     ) async throws -> APIResponse<ConversionCompleteResponse> {
-        Config.log("🚀 Starting conversion onboarding upload", category: "ConversionOnboarding")
+        Config.log("🚀 Starting conversion onboarding upload")
 
         // Verify user is authenticated
         guard let userId = AuthService.shared.user?.id else {
             throw ConversionOnboardingError.userNotAuthenticated
         }
 
-        Config.log("👤 User ID: \(userId)", category: "ConversionOnboarding")
+        Config.log("👤 User ID: \(userId)")
 
         // ==================================================
         // PHASE 1: Convert Voice Recordings to Base64
@@ -79,18 +80,18 @@ class ConversionOnboardingService {
 
         // Helper function to convert voice file URL to base64
         func convertVoiceToBase64(fileURL: URL, name: String) throws -> String {
-            Config.log("🎙️  Converting \(name) to base64...", category: "ConversionOnboarding")
+            Config.log("🎙️  Converting \(name) to base64...")
 
             do {
                 let audioData = try Data(contentsOf: fileURL)
                 let base64Audio = audioData.base64EncodedString()
                 let dataURI = "data:audio/m4a;base64,\(base64Audio)"
 
-                Config.log("✅ \(name) converted: \(audioData.count) bytes", category: "ConversionOnboarding")
+                Config.log("✅ \(name) converted: \(audioData.count) bytes")
 
                 return dataURI
             } catch {
-                Config.log("❌ Failed to convert \(name): \(error)", category: "ConversionOnboarding")
+                Config.log("❌ Failed to convert \(name): \(error)")
                 throw ConversionOnboardingError.voiceConversionFailed(name)
             }
         }
@@ -116,7 +117,7 @@ class ConversionOnboardingService {
         // ==================================================
         // PHASE 2: Build Request Body
         // ==================================================
-        Config.log("📦 Building request body...", category: "ConversionOnboarding")
+        Config.log("📦 Building request body...")
 
         let formatter = ISO8601DateFormatter()
 
@@ -131,12 +132,7 @@ class ConversionOnboardingService {
         ]
 
         // Get push token if available
-        let pushToken = UserDefaultsManager.get("voip_token") as? String
-
-        // Extract just the time portion from callTime
-        let timeFormatter = DateFormatter()
-        timeFormatter.dateFormat = "HH:mm"
-        let callTimeString = timeFormatter.string(from: response.callTime)
+        let pushToken = UserDefaultsManager.get("voip_token") as String?
 
         let requestBody: [String: Any] = [
             // Identity & Aspiration
@@ -186,7 +182,7 @@ class ConversionOnboardingService {
             finalBody["pushToken"] = token
         }
 
-        Config.log("📊 Request body prepared with \(finalBody.keys.count) fields", category: "ConversionOnboarding")
+        Config.log("📊 Request body prepared with \(finalBody.keys.count) fields")
 
         // ==================================================
         // PHASE 3: Upload to Backend
@@ -194,24 +190,28 @@ class ConversionOnboardingService {
         progressCallback?("Uploading to backend...", 0.7)
 
         do {
-            let apiResponse: APIResponse<ConversionCompleteResponse> = try await APIService.shared.post(
-                "/api/onboarding/conversion/complete",
-                body: finalBody
-            )
+            let apiResponse: APIResponse<ConversionCompleteResponse> = try await APIService.shared.post("/api/onboarding/conversion/complete", body: finalBody)
 
             progressCallback?("Upload complete!", 1.0)
 
             if apiResponse.success {
-                Config.log("✅ Conversion onboarding uploaded successfully", category: "ConversionOnboarding")
-                Config.log("📊 Voice uploads: \(apiResponse.data?.voiceUploads.whyItMatters != nil ? "✅" : "❌") whyItMatters, \(apiResponse.data?.voiceUploads.costOfQuitting != nil ? "✅" : "❌") costOfQuitting, \(apiResponse.data?.voiceUploads.commitment != nil ? "✅" : "❌") commitment", category: "ConversionOnboarding")
+                Config.log("✅ Conversion onboarding uploaded successfully")
+                if let uploads = apiResponse.data?.voiceUploads {
+                    let why = uploads.whyItMatters != nil ? "✅" : "❌"
+                    let cost = uploads.costOfQuitting != nil ? "✅" : "❌"
+                    let commit = uploads.commitment != nil ? "✅" : "❌"
+                    Config.log("📊 Voice uploads: \(why) whyItMatters, \(cost) costOfQuitting, \(commit) commitment")
+                } else {
+                    Config.log("📊 Voice uploads: (no data)")
+                }
             } else {
-                Config.log("❌ Upload failed: \(apiResponse.error ?? "Unknown error")", category: "ConversionOnboarding")
+                Config.log("❌ Upload failed: \(apiResponse.error ?? "Unknown error")")
             }
 
             return apiResponse
 
         } catch {
-            Config.log("💥 Network error during upload: \(error)", category: "ConversionOnboarding")
+            Config.log("💥 Network error during upload: \(error)")
             throw ConversionOnboardingError.networkError(error)
         }
     }
@@ -222,7 +222,7 @@ class ConversionOnboardingService {
             let response: APIResponse<[String: String]> = try await APIService.shared.get("/api/health")
             return response.success
         } catch {
-            Config.log("❌ Backend connectivity test failed: \(error)", category: "ConversionOnboarding")
+            Config.log("❌ Backend connectivity test failed: \(error)")
             return false
         }
     }
@@ -262,3 +262,4 @@ extension ConversionOnboardingService {
     }
 }
 #endif
+
