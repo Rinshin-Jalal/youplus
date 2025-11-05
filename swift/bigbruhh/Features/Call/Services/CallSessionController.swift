@@ -78,7 +78,11 @@ final class CallSessionController: NSObject, ObservableObject {
     }
 
     private func fetchPrompts(callUUID: String, token: String) {
-        var request = URLRequest(url: URL(string: "https://api.bigbruh.app/voip/session/prompts")!)
+        guard let baseURL = Config.backendURL else {
+            self.state = .failed(CallSessionError.invalidResponse)
+            return
+        }
+        var request = URLRequest(url: URL(string: "\(baseURL)/voip/session/prompts")!)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue(token, forHTTPHeaderField: "Authorization")
@@ -106,7 +110,11 @@ final class CallSessionController: NSObject, ObservableObject {
     }
 
     private func authenticateAndStream(callUUID: String, sessionToken: String, prompts: DeferredPromptResponse) {
-        var request = URLRequest(url: URL(string: "https://api.bigbruh.app/calls/\(callUUID)/stream")!)
+        guard let baseURL = Config.backendURL else {
+            self.state = .failed(CallSessionError.invalidResponse)
+            return
+        }
+        var request = URLRequest(url: URL(string: "\(baseURL)/calls/\(callUUID)/stream")!)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue(sessionToken, forHTTPHeaderField: "X-Call-Session")

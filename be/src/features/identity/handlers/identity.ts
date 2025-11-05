@@ -37,22 +37,21 @@ import { getAuthenticatedUserId } from "@/middleware/auth";
 import { Identity, IdentityStatus } from "@/types/database";
 
 /**
- * Get current identity with status and statistics
+ * Get current identity with status and statistics (Super MVP)
  *
- * This endpoint provides a complete identity profile including psychological
- * data, performance metrics, voice clips, and call statistics. It serves as
- * the central hub for identity-related information and accountability tracking.
+ * Returns identity profile using Super MVP schema with simplified fields.
+ * All psychological data is stored in onboarding_context JSONB field.
  *
- * Features:
- * - Complete identity profile with 60+ psychological fields
- * - Trust percentage and streak tracking
- * - Promise performance analytics
- * - Voice clip management
+ * Super MVP Features:
+ * - Core identity fields (name, daily_commitment, chosen_path, call_time, strike_limit)
+ * - Voice recording URLs (3 audio files)
+ * - Onboarding context JSONB (all psychological data)
+ * - Simple streak tracking (current_streak_days, total_calls_completed)
  * - Call statistics and success rates
  * - Days active since identity creation
  *
  * @param c Hono context with userId parameter
- * @returns JSON response with complete identity data and statistics
+ * @returns JSON response with Super MVP identity data and statistics
  */
 export const getCurrentIdentity = async (c: Context) => {
   const userId = c.req.param("userId");
@@ -80,103 +79,13 @@ export const getCurrentIdentity = async (c: Context) => {
       return c.json({ error: "Identity not found" }, 404);
     }
 
-    // Step 2: Get identity status for performance tracking
-    // This includes trust percentage, streak days, and promise counts
+    // Step 2: Get identity status for performance tracking (Super MVP schema)
+    // Super MVP: Only current_streak_days, total_calls_completed, last_call_at
     const { data: identityStatus, error: statusError } = await supabase
       .from("identity_status")
       .select("*")
       .eq("user_id", userId)
       .single();
-
-    // Step 2.5: Get user data for timezone and call window if next_call_timestamp is null
-    let nextCallTimestamp = identityStatus?.next_call_timestamp;
-
-    if (!nextCallTimestamp) {
-      const { data: userData } = await supabase
-        .from("users")
-        .select("timezone, call_window_start, call_window_timezone")
-        .eq("id", userId)
-        .single();
-
-      console.log(`🔍 User data for ${userId}: call_window_start=${userData?.call_window_start}, timezone=${userData?.timezone}, call_window_timezone=${userData?.call_window_timezone}`);
-
-      // Use call_window_start or default to 20:00 (8 PM)
-      const callWindowStart = userData?.call_window_start || "20:00";
-      const userTimezone = userData?.call_window_timezone || userData?.timezone || "America/New_York";
-      console.log(`🔍 User data for ${userId}: call_window_start=${userData?.call_window_start}, timezone=${userData?.timezone}, call_window_timezone=${userData?.call_window_timezone}`);
-
-      const [hours, minutes] = callWindowStart.split(":").map(Number);
-
-      console.log(`⏰ Calculating next call for ${userId}: time=${callWindowStart}, timezone=${userTimezone}`);
-
-      // Get current UTC time
-      const nowUTC = new Date();
-
-      // Format current time in user's timezone to get local date/time components
-      const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: userTimezone,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      });
-
-      const parts = formatter.formatToParts(nowUTC);
-      const getPart = (type: string) => parts.find(p => p.type === type)?.value || '';
-
-      const year = parseInt(getPart('year'));
-      const month = parseInt(getPart('month'));
-      const day = parseInt(getPart('day'));
-      const currentHour = parseInt(getPart('hour'));
-      const currentMinute = parseInt(getPart('minute'));
-
-      console.log(`📍 Current time in ${userTimezone}: ${year}-${month}-${day} ${currentHour}:${currentMinute}`);
-
-      // Check if the call time has passed today in user's timezone
-      const callTimePassed = (currentHour > hours) || (currentHour === hours && currentMinute >= minutes);
-
-      console.log(`🕐 Call time passed? ${callTimePassed} (current: ${currentHour}:${currentMinute}, call: ${hours}:${minutes})`);
-
-      // Determine target date (today or tomorrow)
-      const targetDate = new Date(year, month - 1, day);
-      if (callTimePassed) {
-        targetDate.setDate(targetDate.getDate() + 1);
-        console.log(`➡️  Scheduling for tomorrow: ${targetDate.toDateString()}`);
-      } else {
-        console.log(`➡️  Scheduling for today: ${targetDate.toDateString()}`);
-      }
-
-      // Create a date string that represents call time in user's timezone
-      // Format: YYYY-MM-DDTHH:MM:SS
-      const callDateString = `${targetDate.getFullYear()}-${(targetDate.getMonth() + 1).toString().padStart(2, '0')}-${targetDate.getDate().toString().padStart(2, '0')} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
-
-      // Use toLocaleString to convert from user's timezone to UTC
-      // This creates a Date object representing when the call should happen
-      const referenceDate = new Date();
-      const referenceDateInUserTZ = referenceDate.toLocaleString('en-US', { timeZone: userTimezone });
-      const referenceDateInUTC = referenceDate.toLocaleString('en-US', { timeZone: 'UTC' });
-
-      // Calculate offset in milliseconds
-      const offsetMs = new Date(referenceDateInUTC).getTime() - new Date(referenceDateInUserTZ).getTime();
-
-      // Create call time as if it were UTC, then apply the timezone offset
-      const callTimeAsLocal = new Date(callDateString);
-      const callTimeUTC = new Date(callTimeAsLocal.getTime() - offsetMs);
-
-      // Convert to Unix timestamp in seconds
-      nextCallTimestamp = Math.floor(callTimeUTC.getTime() / 1000);
-
-      const nextCallDateUTC = new Date(nextCallTimestamp * 1000);
-      const nextCallInUserTZ = nextCallDateUTC.toLocaleString('en-US', { timeZone: userTimezone, dateStyle: 'full', timeStyle: 'long' });
-
-      console.log(`📅 Calculated next call timestamp for user ${userId}:`);
-      console.log(`   - UTC time: ${nextCallDateUTC.toISOString()}`);
-      console.log(`   - User's local time (${userTimezone}): ${nextCallInUserTZ}`);
-      console.log(`   - Unix timestamp: ${nextCallTimestamp} seconds`);
-      console.log(`   - Time from now: ${Math.floor((nextCallTimestamp * 1000 - Date.now()) / 1000 / 60)} minutes`);
-    }
 
     // Step 3: Calculate days since identity creation
     // This provides context for identity evolution and commitment duration
@@ -198,33 +107,39 @@ export const getCurrentIdentity = async (c: Context) => {
     const successRate =
       totalCalls > 0 ? Math.round((answeredCalls / totalCalls) * 100) : 0;
 
-    // Step 5: Compile comprehensive identity data
-    // This combines all identity information into a single response
+    // Step 5: Compile identity data (Super MVP schema)
+    // Super MVP: 12 columns (5 core + 3 voice URLs + 1 JSONB + system fields)
     const identityData = {
+      // System fields
       id: identity.id,
-      name: identity.identity_name,
-      summary: identity.identity_summary,
+      userId: identity.user_id,
       createdAt: identity.created_at,
       updatedAt: identity.updated_at,
       daysActive,
-      // Core identity information - psychological foundation
-      achievements: identity.achievements,
-      failureReasons: identity.failure_reasons,
-      singleTruthUserHides: identity.current_struggle,
-      fearVersionOfSelf: identity.nightmare_self,
-      desiredOutcome: identity.desired_outcome,
-      keySacrifice: identity.key_sacrifice,
-      identityOath: identity.final_oath,
-      lastBrokenPromise: identity.last_broken_promise,
-      // Status information - performance tracking
-      trustPercentage: identityStatus?.trust_percentage || 100,
-      currentStreakDays: identityStatus?.current_streak_days || 0,
-      promisesMadeCount: identityStatus?.promises_made_count || 0,
-      promisesBrokenCount: identityStatus?.promises_broken_count || 0,
-      nextCallTimestamp: nextCallTimestamp,
-      statusSummary: identityStatus?.status_summary || null,
 
-      // Call statistics - accountability performance
+      // Core identity fields (Super MVP)
+      name: identity.name,
+      dailyCommitment: identity.daily_commitment,
+      chosenPath: identity.chosen_path, // "hopeful" | "doubtful"
+      callTime: identity.call_time, // TIME format "HH:MM:SS"
+      strikeLimit: identity.strike_limit, // 1-5
+
+      // Voice recording URLs
+      voiceRecordings: {
+        whyItMatters: identity.why_it_matters_audio_url,
+        costOfQuitting: identity.cost_of_quitting_audio_url,
+        commitment: identity.commitment_audio_url,
+      },
+
+      // Onboarding context (JSONB - all psychological data)
+      onboardingContext: identity.onboarding_context,
+
+      // Status information (Super MVP simplified)
+      currentStreakDays: identityStatus?.current_streak_days || 0,
+      totalCallsCompleted: identityStatus?.total_calls_completed || 0,
+      lastCallAt: identityStatus?.last_call_at || null,
+
+      // Call statistics
       stats: {
         totalCalls,
         answeredCalls,
@@ -250,18 +165,19 @@ export const getCurrentIdentity = async (c: Context) => {
 };
 
 /**
- * Update current identity
+ * Update current identity (Super MVP)
  *
- * This endpoint allows updating the user's identity profile with new
- * psychological data, commitments, and behavioral insights. It supports
- * the full range of identity fields for comprehensive personalization.
+ * Allows updating user's identity profile with Super MVP schema fields.
+ * Only core operational fields can be updated. Psychological data is
+ * stored in onboarding_context JSONB and set during onboarding.
  *
- * Identity Fields Updated:
- * - Core identity: name, summary, oath
- * - Psychological insights: fears, truths, desired outcomes
- * - Behavioral patterns: slip moments, derail triggers
- * - Accountability preferences: enforcement tone, non-negotiables
- * - Commitment tracking: final oath, external judgment
+ * Updatable Fields (Super MVP):
+ * - dailyCommitment: The daily action they committed to
+ * - callTime: TIME format "HH:MM:SS" for daily accountability call
+ * - strikeLimit: Number of allowed missed days (1-5)
+ * - onboardingContext: JSONB object (optional - for corrections)
+ *
+ * Note: name and chosenPath are typically set during onboarding and not changed
  *
  * @param c Hono context with identity data in request body
  * @returns JSON response confirming identity update
@@ -278,34 +194,44 @@ export const updateIdentity = async (c: Context) => {
   const supabase = createSupabaseClient(env);
 
   try {
-    // Update the identity record with comprehensive psychological data
-    // This supports all 60+ identity fields for deep personalization
+    // Build update object with only Super MVP fields
+    // Only update fields that are provided in the request
+    const updateData: any = {
+      updated_at: new Date().toISOString(),
+    };
+
+    // Map camelCase request fields to snake_case database fields
+    if (identityData.dailyCommitment !== undefined) {
+      updateData.daily_commitment = identityData.dailyCommitment;
+    }
+    if (identityData.callTime !== undefined) {
+      updateData.call_time = identityData.callTime;
+    }
+    if (identityData.strikeLimit !== undefined) {
+      updateData.strike_limit = identityData.strikeLimit;
+    }
+    if (identityData.onboardingContext !== undefined) {
+      updateData.onboarding_context = identityData.onboardingContext;
+    }
+    // Note: name and chosen_path typically not updated after onboarding
+    if (identityData.name !== undefined) {
+      updateData.name = identityData.name;
+    }
+    if (identityData.chosenPath !== undefined) {
+      updateData.chosen_path = identityData.chosenPath;
+    }
+
+    // Update the identity record with Super MVP fields only
     const { data: updatedIdentity, error: updateError } = await supabase
       .from("identity")
-      .update({
-        identity_name: identityData.identity_name,
-        identity_summary: identityData.identity_summary,
-        current_struggle: identityData.single_truth_user_hides,
-        nightmare_self: identityData.fear_version_of_self,
-        desired_outcome: identityData.desired_outcome,
-        key_sacrifice: identityData.key_sacrifice,
-        final_oath: identityData.identity_oath,
-        last_broken_promise: identityData.last_broken_promise,
-        most_common_slip_moment: identityData.most_common_slip_moment,
-        // derail_trigger field removed in BIGBRUH schema migration
-        daily_non_negotiable: identityData.daily_non_negotiable,
-        enforcement_tone: identityData.enforcement_tone,
-        external_judgment: identityData.external_judgment,
-        regret_if_no_change: identityData.regret_if_no_change,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData)
       .eq("user_id", userId)
       .select()
       .single();
 
     if (updateError) throw updateError;
 
-    console.log(`🆔 Identity updated for user ${userId}`);
+    console.log(`🆔 Identity updated for user ${userId} (Super MVP schema)`);
 
     return c.json({
       success: true,
@@ -325,17 +251,16 @@ export const updateIdentity = async (c: Context) => {
 };
 
 /**
- * Update identity status (trust, streak, promises)
+ * Update identity status (Super MVP - simplified streak tracking)
  *
- * This endpoint manages the performance tracking aspects of identity,
- * including trust percentage, current streak, and promise statistics.
- * It uses upsert to handle both creation and updates seamlessly.
+ * This endpoint manages performance tracking with Super MVP's simplified schema.
+ * Only basic streak and call tracking - no trust percentage or promise counts.
+ * Uses upsert to handle both creation and updates seamlessly.
  *
- * Status Components:
- * - Trust Percentage: Psychological pressure mechanism (0-100%)
- * - Current Streak: Consecutive days of promise-keeping
- * - Promise Counts: Made vs broken promises for accountability
- * - Last Updated: Timestamp for tracking changes
+ * Super MVP Status Fields:
+ * - current_streak_days: Consecutive days of kept commitments
+ * - total_calls_completed: Total number of completed accountability calls
+ * - last_call_at: Timestamp of last completed call
  *
  * @param c Hono context with status data in request body
  * @returns JSON response confirming status update
@@ -343,37 +268,43 @@ export const updateIdentity = async (c: Context) => {
 export const updateIdentityStatus = async (c: Context) => {
   const userId = getAuthenticatedUserId(c);
   const {
-    trustPercentage,
     currentStreakDays,
-    promisesMadeCount,
-    promisesBrokenCount,
+    totalCallsCompleted,
+    lastCallAt,
   } = await c.req.json();
 
   const env = c.env as Env;
   const supabase = createSupabaseClient(env);
 
   try {
+    // Build update object with Super MVP identity_status fields
+    const statusData: any = {
+      user_id: userId,
+      updated_at: new Date().toISOString(),
+    };
+
+    // Only include provided fields
+    if (currentStreakDays !== undefined) {
+      statusData.current_streak_days = currentStreakDays;
+    }
+    if (totalCallsCompleted !== undefined) {
+      statusData.total_calls_completed = totalCallsCompleted;
+    }
+    if (lastCallAt !== undefined) {
+      statusData.last_call_at = lastCallAt;
+    }
+
     // Update identity status using upsert for seamless creation/update
-    // This ensures the status record exists and is always current
+    // Super MVP: Only streak days, total calls, and last call timestamp
     const { data: updatedStatus, error: statusError } = await supabase
       .from("identity_status")
-      .upsert(
-        {
-          user_id: userId,
-          trust_percentage: trustPercentage,
-          current_streak_days: currentStreakDays,
-          promises_made_count: promisesMadeCount,
-          promises_broken_count: promisesBrokenCount,
-          last_updated: new Date().toISOString(),
-        },
-        { onConflict: "user_id" }
-      )
+      .upsert(statusData, { onConflict: "user_id" })
       .select()
       .single();
 
     if (statusError) throw statusError;
 
-    console.log(`📊 Identity status updated for user ${userId}`);
+    console.log(`📊 Identity status updated for user ${userId} (Super MVP schema)`);
 
     return c.json({
       success: true,
@@ -409,67 +340,35 @@ export const updateIdentityStatus = async (c: Context) => {
  * @returns JSON response confirming oath recording
  */
 export const updateFinalOath = async (c: Context) => {
-  const userId = getAuthenticatedUserId(c);
-  const { finalOath } = await c.req.json();
-
-  if (!finalOath || typeof finalOath !== "string") {
-    return c.json({ error: "Final oath required" }, 400);
-  }
-
-  const env = c.env as Env;
-  const supabase = createSupabaseClient(env);
-
-  try {
-    // Update final oath in identity - ultimate commitment
-    // This represents the user's most binding promise to themselves
-    const { data: updatedIdentity, error: updateError } = await supabase
-      .from("identity")
-      .update({
-        final_oath: finalOath,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("user_id", userId)
-      .select()
-      .single();
-
-    if (updateError) throw updateError;
-
-    console.log(`💬 Final oath updated for user ${userId}`);
-
-    return c.json({
-      success: true,
-      data: updatedIdentity,
-      message: "Final oath recorded",
-    });
-  } catch (error) {
-    console.error("Final oath update failed:", error);
-    return c.json(
-      {
-        error: "Failed to update final oath",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      500
-    );
-  }
+  // DEPRECATED: final_oath column removed in Super MVP
+  // Psychological data now stored in onboarding_context JSONB
+  return c.json(
+    {
+      error: "Endpoint deprecated in Super MVP",
+      message:
+        "Final oath field removed. Use PUT /identity/:userId with onboardingContext to update psychological data.",
+      migration: "Super MVP Schema - final_oath column removed",
+    },
+    410 // 410 Gone
+  );
 };
 
 /**
- * Get identity performance statistics
+ * Get identity performance statistics (Super MVP)
  *
- * This endpoint provides comprehensive performance analytics for the user's
- * identity journey. It calculates success rates, trends, and behavioral
- * insights to drive accountability and motivation.
+ * Provides performance analytics using Super MVP's simplified schema.
+ * Calculates success rates, trends, and behavioral insights for accountability.
  *
- * Performance Metrics:
+ * Super MVP Metrics:
  * - Days Active: Time since identity creation
- * - Trust Percentage: Current psychological pressure level
+ * - Current Streak: Consecutive days of kept commitments
+ * - Total Calls Completed: Count of completed accountability calls
  * - Promise Success Rate: Kept vs broken promises
  * - Call Answer Rate: Responsiveness to accountability
  * - Performance Trending: Excellent/Good/Needs Improvement
- * - Consistency Score: Streak-based reliability measure
  *
  * @param c Hono context with userId parameter
- * @returns JSON response with comprehensive performance statistics
+ * @returns JSON response with Super MVP performance statistics
  */
 export const getIdentityStats = async (c: Context) => {
   const userId = c.req.param("userId");
@@ -535,13 +434,15 @@ export const getIdentityStats = async (c: Context) => {
         )
       : 0;
 
-    // Step 6: Return comprehensive performance statistics
+    // Step 6: Return Super MVP performance statistics
     return c.json({
       success: true,
       data: {
         daysActive,
-        trustPercentage: identityStatus?.trust_percentage || 100,
+        // Super MVP: Simplified status tracking
         currentStreakDays: identityStatus?.current_streak_days || 0,
+        totalCallsCompleted: identityStatus?.total_calls_completed || 0,
+        lastCallAt: identityStatus?.last_call_at || null,
         promises: {
           total: totalPromises,
           kept: keptPromises,

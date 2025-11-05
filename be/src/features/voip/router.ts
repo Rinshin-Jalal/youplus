@@ -22,17 +22,28 @@ import {
 
 const router = new Hono();
 
-// VoIP Debug endpoints
+// ===================================================================
+// VoIP Debug Endpoints (@debug-only)
+// These endpoints are for debugging VoIP push notifications
+// Not used by iOS app in production - development/testing only
+// ===================================================================
 router.post('/debug/voip', postVoIPDebug);
 router.get('/debug/voip', getVoIPDebugEvents);
 router.delete('/debug/voip', clearVoIPDebugEvents);
 router.get('/debug/voip/summary', getVoIPDebugSummary);
 
-// VoIP Session endpoints
+// ===================================================================
+// VoIP Session Endpoints (Production)
+// Used by iOS app for real call sessions
+// ===================================================================
 router.post('/session/init', initVoipSession);
 router.post('/session/prompts', getVoipSessionPrompts);
 
-// VoIP Test endpoints
+// ===================================================================
+// VoIP Test Endpoints (@test-only)
+// These endpoints are for testing VoIP functionality
+// Not used by iOS app in production - testing/validation only
+// ===================================================================
 router.get('/test-certificates', testVoipCertificates);
 router.post('/simple-test', simpleVoipTest);
 router.post('/test', advancedVoipTest);

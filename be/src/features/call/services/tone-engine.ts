@@ -99,9 +99,12 @@ export function calculateOptimalTone(
   const currentStreak = identityStatus?.current_streak_days ?? 0;
   const streakHealth = analyzeStreakHealth(currentStreak);
 
-  // ⚠️ PHASE 3: Assess psychological collapse risk from trust erosion
-  const trustPercentage = identityStatus?.trust_percentage ?? 0;
-  const collapseScore = Math.max(0, 100 - trustPercentage); // Ensure non-negative
+  // ⚠️ PHASE 3: Assess psychological collapse risk from streak breakdown
+  // Super MVP: Use current_streak_days instead of removed trust_percentage
+  const collapseScore = currentStreak === 0 ? 100 :  // No streak = critical collapse risk
+                        currentStreak < 3 ? 70 :      // Fragile momentum = high risk
+                        currentStreak < 7 ? 30 :      // Building strength = medium risk
+                        0;                             // Strong streak = low risk
   const collapseRisk = analyzeCollapseRisk(collapseScore);
 
   // 🎯 PHASE 4: Calculate weighted psychological intervention score
