@@ -14,8 +14,6 @@ struct ControlView: View {
     
     @State private var callWindowStart: Date = Calendar.current.date(from: DateComponents(hour: 19, minute: 0)) ?? Date()
     @State private var showTimePicker: Bool = false
-    @State private var loading: Bool = false
-    @State private var isRefreshing: Bool = false
     @State private var extractionStatus: String = ""
 
     var body: some View {
@@ -31,15 +29,15 @@ struct ControlView: View {
                     // HERO SETTINGS CARD - matches NRN
                     heroSettingsCard
 
-                    // Control Actions
-                    Text("CONTROL ACTIONS")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(Color(white: 0.7, opacity: 1.0))
-                        .tracking(2)
+                    // Actions Section
+                    Text("ACTIONS")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(Color(white: 0.5))
+                        .tracking(1.5)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 16)
-                        .padding(.top, 10)
-                        .padding(.bottom, 8)
+                        .padding(.top, 16)
+                        .padding(.bottom, 10)
 
                     controlActions
 
@@ -57,219 +55,127 @@ struct ControlView: View {
     // MARK: - Hero Settings Card
 
     private var heroSettingsCard: some View {
-        VStack(spacing: 10) {
-            Text("commitment window")
-                .font(.system(size: 14, weight: .bold))
-                .foregroundColor(Color(white: 0.85, opacity: 1.0))
+        VStack(spacing: 8) {
+            Text("COMMITMENT WINDOW")
+                .font(.system(size: 11, weight: .bold))
+                .foregroundColor(Color(white: 0.6))
+                .tracking(1.5)
 
             Text("\(formatTimeForDisplay(callWindowStart)) - \(formatTimeForDisplay(endTime))")
-                .font(.system(size: 28, weight: .black))
+                .font(.system(size: 24, weight: .black))
                 .foregroundColor(.white)
-                .tracking(2)
-                .multilineTextAlignment(.center)
+                .tracking(1)
         }
-        .padding(.vertical, 40)
-        .padding(.horizontal, 10)
+        .padding(.vertical, 32)
         .frame(maxWidth: .infinity)
-        .frame(minHeight: 250)
-        .background(Color.black)
-        .padding(.horizontal, 20)
-        .padding(.vertical, 20)
+        .background(Color(white: 0.05))
+        .cornerRadius(10)
+        .padding(.horizontal, 16)
+        .padding(.top, 16)
     }
 
     // MARK: - Control Actions
 
     private var controlActions: some View {
         VStack(spacing: 12) {
-            // DEBUG: Call Screen Button
             #if DEBUG
-            Button(action: {
-                navigator.showCall()
-            }) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text("DEBUG: CALL SCREEN")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.white)
-                                .tracking(1)
-
-                            Spacer()
-
+            // Debug Actions Section
+            VStack(spacing: 10) {
+                HStack(spacing: 10) {
+                    // Call Screen
+                    Button(action: { navigator.showCall() }) {
+                        VStack(spacing: 4) {
                             Image(systemName: "phone.fill")
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundColor(.white)
-                        }
-
-                        Text("Test the call screen interface")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundColor(Color(white: 0.8, opacity: 1.0))
-                            .lineSpacing(4)
-                    }
-                }
-                .padding(16)
-                .frame(maxWidth: .infinity)
-                .background(Color(hex: "#8B00FF"))
-                .cornerRadius(10)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color(hex: "#4B0082"), lineWidth: 3)
-                )
-            }
-            .buttonStyle(.plain)
-
-    // DEBUG: Secret Plan Button
-    Button(action: {
-        navigator.showSecretPlan(userName: "BigBruh", source: "debug")
-    }) {
-        HStack {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("DEBUG: SECRET PLAN")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.white)
-                        .tracking(1)
-
-                    Spacer()
-
-                    Image(systemName: "lock.fill")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(.white)
-                }
-
-                Text("Test the secret plan paywall flow")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(Color(white: 0.8, opacity: 1.0))
-                    .lineSpacing(4)
-            }
-        }
-        .padding(16)
-        .frame(maxWidth: .infinity)
-        .background(Color(hex: "#FFD700"))
-        .cornerRadius(10)
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color(hex: "#B8860B"), lineWidth: 3)
-        )
-    }
-    .buttonStyle(.plain)
-
-            // DEBUG: Identity Extraction Button
-            Button(action: {
-                triggerIdentityExtraction()
-            }) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text("DEBUG: IDENTITY EXTRACTION")
                                 .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.white)
-                                .tracking(1)
-
-                            Spacer()
-
-                            Image(systemName: "brain.head.profile")
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundColor(.white)
+                            Text("CALL")
+                                .font(.system(size: 10, weight: .bold))
                         }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Color(hex: "#8B00FF"))
+                        .cornerRadius(8)
+                    }
 
-                        Text("Trigger AI identity extraction manually")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundColor(Color(white: 0.8, opacity: 1.0))
-                            .lineSpacing(4)
+                    // Paywall
+                    Button(action: { navigator.showSecretPlan(userName: "BigBruh", source: "debug") }) {
+                        VStack(spacing: 4) {
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 16, weight: .bold))
+                            Text("PAYWALL")
+                                .font(.system(size: 10, weight: .bold))
+                        }
+                        .foregroundColor(.black)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Color(hex: "#FFD700"))
+                        .cornerRadius(8)
+                    }
+
+                    // Identity Extraction
+                    Button(action: triggerIdentityExtraction) {
+                        VStack(spacing: 4) {
+                            Image(systemName: "brain.head.profile")
+                                .font(.system(size: 16, weight: .bold))
+                            Text("EXTRACT")
+                                .font(.system(size: 10, weight: .bold))
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Color(hex: "#00CED1"))
+                        .cornerRadius(8)
                     }
                 }
-                .padding(16)
-                .frame(maxWidth: .infinity)
-                .background(Color(hex: "#00CED1"))
-                .cornerRadius(10)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color(hex: "#008B8B"), lineWidth: 3)
-                )
-            }
-            .buttonStyle(.plain)
-            .disabled(loading)
+                .buttonStyle(.plain)
 
-            // Status Display
-            if !extractionStatus.isEmpty {
-                Text(extractionStatus)
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(Color(white: 0.7))
-                    .padding(.horizontal, 16)
-                    .padding(.top, 8)
+                if !extractionStatus.isEmpty {
+                    Text(extractionStatus)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(Color(white: 0.6))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
+            .padding(12)
+            .background(Color(white: 0.08))
+            .cornerRadius(8)
             #endif
 
             // Modify Window Button
-            Button(action: {
-                withAnimation {
-                    showTimePicker = true
-                }
-            }) {
+            Button(action: { withAnimation { showTimePicker = true } }) {
                 HStack {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text("MODIFY WINDOW")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.white)
-                                .tracking(1)
-
-                            Spacer()
-
-                            Image(systemName: "clock")
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundColor(.white)
-                        }
-
-                        Text("Change your daily commitment window")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundColor(Color(white: 0.8, opacity: 1.0))
-                            .lineSpacing(4)
-                    }
+                    Image(systemName: "clock")
+                        .font(.system(size: 18, weight: .bold))
+                    Text("MODIFY WINDOW")
+                        .font(.system(size: 14, weight: .bold))
+                        .tracking(1)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .bold))
                 }
+                .foregroundColor(.white)
                 .padding(16)
-                .frame(maxWidth: .infinity)
                 .background(Color(hex: "#1a1a1a"))
-                .cornerRadius(10)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color(hex: "#333333"), lineWidth: 3)
-                )
+                .cornerRadius(8)
             }
             .buttonStyle(.plain)
 
             // Terminate Session Button
             Button(action: handleSignOut) {
                 HStack {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text("TERMINATE SESSION")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.white)
-                                .tracking(1)
-
-                            Spacer()
-
-                            Image(systemName: "arrow.right.square")
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundColor(.white)
-                        }
-
-                        Text("End your accountability commitment")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundColor(.white)
-                            .lineSpacing(4)
-                    }
+                    Image(systemName: "arrow.right.square")
+                        .font(.system(size: 18, weight: .bold))
+                    Text("SIGN OUT")
+                        .font(.system(size: 14, weight: .bold))
+                        .tracking(1)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .bold))
                 }
+                .foregroundColor(.white)
                 .padding(16)
-                .frame(maxWidth: .infinity)
                 .background(Color(hex: "#DC143C"))
-                .cornerRadius(10)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color(hex: "#8B0000"), lineWidth: 3)
-                )
+                .cornerRadius(8)
             }
             .buttonStyle(.plain)
         }
@@ -281,55 +187,45 @@ struct ControlView: View {
 
     private var timePickerModal: some View {
         ZStack {
-            Color.black.opacity(0.8)
+            Color.black.opacity(0.85)
                 .ignoresSafeArea()
-                .onTapGesture {
-                    withAnimation {
-                        showTimePicker = false
-                    }
-                }
+                .onTapGesture { withAnimation { showTimePicker = false } }
 
             VStack(spacing: 0) {
-                // Header
                 HStack {
                     Button("Cancel") {
-                        withAnimation {
-                            showTimePicker = false
-                        }
+                        withAnimation { showTimePicker = false }
                     }
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundColor(Color(hex: "#DC143C"))
 
                     Spacer()
 
                     Text("SELECT TIME")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.white)
-                        .tracking(1)
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(Color(white: 0.7))
+                        .tracking(1.5)
 
                     Spacer()
 
-                    Button("Done") {
+                    Button("Save") {
                         saveCallWindow()
-                        withAnimation {
-                            showTimePicker = false
-                        }
+                        withAnimation { showTimePicker = false }
                     }
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 15, weight: .bold))
                     .foregroundColor(.success)
                 }
-                .padding(20)
-                .background(Color(white: 0.1, opacity: 1.0))
+                .padding(16)
+                .background(Color(white: 0.08))
 
-                // Time Picker
                 DatePicker("", selection: $callWindowStart, displayedComponents: .hourAndMinute)
                     .datePickerStyle(.wheel)
                     .labelsHidden()
                     .colorScheme(.dark)
                     .padding()
-                    .background(Color(white: 0.05, opacity: 1.0))
+                    .background(Color(white: 0.03))
             }
-            .background(Color(white: 0.05, opacity: 1.0))
+            .background(Color(white: 0.03))
             .cornerRadius(12)
             .padding(.horizontal, 20)
         }
@@ -387,7 +283,6 @@ struct ControlView: View {
             return
         }
 
-        loading = true
         extractionStatus = "🔄 Triggering identity extraction..."
 
         Task {
@@ -399,16 +294,14 @@ struct ControlView: View {
 
                 await MainActor.run {
                     if response.success {
-                        extractionStatus = "✅ Identity extraction completed successfully"
+                        extractionStatus = "✅ Identity extraction completed"
                     } else {
-                        extractionStatus = "❌ Identity extraction failed: \(response.error ?? "Unknown error")"
+                        extractionStatus = "❌ Failed: \(response.error ?? "Unknown error")"
                     }
-                    loading = false
                 }
             } catch {
                 await MainActor.run {
-                    extractionStatus = "❌ Identity extraction error: \(error.localizedDescription)"
-                    loading = false
+                    extractionStatus = "❌ Error: \(error.localizedDescription)"
                 }
             }
         }
