@@ -207,6 +207,24 @@ class APIService {
         return try await post("/token-init-push", body: json)
     }
 
+    // MARK: - Settings Endpoints
+
+    /// Update call schedule settings
+    /// PUT /api/settings/schedule
+    func updateCallSchedule(callWindowStart: String, timezone: String? = nil) async throws -> APIResponse<[String: AnyCodableValue]> {
+        Config.log("Updating call schedule: \(callWindowStart)", category: "API")
+
+        var body: [String: Any] = [
+            "callWindowStart": callWindowStart
+        ]
+
+        if let timezone = timezone {
+            body["timezone"] = timezone
+        }
+
+        return try await put("/api/settings/schedule", body: body)
+    }
+
     // MARK: - Health Check
 
     /// Test API connectivity

@@ -348,8 +348,31 @@ struct ControlView: View {
     }
 
     private func saveCallWindow() {
-        // TODO: Save to API
-        print("💾 Saving call window: \(formatTimeForDisplay(callWindowStart))")
+        Task {
+            do {
+                // Format time as HH:MM for backend (backend will add :00 for seconds)
+                let formatter = DateFormatter()
+                formatter.dateFormat = "HH:mm"
+                let timeString = formatter.string(from: callWindowStart)
+
+                // Get user's timezone
+                let timezone = TimeZone.current.identifier
+
+                print("💾 Saving call window: \(timeString) (\(timezone))")
+
+                // Call API
+                let _: APIResponse<[String: AnyCodableValue]> = try await APIService.shared.updateCallSchedule(
+                    callWindowStart: timeString,
+                    timezone: timezone
+                )
+
+                print("✅ Call window saved successfully")
+
+            } catch {
+                print("❌ Failed to save call window: \(error)")
+                // TODO: Show error alert to user
+            }
+        }
     }
 
     private func handleSignOut() {
