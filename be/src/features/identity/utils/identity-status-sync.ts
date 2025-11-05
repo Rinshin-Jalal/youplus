@@ -183,7 +183,8 @@ async function generateStatusSummary(
   try {
     const userContext = await getUserContext(env, userId);
     identity = userContext.identity;
-    primaryExcuse = userContext.identity?.self_sabotage_pattern || undefined;
+    // Super MVP: self_sabotage_pattern now in onboarding_context
+    primaryExcuse = userContext.identity?.onboarding_context?.self_sabotage_pattern as string | undefined;
 
     const { data: latestCall } = await supabase
       .from("calls")
@@ -231,10 +232,10 @@ Recent promises:
 ${recentPromises || "(no promises recorded)"}
 
 Identity data:
-- Daily non-negotiable: ${identity?.non_negotiable_commitment || identity?.daily_non_negotiable || "unknown"}
-- Breaking point: ${identity?.breaking_point_event || "unknown"}
-- Current self: ${identity?.current_self_summary || "unknown"}
-- War cry: ${identity?.war_cry_or_death_vision || "none"}
+- Daily commitment: ${identity?.daily_commitment || "unknown"}
+- Goal: ${identity?.onboarding_context?.goal || "unknown"}
+- Motivation level: ${identity?.onboarding_context?.motivation_level || "unknown"}
+- Future if no change: ${identity?.onboarding_context?.future_if_no_change || "none"}
 
 You are BigBruh. Classify their discipline state and craft a brutal but motivating notification.
 Return JSON with keys: disciplineLevel (CRISIS|GROWTH|STUCK|STABLE|UNKNOWN), disciplineMessage, notificationTitle, notificationMessage. Make it short, sharp, and personal.`;
@@ -323,7 +324,8 @@ function buildHeuristicSummary(
   }
 
   const identityName = identity?.name || "bro";
-  const excuse = options?.primaryExcuse || identity?.self_sabotage_pattern || "weak escape";
+  // Super MVP: self_sabotage_pattern now in onboarding_context
+  const excuse = options?.primaryExcuse || (identity?.onboarding_context?.self_sabotage_pattern as string) || "weak escape";
   const latestSummary = options?.latestCallSummary;
 
   const disciplineMessageMap: Record<IdentityStatusSummary["disciplineLevel"], string> = {

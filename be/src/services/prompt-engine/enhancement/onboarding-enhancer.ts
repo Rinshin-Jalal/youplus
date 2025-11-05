@@ -19,55 +19,55 @@ export function enhancePromptWithOnboardingData(
     enhanced += `**USER NAME**: "${identity.name}" - This is who you're calling out\n`;
   }
 
-  // WEAPON 1: SHAME TRIGGER
-  if (identity.shame_trigger) {
-    enhanced += `**SHAME TRIGGER**: "${identity.shame_trigger}" - What makes them feel most ashamed/disgusted\n`;
+  // Super MVP: All fields now in onboarding_context
+  const context = identity.onboarding_context as any;
+
+  // WEAPON 1: FAVORITE EXCUSE (replaces shame_trigger)
+  if (context?.favorite_excuse) {
+    enhanced += `**FAVORITE EXCUSE**: "${context.favorite_excuse}" - Their go-to excuse\n`;
   }
 
-  // WEAPON 2: FINANCIAL PAIN POINT
-  if (identity.financial_pain_point) {
-    enhanced += `**FINANCIAL PAIN**: "${identity.financial_pain_point}" - Money/career opportunity cost of their weakness\n`;
+  // WEAPON 2: GOAL AND MOTIVATION
+  if (context?.goal) {
+    enhanced += `**GOAL**: "${context.goal}" - What they're trying to achieve\n`;
+  }
+  if (context?.motivation_level) {
+    enhanced += `**MOTIVATION LEVEL**: ${context.motivation_level}/10 - Self-reported commitment\n`;
   }
 
-  // WEAPON 3: RELATIONSHIP DAMAGE
-  if (identity.relationship_damage_specific) {
-    enhanced += `**RELATIONSHIP DAMAGE**: "${identity.relationship_damage_specific}" - Person who gave up on them\n`;
+  // WEAPON 3: WHO DISAPPOINTED
+  if (context?.who_disappointed) {
+    enhanced += `**WHO DISAPPOINTED**: "${context.who_disappointed}" - Person they let down\n`;
   }
 
-  // WEAPON 4: BREAKING POINT EVENT
-  if (identity.breaking_point_event) {
-    enhanced += `**BREAKING POINT**: "${identity.breaking_point_event}" - Catastrophic event that would force change\n`;
+  // WEAPON 4: FUTURE IF NO CHANGE (replaces breaking_point_event)
+  if (context?.future_if_no_change) {
+    enhanced += `**FUTURE IF NO CHANGE**: "${context.future_if_no_change}" - What happens if they keep failing\n`;
   }
 
-  // WEAPON 5: SELF-SABOTAGE PATTERN
-  if (identity.self_sabotage_pattern) {
-    enhanced += `**SELF-SABOTAGE**: "${identity.self_sabotage_pattern}" - How they ruin their own success\n`;
+  // WEAPON 5: ATTEMPT HISTORY (replaces self_sabotage_pattern)
+  if (context?.attempt_history) {
+    enhanced += `**ATTEMPT HISTORY**: "${context.attempt_history}" - Past failures and patterns\n`;
   }
 
-  // WEAPON 6: ACCOUNTABILITY HISTORY
-  if (identity.accountability_history) {
-    enhanced += `**ACCOUNTABILITY HISTORY**: "${identity.accountability_history}" - Pattern of abandoning help systems\n`;
+  // WEAPON 6: QUIT PATTERN
+  if (context?.quit_pattern) {
+    enhanced += `**QUIT PATTERN**: "${context.quit_pattern}" - How they typically give up\n`;
   }
 
-  // ANCHOR 1: CURRENT SELF SUMMARY
-  if (identity.current_self_summary) {
-    enhanced += `**CURRENT SELF**: "${identity.current_self_summary}" - Who they are NOW (brutal honest)\n`;
+  // ANCHOR 1: DAILY COMMITMENT (core field, not in context)
+  if (identity.daily_commitment) {
+    enhanced += `**DAILY COMMITMENT**: "${identity.daily_commitment}" - Their ONE daily action\n`;
   }
 
-  // ANCHOR 2: ASPIRATIONAL IDENTITY GAP
-  if (identity.aspirational_identity_gap) {
-    enhanced += `**IDENTITY GAP**: "${identity.aspirational_identity_gap}" - Gap between want and reality\n`;
+  // ANCHOR 2: CHOSEN PATH
+  if (identity.chosen_path) {
+    enhanced += `**CHOSEN PATH**: "${identity.chosen_path}" - Hopeful or doubtful mindset\n`;
   }
 
-  // ANCHOR 3: NON-NEGOTIABLE COMMITMENT
-  if (identity.non_negotiable_commitment || identity.daily_non_negotiable) {
-    const commitment = identity.non_negotiable_commitment || identity.daily_non_negotiable;
-    enhanced += `**NON-NEGOTIABLE**: "${commitment}" - Their ONE daily action\n`;
-  }
-
-  // WEAPON 7: WAR CRY OR DEATH VISION
-  if (identity.war_cry_or_death_vision) {
-    enhanced += `**WAR CRY/DEATH VISION**: "${identity.war_cry_or_death_vision}" - Motivator or nightmare future\n`;
+  // ANCHOR 3: WITNESS
+  if (context?.witness) {
+    enhanced += `**WITNESS**: "${context.witness}" - Person holding them accountable\n`;
   }
 
   enhanced += `\n**PERSONALIZED IDENTITY DATA**: Complete psychological profile loaded\n`;
@@ -86,13 +86,12 @@ export function enhanceFirstMessageWithOnboardingData(
   identity: Partial<Identity>,
   callType: string
 ): string {
-  // If they have a war cry or death vision, use that for motivation
-  if (callType === "morning" && identity.war_cry_or_death_vision) {
-    return `[Use their war cry/death vision: "${identity.war_cry_or_death_vision}"] - Use this personalized motivator they created.`;
-  }
+  // Super MVP: Use goal and motivation from onboarding_context
+  const context = identity.onboarding_context as any;
 
-  // The identity_name is the user's actual name, not BigBruh name
-  // BigBruh should remain as "BigBruh" in messages
+  if (callType === "daily_reckoning" && context?.goal) {
+    return `Remember your goal: "${context.goal}". Let's see if you're actually working toward it or just lying to yourself.`;
+  }
 
   return baseMessage;
 }

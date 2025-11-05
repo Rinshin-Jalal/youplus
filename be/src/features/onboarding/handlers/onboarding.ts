@@ -35,6 +35,7 @@ import {
 } from "@/features/voice/services/r2-upload";
 import { cloneVoice } from "@/features/voice/services/voice-cloning";
 import { extractAndSaveIdentityUnified } from "../../identity/services/unified-identity-extractor";
+import { extractAndSaveV3Identity } from "../../identity/services/v3-identity-mapper";
 import { processOnboardingFiles } from "@/features/onboarding/utils/onboardingFileProcessor";
 import { syncIdentityStatus } from "../../identity/utils/identity-status-sync";
 
@@ -369,24 +370,35 @@ export const postOnboardingV3Complete = async (c: Context) => {
       }
     }
 
-    // ✨ SIMPLE FIX: Auto-trigger identity extraction after onboarding
+    // 🧬 V3 IDENTITY EXTRACTION: Map iOS responses to Identity table schema
     let identityExtractionResult = null;
     try {
       console.log(
-        `🧠 Starting automatic identity extraction for user ${userId}...`
+        `🧬 Starting V3 identity extraction for user ${userId}...`
       );
-      identityExtractionResult = await extractAndSaveIdentityUnified(
+
+      // Use V3 mapper to extract identity from iOS responses
+      identityExtractionResult = await extractAndSaveV3Identity(
         userId,
+        state.userName || "User",
+        processedResponses,
         env
       );
+
       console.log(
-        `✅ Identity extraction: ${
+        `✅ V3 Identity extraction: ${
           identityExtractionResult.success ? "SUCCESS" : "FAILED"
-        } - ${identityExtractionResult.fieldsExtracted || 0} fields extracted`
+        }`
       );
+
+      if (identityExtractionResult.success) {
+        console.log(`   Core fields: name, daily_commitment, chosen_path, call_time, strike_limit`);
+        console.log(`   Voice URLs: ${Object.keys(identityExtractionResult.identity || {}).filter(k => k.includes('audio_url')).length}/3`);
+        console.log(`   Context fields: ${Object.keys(identityExtractionResult.identity?.onboarding_context || {}).length}`);
+      }
     } catch (error) {
       console.warn(
-        `⚠️ Identity extraction failed, user can continue without it:`,
+        `⚠️ V3 Identity extraction failed, user can continue without it:`,
         error
       );
       identityExtractionResult = {
@@ -512,26 +524,45 @@ export const postExtractOnboardingData = async (c: Context) => {
       } responses`
     );
 
-    // Extract and save identity data using unified extractor
+    // Get user's name from auth
+    const { data: userData } = await supabase
+      .from("users")
+      .select("name")
+      .eq("id", userId)
+      .single();
+
+    const userName = userData?.name || "User";
+
+    // Extract and save identity data using V3 mapper
     console.log(
-      `🧠 Extracting identity data using UNIFIED approach for user ${userId}...`
+      `🧬 Extracting identity data using V3 MAPPER for user ${userId}...`
     );
-    const identityResult = await extractAndSaveIdentityUnified(userId, env);
+    const identityResult = await extractAndSaveV3Identity(
+      userId,
+      userName,
+      onboardingRecord.responses,
+      env
+    );
 
     // Log results
-    console.log(`✅ UNIFIED Data extraction completed:`);
+    console.log(`✅ V3 Data extraction completed:`);
     console.log(
       `  - Identity extraction: ${
         identityResult.success ? "SUCCESS" : "FAILED"
-      } - ${identityResult.fieldsExtracted || 0} fields`
+      }`
     );
+
+    if (identityResult.success && identityResult.identity) {
+      console.log(`  - Core fields: ✅`);
+      console.log(`  - Voice URLs: ${Object.keys(identityResult.identity).filter(k => k.includes('audio_url')).length}/3`);
+      console.log(`  - Context fields: ${Object.keys(identityResult.identity.onboarding_context || {}).length}`);
+    }
 
     return c.json({
       success: true,
-      message: "UNIFIED data extraction completed successfully",
-      unifiedExtraction: {
+      message: "V3 data extraction completed successfully",
+      v3Extraction: {
         success: identityResult.success,
-        fieldsExtracted: identityResult.fieldsExtracted || 0,
         error: identityResult.error,
       },
       extractedAt: new Date().toISOString(),

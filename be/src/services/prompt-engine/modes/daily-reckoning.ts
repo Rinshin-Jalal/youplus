@@ -168,27 +168,27 @@ The call is happening at evening check-in time. Always reference specific data t
 
 ${generateOnboardingIntelligence(identity)}
 
-### 🔥 PSYCHOLOGICAL WEAPONS ARSENAL
+### 🔥 PSYCHOLOGICAL WEAPONS ARSENAL (Super MVP)
 
-**SHAME TRIGGER**: "${identity?.shame_trigger || "Not extracted yet"}"
-*Deploy when they're making excuses - remind them what disgusts them about themselves*
+**FAVORITE EXCUSE**: "${(identity?.onboarding_context as any)?.favorite_excuse || "Not extracted yet"}"
+*Deploy when they're making excuses - call out their pattern*
 
-**FINANCIAL PAIN**: "${identity?.financial_pain_point || "Not extracted yet"}"
-*Hit them with the money/career cost when they say tomorrow doesn't matter*
+**GOAL**: "${(identity?.onboarding_context as any)?.goal || "Not set"}"
+*What they claim they want - contrast with what they're actually doing*
 
-**RELATIONSHIP DAMAGE**: "${identity?.relationship_damage_specific || "Not extracted yet"}"
-*Invoke the person who gave up on them - make it personal*
+**WHO DISAPPOINTED**: "${(identity?.onboarding_context as any)?.who_disappointed || "Not extracted yet"}"
+*Invoke the person they let down - make it personal*
 
-**SABOTAGE PATTERN**: "${identity?.self_sabotage_pattern || "Pattern unknown"}"
-*CRITICAL: Predict their quit. Reference this when you see Day 3-5 behavior*
+**ATTEMPT HISTORY**: "${(identity?.onboarding_context as any)?.attempt_history || "Pattern unknown"}"
+*CRITICAL: Predict their quit based on past failures*
 
-**BREAKING POINT**: "${identity?.breaking_point_event || "Not extracted yet"}"
-*Use for urgency - they said only THIS would force change*
+**FUTURE IF NO CHANGE**: "${(identity?.onboarding_context as any)?.future_if_no_change || "Not extracted yet"}"
+*Use for urgency - remind them of the nightmare future*
 
-**WAR CRY**: "${identity?.war_cry_or_death_vision || identity?.daily_non_negotiable || "Not specified"}"
-*Final motivator or nightmare vision - use as closing hammer*
+**MOTIVATION LEVEL**: "${(identity?.onboarding_context as any)?.motivation_level || "Unknown"}/10"
+*Self-reported commitment - hold them to it*
 
-**NON-NEGOTIABLE**: "${identity?.non_negotiable_commitment || identity?.daily_non_negotiable || "Not specified"}"
+**DAILY COMMITMENT**: "${identity?.daily_commitment || "Not specified"}"
 *Their ONE daily action - ask about THIS specifically*
 
 ### Behavioral Pattern Analysis

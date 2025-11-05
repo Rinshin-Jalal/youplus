@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { requireActiveSubscription, requireAuth } from "@/middleware/auth";
 import { getHealth, getStats, getDebugSchedules } from "./handlers/health";
-import { getCallEligibility, getScheduleSettings, updateSubscriptionStatus, updateRevenueCatCustomerId } from "./handlers/settings";
+import { getCallEligibility, getScheduleSettings, updateScheduleSettings, updateSubscriptionStatus, updateRevenueCatCustomerId } from "./handlers/settings";
 import { postUserPushToken } from "./handlers/token-init-push";
 import { testR2Upload, testR2Connection } from "./handlers/test-r2";
 import { getPromptEngineDemo, getQuickDemo } from "./handlers/prompt-engine-demo";
@@ -18,6 +18,7 @@ router.get("/debug/schedules", getDebugSchedules);
 // API Settings endpoints
 router.get("/api/calls/eligibility", requireAuth, getCallEligibility);
 router.get("/api/settings/schedule", requireActiveSubscription, getScheduleSettings);
+router.put("/api/settings/schedule", requireAuth, updateScheduleSettings);
 router.put("/api/settings/subscription-status", requireAuth, updateSubscriptionStatus);
 router.put("/api/settings/revenuecat-customer-id", requireAuth, updateRevenueCatCustomerId);
 

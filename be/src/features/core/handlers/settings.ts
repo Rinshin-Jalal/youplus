@@ -192,6 +192,73 @@ export const updateSubscriptionStatus = async (c: Context) => {
 };
 
 /**
+ * PUT /api/settings/schedule
+ * Update user's call schedule (call window start time and timezone)
+ */
+export const updateScheduleSettings = async (c: Context) => {
+  const userId = getAuthenticatedUserId(c);
+  const body = await c.req.json();
+  const { callWindowStart, timezone } = body;
+
+  // Validate input
+  if (!callWindowStart || typeof callWindowStart !== 'string') {
+    return c.json({ error: 'callWindowStart is required (HH:MM:SS format)' }, 400);
+  }
+
+  // Validate time format (HH:MM:SS or HH:MM)
+  const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/;
+  if (!timeRegex.test(callWindowStart)) {
+    return c.json({ error: 'Invalid time format. Use HH:MM:SS or HH:MM' }, 400);
+  }
+
+  // Ensure HH:MM:SS format (add :00 if only HH:MM provided)
+  const formattedTime = callWindowStart.split(':').length === 2
+    ? `${callWindowStart}:00`
+    : callWindowStart;
+
+  const env = c.env as Env;
+  const supabase = createSupabaseClient(env);
+
+  try {
+    const updateData: any = {
+      call_window_start: formattedTime,
+      updated_at: new Date().toISOString(),
+    };
+
+    // Update timezone if provided
+    if (timezone && typeof timezone === 'string') {
+      updateData.call_window_timezone = timezone;
+    }
+
+    const { data, error } = await supabase
+      .from('users')
+      .update(updateData)
+      .eq('id', userId)
+      .select('call_window_start, call_window_timezone, timezone')
+      .single();
+
+    if (error) throw error;
+
+    console.log(`✅ Updated call schedule for user ${userId}: ${formattedTime}`);
+
+    return c.json({
+      success: true,
+      data,
+      message: 'Call schedule updated successfully',
+    });
+  } catch (error) {
+    console.error('Schedule update failed:', error);
+    return c.json(
+      {
+        error: 'Failed to update call schedule',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      500
+    );
+  }
+};
+
+/**
  * PUT /api/settings/revenuecat-customer-id
  * Store RevenueCat customer ID for user after payment
  */

@@ -36,7 +36,8 @@ export async function generateCallMetadata(
   const userContext = await getUserContext(env, userId);
   const toneAnalysis = calculateOptimalTone(userContext);
 
-  const agentId = env.ELEVENLABS_AGENT_ID ||
+  // Ensure agentId is a string
+  const agentId = (env.ELEVENLABS_AGENT_ID as string) ||
     "agent_01jyp5t2v7edwra210m6bwvcq5";
 
   let mood = toneAnalysis.recommended_mood;
@@ -104,21 +105,15 @@ function resolveVoiceId(
     nuclear: "pNInz6obpgDQGcFmaJgB",
     calm: "21m00Tcm4TlvDq8ikWAM",
     encouraging: "21m00Tcm4TlvDq8ikWAM",
-    first_call: "21m00Tcm4TlvDq8ikWAM",
-    apology_call: "TxGEqnHWrfWFTfGW9XjX",
+    // Super MVP: Removed first_call and apology_call types
   };
 
-  if (voiceMap[callType]) {
-    return voiceMap[callType];
-  }
-
+  // Super MVP: Only daily_reckoning exists, check mood only
   if (voiceMap[mood]) {
     return voiceMap[mood];
   }
 
-  if (userContext.user?.voice_clone_id) {
-    return userContext.user.voice_clone_id;
-  }
-
+  // Super MVP: voice_clone_id removed (no voice cloning in MVP)
+  // Default to undefined - let agent use its configured voice
   return undefined;
 }
