@@ -84,14 +84,6 @@ extension AppDelegate: VoIPPushManagerDelegate {
         )
         callKitManager.reportIncomingCall(uuid: uuid, update: update)
         Config.log("✅ CallKit UI triggered for call: \(uuid)", category: "VoIP")
-
-        // Navigate to call screen
-        NotificationCenter.default.post(
-            name: .showCallScreen,
-            object: nil,
-            userInfo: ["callUUID": uuid.uuidString]
-        )
-        Config.log("✅ Posted showCallScreen notification", category: "VoIP")
     }
 
     func voipPushManager(_ manager: VoIPPushManager, didInvalidateWithError error: Error?) {
@@ -101,9 +93,4 @@ extension AppDelegate: VoIPPushManagerDelegate {
             Config.log("⚠️ VoIP token invalidated (no error)", category: "VoIP")
         }
     }
-}
-
-// MARK: - Notification Names
-extension Notification.Name {
-    static let showCallScreen = Notification.Name("showCallScreen")
 }

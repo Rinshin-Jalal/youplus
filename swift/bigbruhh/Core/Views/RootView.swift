@@ -152,18 +152,12 @@ struct RootView: View {
             print("🚀 AuthService state - loading: \(authService.loading), authenticated: \(authService.isAuthenticated)")
             determineInitialScreen()
 
-            // Listen for incoming call notifications
-            NotificationCenter.default.addObserver(
-                forName: .showCallScreen,
-                object: nil,
-                queue: .main
-            ) { notification in
-                Config.log("📞 RootView: Received showCallScreen notification", category: "Navigation")
-                if let callUUID = notification.userInfo?["callUUID"] as? String {
-                    Config.log("📞 Call UUID: \(callUUID)", category: "Navigation")
-                }
-                navigator.showCall()
-            }
+            // Check if there's an active CallKit call
+            checkForActiveCall()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            // When app comes to foreground, check for active call
+            checkForActiveCall()
         }
         .onChange(of: authService.loading) { _, loading in
             print("🔄 AuthService loading changed to: \(loading)")
@@ -182,6 +176,22 @@ struct RootView: View {
         }
         .onChange(of: navigator.currentScreen) { _, newValue in
             print("🚨🚨🚨 CURRENT SCREEN CHANGED TO: \(newValue) 🚨🚨🚨")
+        }
+    }
+
+    private func checkForActiveCall() {
+        // Get AppDelegate to check for active call
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+
+        // If there's an active CallKit call and we're not already on call screen
+        if let activeUUID = appDelegate.callKitManager.activeCallUUID,
+           navigator.currentScreen != .call {
+            Config.log("📞 Active call detected (UUID: \(activeUUID)), showing CallScreen", category: "Navigation")
+
+            // Make sure we're authenticated first
+            if authService.isAuthenticated {
+                navigator.showCall()
+            }
         }
     }
 
