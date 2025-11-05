@@ -98,6 +98,20 @@ This index organizes all project documentation for easy navigation.
 
 ---
 
+## 📈 Strategy & Story-Market Fit
+
+**NEW**: Story-Market Fit framework based on Daniel Kwon's principles
+
+- **[Strategy Documentation](./strategy/README.md)** - ⭐ **START HERE** for Story-Market Fit framework
+  - [Story-Market Fit Guide](./strategy/STORY_MARKET_FIT_GUIDE.md) - Complete framework (18 principles)
+  - [BigBruh Story-Market Fit Analysis](./strategy/BIGBRUH_STORY_MARKET_FIT_ANALYSIS.md) - Current state assessment (Score: 7.5/10)
+  - [Story-Market Fit Checklist](./strategy/STORY_MARKET_FIT_CHECKLIST.md) - Actionable validation checklist
+  - [Story-Market Fit Assessment Template](./strategy/STORY_MARKET_FIT_ASSESSMENT.md) - Monthly/quarterly evaluation tool
+
+**Key Insight**: Story-Market Fit > Product-Market Fit. Validate story BEFORE scaling.
+
+---
+
 ## 🎨 Design & Branding
 
 - [Brand Guidelines](./brand.md) - BigBruh brand identity
@@ -126,6 +140,12 @@ This index organizes all project documentation for easy navigation.
 ```
 docs/
 ├── INDEX.md                          # This file
+├── strategy/                         # ⭐ NEW: Story-Market Fit framework
+│   ├── README.md                     # Strategy documentation index
+│   ├── STORY_MARKET_FIT_GUIDE.md     # Complete framework (18 principles)
+│   ├── BIGBRUH_STORY_MARKET_FIT_ANALYSIS.md  # Current assessment (7.5/10)
+│   ├── STORY_MARKET_FIT_CHECKLIST.md # Validation checklist
+│   └── STORY_MARKET_FIT_ASSESSMENT.md # Monthly/quarterly tool
 ├── audits/                           # Status reports and audits
 │   ├── DEPLOYMENT_READINESS_AUDIT.md
 │   ├── BLOAT_ANALYSIS_COMPLETE.md
@@ -168,6 +188,12 @@ docs/
 
 ## 🎯 Priority Reading Order
 
+### For Strategic Planning (Pre-Launch):
+1. **[Strategy README](./strategy/README.md)** - Story-Market Fit overview
+2. [Story-Market Fit Guide](./strategy/STORY_MARKET_FIT_GUIDE.md) - Complete framework
+3. [BigBruh Story-Market Fit Analysis](./strategy/BIGBRUH_STORY_MARKET_FIT_ANALYSIS.md) - Current assessment
+4. [Story-Market Fit Checklist](./strategy/STORY_MARKET_FIT_CHECKLIST.md) - Action items
+
 ### For New Team Members:
 1. [Main README](../README.md)
 2. [CLAUDE.md](./CLAUDE.md) - Project philosophy
@@ -196,10 +222,10 @@ docs/
 
 ## 📊 Documentation Statistics
 
-- **Total Documents**: 27+ markdown files
+- **Total Documents**: 32+ markdown files
 - **Largest Document**: E2E_TESTING_CHECKLIST.md (833 lines)
-- **Most Recent**: Onboarding Identity Fix Report (Nov 5, 2025)
-- **Categories**: 7 (audits, testing, guides, onboarding, backend, reports, misc)
+- **Most Recent**: Story-Market Fit Framework (Nov 5, 2025)
+- **Categories**: 8 (strategy, audits, testing, guides, onboarding, backend, reports, misc)
 
 ---
 
