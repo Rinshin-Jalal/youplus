@@ -510,7 +510,7 @@ struct PhaseProgressView: View {
     var body: some View {
         let info = phaseInfo
 
-        HStack(spacing: 4) {
+        HStack(spacing: Spacing.xxs) {
             ForEach(1...info.totalSteps, id: \.self) { segmentNumber in
                 GlassySegmentBar(
                     isCompleted: segmentNumber < info.phaseStep,
@@ -519,8 +519,8 @@ struct PhaseProgressView: View {
                 )
             }
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 8)
+        .padding(.horizontal, Spacing.screenHorizontal)
+        .padding(.vertical, Spacing.xs)
     }
 }
 
@@ -537,40 +537,39 @@ struct GlassySegmentBar: View {
     var body: some View {
         ZStack {
             // Base bar with glassmorphism
-            RoundedRectangle(cornerRadius: isActive ? 3 : 1)
+            RoundedRectangle(cornerRadius: isActive ? 3 : 1.5, style: .continuous)
                 .fill(
                     LinearGradient(
                         colors: isCompleted || isActive ? [
-                            accentColor.opacity(0.8),
-                            accentColor.opacity(1.0),
-                            accentColor.opacity(0.8)
+                            accentColor.opacity(0.85),
+                            accentColor,
+                            accentColor.opacity(0.85)
                         ] : [
-                            Color.gray.opacity(0.2),
-                            Color.gray.opacity(0.3),
-                            Color.gray.opacity(0.2)
+                            Color.white.opacity(0.15),
+                            Color.white.opacity(0.2),
+                            Color.white.opacity(0.15)
                         ],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
                 )
-                .frame(height: isActive ? 6 : 2)
-                .blur(radius: isActive ? 0.5 : 0)
+                .frame(height: isActive ? 5 : 2.5)
                 .overlay(
                     // Glass reflection layer
                     LinearGradient(
                         colors: [
-                            Color.white.opacity(0.4),
+                            Color.white.opacity(isActive ? 0.4 : 0.2),
                             Color.white.opacity(0.0),
-                            Color.white.opacity(0.2)
+                            Color.white.opacity(isActive ? 0.2 : 0.1)
                         ],
                         startPoint: .top,
                         endPoint: .bottom
                     )
-                    .mask(RoundedRectangle(cornerRadius: isActive ? 3 : 1))
+                    .mask(RoundedRectangle(cornerRadius: isActive ? 3 : 1.5, style: .continuous))
                 )
                 .shadow(
-                    color: isActive ? accentColor.opacity(0.8) : .clear,
-                    radius: isActive ? 8 : 0,
+                    color: isActive ? accentColor.opacity(0.7) : .clear,
+                    radius: isActive ? 10 : 0,
                     x: 0,
                     y: 0
                 )
@@ -578,21 +577,21 @@ struct GlassySegmentBar: View {
 
             // Shimmer effect on active bar
             if isActive {
-                RoundedRectangle(cornerRadius: 3)
+                RoundedRectangle(cornerRadius: 3, style: .continuous)
                     .fill(
                         LinearGradient(
                             colors: [
                                 Color.white.opacity(0),
-                                Color.white.opacity(0.6),
+                                Color.white.opacity(0.7),
                                 Color.white.opacity(0)
                             ],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
                     )
-                    .frame(width: 30, height: 6)
+                    .frame(width: 30, height: 5)
                     .offset(x: shimmerOffset * 100)
-                    .mask(RoundedRectangle(cornerRadius: 3).frame(height: 6))
+                    .mask(RoundedRectangle(cornerRadius: 3, style: .continuous).frame(height: 5))
             }
         }
         .onAppear {
@@ -601,7 +600,7 @@ struct GlassySegmentBar: View {
                 withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
                     pulseScale = 1.15
                 }
-                
+
                 // Shimmer animation
                 withAnimation(.linear(duration: 2.0).repeatForever(autoreverses: false)) {
                     shimmerOffset = 1.0

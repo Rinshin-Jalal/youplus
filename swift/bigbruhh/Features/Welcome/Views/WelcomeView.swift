@@ -13,40 +13,95 @@ struct WelcomeView: View {
 
     var body: some View {
         ZStack {
-            Color.black
+            // Background with subtle gradient
+            ZStack {
+                Color.brutalBlack
+                    .ignoresSafeArea()
+
+                LinearGradient(
+                    colors: [
+                        Color.brutalBlack,
+                        Color.brutalRed.opacity(0.1)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
                 .ignoresSafeArea()
+            }
 
-            VStack(spacing: 40) {
+            VStack(spacing: Spacing.xxxl) {
                 Spacer()
 
-                // Simple centered message
+                // Hero message
                 Text("Ready?")
-                    .font(.system(size: 48, weight: .black))
+                    .font(.displayMedium)
                     .foregroundColor(.white)
+                    .shadow(color: .black.opacity(0.4), radius: 12, x: 0, y: 6)
 
                 Spacer()
 
-                // Single button
-                VStack(spacing: 16) {
+                // Action buttons
+                VStack(spacing: Spacing.md) {
+                    // Primary CTA button
                     Button(action: handleStartTalking) {
                         Text("START")
-                            .font(.system(size: 20, weight: .black))
+                            .font(.buttonLarge)
+                            .fontWeight(.semibold)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 24)
-                            .background(Color.brutalRed)
-                            .cornerRadius(16)
-                    }
-                    .padding(.horizontal, 24)
+                            .frame(height: Spacing.buttonHeightLarge)
+                            .background(
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: Spacing.radiusLarge, style: .continuous)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [Color.brutalRedLight, Color.brutalRed],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
 
-                    // Sign in link
+                                    // Subtle highlight
+                                    RoundedRectangle(cornerRadius: Spacing.radiusLarge, style: .continuous)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [
+                                                    Color.white.opacity(0.2),
+                                                    Color.clear
+                                                ],
+                                                startPoint: .top,
+                                                endPoint: .center
+                                            )
+                                        )
+                                }
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: Spacing.radiusLarge, style: .continuous)
+                                    .strokeBorder(
+                                        LinearGradient(
+                                            colors: [
+                                                Color.white.opacity(0.3),
+                                                Color.white.opacity(0.1)
+                                            ],
+                                            startPoint: .top,
+                                            endPoint: .bottom
+                                        ),
+                                        lineWidth: Spacing.borderThin
+                                    )
+                            )
+                            .elevation(.high)
+                            .wideTracking()
+                    }
+                    .padding(.horizontal, Spacing.lg)
+
+                    // Secondary sign in link
                     Button(action: handleSignIn) {
                         Text("Sign in")
-                            .font(.system(size: 14))
+                            .font(.bodyRegular)
                             .foregroundColor(.white.opacity(0.6))
                     }
                 }
-                .padding(.bottom, 40)
+                .padding(.bottom, Spacing.xxl)
             }
         }
     }
