@@ -1,15 +1,15 @@
-# BigBruh – Daily Accountability System
+# You+ – Daily Accountability System
 
-This is the post-onboarding experience: **one daily call from BigBruh**. No tracking dashboards, no gentle reminders - just raw psychological enforcement through AI voice confrontation.
+This is the post-onboarding experience: **daily calls from your Future Self**. No tracking dashboards, no gentle reminders - just raw self-confrontation through your own voice.
 
-## 1. The Single Daily Call
+## 1. The Daily Call
 
-### BigBruh Initiates Contact
+### Your Future Self Calls
 
-BigBruh calls you. Not the other way around.
+Your future self calls you. Using YOUR recorded voice.
 
-**VoIP Call Example Opening:** 
-_"Time for your check-in. Did you keep your word today, or are we about to add another excuse to your collection?"_
+**VoIP Call Example Opening (in your voice):**
+_"Did you do what you said you'd do? No excuses. Just truth."_
 
 ### Binary Response System
 
@@ -18,26 +18,26 @@ During the call, user gives simple response:
 **✅ Did it** = Kept the daily commitment  
 **❌ Failed** = Broke the promise
 
-### Immediate AI Response
+### Immediate Response (Using Your Voice)
 
-**Success** = BigBruh reinforces with swagger.
-- _"That's the version of you I f*** with. Stack another win."_
+**Success** = Your voice reinforces the win.
+- _"This is who you said you'd be. Keep going."_
 
-**Failure** = Confrontational mirror using onboarding data.
-- _"Same weak excuse from step 23 of onboarding. I didn't forget. You're becoming exactly what you said you feared."_
+**Failure** = Your voice confronts you using your recorded commitments.
+- _"You said you wouldn't skip this. Your future self is watching."_
 
-### Real-Time Excuse Detection
+### Real-Time Pattern Detection
 
 If user tries to justify failure during call:
-- AI detects excuse patterns from voice tone and words
-- Immediately calls out repetition: _"Excuse #4 this month. You love recycling trash."_
-- System logs excuse for future confrontations
+- System detects excuse patterns from previous calls
+- Your voice calls it out: _"Same excuse. You said you'd stop doing this."_
+- System logs pattern for future accountability moments
 
-## 2. Call Personality Modes
+## 2. Call Voice Modes
 
-### A. Mocking Mode (Gen Z Default)
+### A. Direct Mode (Default)
 
-Slang, sarcasm, brotherly roasting.
+Your voice, straightforward questions, no games.
 - _"Scrolling TikTok instead of hitting the gym? You're the content, not the creator."_
 
 ### B. Strict Authority Mode

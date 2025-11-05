@@ -4,22 +4,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-BigBruh is a psychological accountability system built as a React Native/Expo mobile app with a Cloudflare Workers backend. It uses confrontational AI interactions to help users overcome their weaknesses and build discipline through daily accountability calls and interventions.
+You+ is a psychological accountability system that uses your own voice to hold you accountable. Built as a Swift iOS app with a Cloudflare Workers backend, it creates daily phone calls where your recorded voice asks: "Did you do what you said you'd do?" You can't lie to your future self.
 
 ## Development Commands
 
-### Frontend (React Native/Expo) - `/rn` directory
+### Frontend (Swift iOS) - `/swift` directory
 
 ```bash
-# Start development server
-npm start
+# Open project in Xcode
+open swift/bigbruhh.xcodeproj
 
-# Run on specific platforms
-npm run ios        # iOS simulator
-npm run android    # Android emulator
-npm run web       # Web browser
+# Build and run via Xcode
+# - Select target device/simulator
+# - Press Cmd+R to build and run
+# - Use Cmd+B to build only
 
-# Build and deployment handled via EAS
+# Note: Code references "bigbruhh" for technical reasons
+# Brand name is "You+" in all user-facing content
 ```
 
 ### Backend (Cloudflare Workers) - `/be` directory  
@@ -42,13 +43,13 @@ npm test         # Runs jest
 
 ### Tech Stack
 
-- **Frontend**: React Native, Expo Router (file-based routing), TypeScript
+- **Frontend**: Swift, SwiftUI, iOS native
 - **Backend**: Hono framework on Cloudflare Workers, TypeScript
 - **Database**: Supabase (PostgreSQL)
 - **Storage**: Cloudflare R2 (S3-compatible)
-- **Voice/AI**: ElevenLabs (Convo AI), OpenAI, Cartesia
+- **Voice/AI**: ElevenLabs (Convo AI), OpenAI for voice processing
 - **Payments**: RevenueCat
-- **Push Notifications**: VoIP push for iOS, standard push for Android
+- **Push Notifications**: VoIP push for iOS (CallKit integration)
 
 ### Key Integrations
 

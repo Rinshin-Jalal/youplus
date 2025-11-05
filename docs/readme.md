@@ -1,47 +1,48 @@
-# BigBruh – README
+# You+ – README
 
 ## 1. Core Philosophy
 
-BigBruh is **not an app**. It's a psychological enforcement system disguised as an accountability tool.
-Where BIG BRUH leans into self-discipline as identity, BigBruh attacks Gen Z's biggest weakness: quitting when things get hard.
+You+ is **not an app**. It's a psychological accountability system using your own voice against you.
+You+ attacks the biggest weakness: lying to yourself when things get hard.
 
 - Not a tracker.
 - Not a productivity app.
 - Not therapy.
 
-BigBruh is your older brother—calling you out, reminding you of your own failures, refusing to let you escape.
+You+ is your future self—calling you, reminding you of your commitments, refusing to let you hide.
 
-The product is pressure. The app is a mirror sharpened into a weapon.
+The product is consequence. The app is a mirror you can't look away from.
 
 ## 2. Core Pillars
 
 ### Onboarding (Initiation Ritual)
 
-- Long, confrontational, story-driven.
-- Extracts truths: lies they tell themselves, excuses, slips, missed opportunities.
-- Builds relationship tone (tough, blunt, but brotherly).
-- Ends in **Identity Contract**: oath to BigBruh.
+- Voice-based, confrontational, identity-extracting.
+- Records your voice stating your commitments and non-negotiables.
+- Extracts your patterns: excuses, habits, weaknesses.
+- Builds your Future Self identity through your own words.
+- Ends in **Commitment Recording**: your voice stating what you won't compromise on.
 
 ### Daily Enforcement
 
-- Voice or text reminders in strict tone, drawn directly from their own onboarding confessions.
-- _"You said you waste time scrolling at night—guess what you're doing right now?"_
-- Interventions hit when temptation is highest.
+- Daily calls using YOUR VOICE asking: "Did you do what you said you'd do?"
+- Your own recorded words played back when you fail.
+- _"You said you wouldn't skip the gym—your future self is disappointed."_
+- Interventions use your voice, not an external authority.
 - Not optional, not soft.
 
 ### Reflection & Tracking
 
-- Minimal logs of failures.
-- No dashboards, no charts. Only confessions and receipts.
-- Each slip stored against user's contract, reflected back in interventions.
+- Simple tracking of commitments kept vs. broken.
+- No gamification, no streaks. Just truth.
+- Each pattern stored and reflected back through your own voice.
 
 ### Accountability Escalation
 
-- Weak excuse counter tallies every time they try to justify a failure.
-- Option to escalate:
-  - Daily summary sent to friend or mentor.
-  - Social exposure toggles (brutal but optional).
-- Breaking contract costs status, not just streaks.
+- Pattern recognition shows you your recurring failures.
+- Your voice reminding you of who you said you'd be.
+- Breaking commitments means hearing yourself lie.
+- The shame comes from within, not from others.
 
 ### Community Layer (Optional v2)
 
@@ -52,55 +53,63 @@ The product is pressure. The app is a mirror sharpened into a weapon.
 
 ### Input:
 
-- User confesses truths, fears, excuses during onboarding and dailies.
+- User records their voice stating commitments during onboarding.
+- Daily check-ins: Did you do it? Yes or No.
 
 ### Processing:
 
-- System detects patterns (slip times, derail triggers, top excuses).
-- Assigns tone (mocking, authoritarian, dark mirror).
+- System detects patterns (when you fail, recurring excuses, behavioral trends).
+- Uses YOUR VOICE for all accountability moments.
 
 ### Output:
 
-- Interventions that weaponize the user's own words.
-- Escalating responses based on consistency.
+- Interventions using your recorded voice.
+- Your own words played back to confront you.
+- Escalating honesty based on patterns.
 
 ## 4. Modes of Enforcement
 
-- **Cold Mockery** – ridicules excuses, light but cutting.
-- **Strict Authority** – direct commands, military precision.
-- **Dark Mirror** – replays their own confessions back to them.
-- **External Threat** – _"Remember, you set your brother as external judgment. Want me to send this slip?"_
+- **Your Voice** – Your recorded commitments asking "Did you do it?"
+- **Pattern Mirror** – Shows you your recurring failures in your own words.
+- **Future Self Confrontation** – Plays back what you said you'd become.
+- **Honest Reflection** – No external judgment, just you vs. you.
 
-Users can't hide from themselves, because BigBruh remembers.
+You can't hide from yourself, because You+ remembers everything you said.
 
 ## 5. Monetization
 
-- **Stakes-as-a-Service**: pay to activate external judgment (text/email to accountability partner).
-- **Tone Packs**: Military Sergeant, Brutal Humor, Monk of Discipline.
-- **Lock Features**: free users get onboarding + soft enforcement. Paid users get full pressure loop (daily enforcement, escalation, external stakes).
-- **Identity Insurance**: break your contract too many times on free plan, you lose progress unless you upgrade.
+- **Founder Plan**: $6.99/week for first 100 users (lifetime lock)
+- **Regular Price**: $8.99/week after founder spots filled
+- Core feature: Daily accountability calls in your own voice
+- Weekly brutal progress reports showing patterns
+- Direct founder access during early phase
+- Future: Advanced voice modes, deeper pattern analysis
 
 ## 6. Positioning
 
-- **Target Demographic**: Male Gen Z (16–26), identity insecure, drifting, addicted to short-term dopamine, quitting often.
-- **Language**: blunt, brotherly, no fluff.
-- **Visuals**: bold, bright, slightly aggressive (high contrast, sharp edges, no soft pastel).
-- **Tone**: confrontational but not mocking parody. It feels like a real person cares enough to call you out.
+- **Target Demographic**: Gen Z (18–30), knows what to do but doesn't do it, tired of lying to themselves.
+- **Language**: blunt, self-confrontational, brutally honest.
+- **Visuals**: bold, high contrast, sharp edges, future-facing minimalism.
+- **Tone**: honest confrontation with yourself. Not external judgment, internal reckoning.
 
-BigBruh = the app you hate but can't delete.
+You+ = the app that makes lying to yourself impossible.
 
 ## 7. Competitive Differentiation
 
-NGL, GAS, BeReal = viral but fleeting. They exploit curiosity or gossip.
+Habit trackers = gamified but shallow. You can lie to them.
 
-BigBruh = viral through accountability + social proof of transformation.
+Accountability apps = external judges. Easy to ignore.
 
-It doesn't just go viral, it sticks—because once identity contract is signed, quitting = shame.
+You+ = uses YOUR VOICE. Can't ignore yourself.
+
+It doesn't just track habits, it changes identity—because hearing yourself lie is impossible to escape.
 
 ## 8. Long-Term Vision
 
-Build **BIG BRUH** as the doctrine app (serious, identity-driven, philosophical).
+Build **You+** as the self-accountability platform using voice technology.
 
-Build **BigBruh** as the Gen Z enforcement app (direct, playful but brutal).
+The mechanism: Your own voice becomes your accountability partner.
 
-Same engine, different skin. Two distribution channels into the same back-end empire.
+The result: You can't lie to your future self.
+
+Long-term: Voice-based identity transformation across all life domains.
