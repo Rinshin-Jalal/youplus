@@ -12,28 +12,34 @@ import {
 
 const router = new Hono();
 
-// Manual Trigger Routes (high security risk - token protected)
-// Development/admin only - protected by debugProtection middleware in index.ts
+// ===================================================================
+// Manual Trigger Routes (@admin-only)
+// ===================================================================
+// These endpoints are for ADMIN USE ONLY - not called by iOS app
+// Used for manual intervention, testing, and system operations
+// Protected by requireAuth middleware - token required
+// Protected by debugProtection middleware in index.ts
+// ===================================================================
 
-// Trigger morning calls for all users
+// @admin-only - Trigger morning calls for all users (placeholder)
 router.post('/morning', requireAuth, triggerMorningCallsAdmin);
 
-// Trigger evening calls for all users
+// @admin-only - Trigger evening calls for all users (placeholder)
 router.post('/evening', requireAuth, triggerEveningCallsAdmin);
 
-// Trigger a call for a specific user
+// @admin-only - Trigger a call for a specific user (testing/manual intervention)
 router.post('/user/:userId/:callType', requireAuth, triggerUserCallAdmin);
 
-// Send immediate VoIP push with custom payload
+// @admin-only - Send immediate VoIP push with custom payload (testing)
 router.post('/voip', requireAuth, triggerVoipPushAdmin);
 
-// Trigger onboarding call for testing
+// @admin-only - Trigger onboarding call for testing
 router.post('/onboarding/:userId', triggerOnboardingCallAdmin);
 
-// Process scheduled calls
+// @admin-only - Process scheduled calls (system operation)
 router.post('/scheduled-calls', requireAuth, processScheduledCallsAdmin);
 
-// Process retry queue
+// @admin-only - Process retry queue (system operation)
 router.post('/retry-queue', requireAuth, processRetryQueueAdmin);
 
 export default router;

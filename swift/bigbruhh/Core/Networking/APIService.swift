@@ -168,105 +168,15 @@ class APIService {
         return try await get("/api/identity/stats/\(userId)")
     }
 
-    /// Get voice clips from onboarding
-    /// GET /api/identity/voice-clips/:userId
-    func fetchVoiceClips(userId: String) async throws -> APIResponse<[VoiceClip]> {
-        return try await get("/api/identity/voice-clips/\(userId)")
-    }
-
     // MARK: - Call Endpoints
 
     /// Get call configuration for 11Labs
-    /// POST /call/:userId/:callType
+    /// GET /call/config/:userId/:callType
     func getCallConfig(userId: String, callType: String) async throws -> APIResponse<CallConfigResponse> {
         Config.log("Getting call config for \(callType) call", category: "API")
-        return try await post("/call/\(userId)/\(callType)", body: [:])
+        return try await get("/call/config/\(userId)/\(callType)")
     }
 
-    /// Get call history
-    /// GET /api/history/calls
-    func fetchCallHistory(userId: String) async throws -> APIResponse<[CallLogEntry]> {
-        return try await get("/api/history/calls")
-    }
-
-    /// Get this week's calls
-    /// GET /api/call-log/week/:userId
-    func fetchWeekCalls(userId: String) async throws -> APIResponse<[CallLogEntry]> {
-        return try await get("/api/call-log/week/\(userId)")
-    }
-
-    /// Get call receipts/transcripts
-    /// GET /api/call-log/receipts/:userId
-    func fetchCallReceipts(userId: String) async throws -> APIResponse<[String: AnyCodableValue]> {
-        return try await get("/api/call-log/receipts/\(userId)")
-    }
-
-    // MARK: - Promise Endpoints
-
-    /// Get all promises for user
-    /// GET /api/promises/:userId
-    func fetchPromises(userId: String) async throws -> APIResponse<[Promise]> {
-        return try await get("/api/promises/\(userId)")
-    }
-
-    /// Create new promise
-    /// POST /promise/create
-    func createPromise(request: CreatePromiseRequest) async throws -> APIResponse<[String: AnyCodableValue]> {
-        let encoder = JSONEncoder()
-        encoder.keyEncodingStrategy = .convertToSnakeCase
-        let data = try encoder.encode(request)
-        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
-        return try await post("/promise/create", body: json)
-    }
-
-    /// Complete a promise
-    /// POST /promise/complete
-    func completePromise(request: CompletePromiseRequest) async throws -> APIResponse<[String: AnyCodableValue]> {
-        let encoder = JSONEncoder()
-        let data = try encoder.encode(request)
-        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
-        return try await post("/promise/complete", body: json)
-    }
-
-    // MARK: - Settings Endpoints
-
-    /// Get call schedule settings
-    /// GET /api/settings/schedule/:userId
-    func fetchSchedule(userId: String) async throws -> APIResponse<ScheduleSettings> {
-        return try await get("/api/settings/schedule/\(userId)")
-    }
-
-    /// Update call schedule
-    /// PUT /api/settings/schedule/:userId
-    func updateSchedule(userId: String, request: UpdateScheduleRequest) async throws -> APIResponse<ScheduleSettings> {
-        let encoder = JSONEncoder()
-        encoder.keyEncodingStrategy = .convertToSnakeCase
-        let data = try encoder.encode(request)
-        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
-        return try await put("/api/settings/schedule/\(userId)", body: json)
-    }
-
-    /// Get accountability rules
-    /// GET /api/settings/rules/:userId
-    func fetchRules(userId: String) async throws -> APIResponse<[String: AnyCodableValue]> {
-        return try await get("/api/settings/rules/\(userId)")
-    }
-
-    /// Get usage limits
-    /// GET /api/settings/limits/:userId
-    func fetchLimits(userId: String) async throws -> APIResponse<[String: AnyCodableValue]> {
-        return try await get("/api/settings/limits/\(userId)")
-    }
-
-    // MARK: - Brutal Reality Endpoints (REMOVED - bloat elimination)
-
-    // MARK: - Countdown Endpoint
-
-    /// Get next call countdown
-    /// GET /api/mirror/countdown/:userId
-    func fetchCountdown(userId: String) async throws -> APIResponse<CountdownData> {
-        return try await get("/api/mirror/countdown/\(userId)")
-    }
 
     // MARK: - Onboarding Endpoints
 

@@ -247,31 +247,53 @@ All in `be/src/features/trigger/handlers/`:
 
 ### **HIGH PRIORITY** (Breaks Production)
 
-1. **Fix iOS Call Config Bug** 🔴
+1. ✅ **Fix iOS Call Config Bug** ~~🔴~~ **COMPLETED**
    - File: `swift/bigbruhh/Core/Networking/APIService.swift:183`
    - Change: `post("/call/\(userId)/\(callType)")` → `get("/call/config/\(userId)/\(callType)")`
+   - **FIXED**: Changed POST to GET, updated path to /call/config/, removed body parameter
 
-2. **Remove 15 Dead iOS API Methods** 🔴
-   - File: `swift/bigbruhh/Core/Networking/APIService.swift:173-269`
-   - Delete: All promise, call-log, voice-clips, countdown, schedule/:userId methods
+2. ✅ **Remove 15 Dead iOS API Methods** ~~🔴~~ **COMPLETED**
+   - File: `swift/bigbruhh/Core/Networking/APIService.swift`
+   - **DELETED**: All promise, call-log, voice-clips, countdown, schedule/:userId methods
+   - Removed: fetchVoiceClips, fetchCallHistory, fetchWeekCalls, fetchCallReceipts, fetchPromises, createPromise, completePromise, fetchSchedule, updateSchedule, fetchRules, fetchLimits, fetchCountdown
+   - Result: APIService now only contains 8 working endpoints
 
-3. **Fix Bloated Backend Handlers** 🔴
-   - `be/src/features/call/services/tone-engine.ts` - Remove trust_percentage
-   - `be/src/features/identity/utils/identity-status-sync.ts` - Remove trust_percentage
+3. ✅ **Fix Bloated Backend Handlers** ~~🔴~~ **COMPLETED**
+   - File: `be/src/features/call/services/tone-engine.ts`
+     - **FIXED**: Removed trust_percentage reference (line 103)
+     - **REPLACED**: Now uses current_streak_days for collapse risk calculation
+     - Logic: 0 streak = critical, <3 = high, <7 = medium, 7+ = low risk
+   - File: `be/src/features/identity/utils/identity-status-sync.ts`
+     - **FIXED**: Removed trust_percentage from SummaryMetrics interface
+     - **FIXED**: Removed trust_percentage calculation, upsert, and return value
+     - **FIXED**: Removed trust_percentage from AI prompt
+     - **FIXED**: Updated discipline logic to use currentStreak instead
+     - **FIXED**: Updated notification messages to use streak and success rate
 
 ### **MEDIUM PRIORITY** (Cleanup)
 
-4. **Remove Deprecated Endpoint** ⚠️
-   - File: `be/src/features/identity/router.ts:19`
-   - Remove: `identityRouter.put('/final-oath/:userId', ...)`
+4. ✅ **Remove Deprecated Endpoint** ~~⚠️~~ **COMPLETED**
+   - File: `be/src/features/identity/router.ts`
+   - **REMOVED**: Deprecated `/final-oath/:userId` endpoint (line 19)
+   - **REMOVED**: Unused `updateFinalOath` import
+   - Endpoint was returning 410 Gone and never used by iOS
 
-5. **Fix iOS Hardcoded URLs** ⚠️
-   - File: `swift/bigbruhh/Features/Call/Services/CallSessionController.swift:81,109`
-   - Use: `Config.backendURL` instead of `https://api.bigbruh.app`
+5. ✅ **Fix iOS Hardcoded URLs** ~~⚠️~~ **COMPLETED**
+   - File: `swift/bigbruhh/Features/Call/Services/CallSessionController.swift`
+   - **FIXED**: Line 81 - fetchPrompts() now uses `Config.backendURL`
+   - **FIXED**: Line 113 - authenticateAndStream() now uses `Config.backendURL`
+   - **ADDED**: Guard statements to handle missing Config.backendURL
+   - Result: Can now switch backend URLs for dev/staging environments
 
-6. **Mark Debug/Admin Endpoints** ⚠️
-   - Add `@debug-only` comments to 14 VoIP debug endpoints
-   - Add `@admin-only` comments to 7 trigger admin endpoints
+6. ✅ **Mark Debug/Admin Endpoints** ~~⚠️~~ **COMPLETED**
+   - File: `be/src/features/voip/router.ts`
+     - **MARKED**: 4 debug endpoints as `@debug-only` (lines 25-33)
+     - **MARKED**: 10 test endpoints as `@test-only` (lines 42-54)
+     - **DOCUMENTED**: 2 production session endpoints (lines 35-40)
+   - File: `be/src/features/trigger/router.ts`
+     - **MARKED**: All 7 trigger endpoints as `@admin-only` (lines 24-43)
+     - **DOCUMENTED**: Security context and protection details
+   - Result: Clear distinction between production, debug, test, and admin endpoints
 
 ### **LOW PRIORITY** (Documentation)
 

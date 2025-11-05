@@ -5,7 +5,6 @@ import { format, subDays } from "date-fns";
 
 interface SummaryMetrics {
   successRate: number;
-  trustPercentage: number;
   currentStreak: number;
   promisesMade: number;
   promisesBroken: number;
@@ -62,7 +61,6 @@ export async function syncIdentityStatus(
     const sevenDaysAgo = format(subDays(new Date(), 7), "yyyy-MM-dd");
     const recentPromises = (allPromises || []).filter((p) => p.promise_date >= sevenDaysAgo);
     const recentBroken = recentPromises.filter((p) => p.status === "broken").length;
-    const trustPercentage = Math.max(0, 100 - recentBroken * 10);
 
     const successRate = promisesMade > 0
       ? Math.round(((promisesMade - promisesBroken) / promisesMade) * 100)
@@ -73,12 +71,11 @@ export async function syncIdentityStatus(
     );
     console.log(`🔥 Current streak: ${currentStreak} days`);
     console.log(
-      `🎯 Trust calculation: ${recentBroken} broken in last 7 days = ${trustPercentage}% trust`
+      `⚡ Recent performance: ${recentBroken} broken in last 7 days`
     );
 
     const metrics: SummaryMetrics = {
       successRate,
-      trustPercentage,
       currentStreak,
       promisesMade,
       promisesBroken,
@@ -101,7 +98,6 @@ export async function syncIdentityStatus(
           promises_made_count: promisesMade,
           promises_broken_count: promisesBroken,
           current_streak_days: currentStreak,
-          trust_percentage: trustPercentage,
           last_updated: new Date().toISOString(),
           status_summary: statusSummary,
         },
@@ -116,7 +112,7 @@ export async function syncIdentityStatus(
     }
 
     console.log(
-      `✅ Identity status synced for user ${userId}: ${promisesMade} made, ${promisesBroken} broken, ${currentStreak} day streak, ${trustPercentage}% trust`
+      `✅ Identity status synced for user ${userId}: ${promisesMade} made, ${promisesBroken} broken, ${currentStreak} day streak`
     );
 
     return {
@@ -125,7 +121,6 @@ export async function syncIdentityStatus(
         promises_made_count: promisesMade,
         promises_broken_count: promisesBroken,
         current_streak_days: currentStreak,
-        trust_percentage: trustPercentage,
         status_summary: statusSummary,
       },
     };
@@ -225,7 +220,6 @@ async function generateStatusSummary(
 
     const prompt = `# USER PERFORMANCE SNAPSHOT
 Success rate: ${metrics.successRate}%
-Trust percentage: ${metrics.trustPercentage}%
 Current streak: ${metrics.currentStreak} days
 Promises made: ${metrics.promisesMade}
 Promises broken: ${metrics.promisesBroken}
@@ -312,17 +306,17 @@ function buildHeuristicSummary(
   identity?: Identity | null,
   options?: { latestCallSummary?: string | null; primaryExcuse?: string | undefined }
 ): IdentityStatusSummary {
-  const { successRate, trustPercentage, currentStreak, promisesMade, promisesBroken, recentBroken } = metrics;
+  const { successRate, currentStreak, promisesMade, promisesBroken, recentBroken } = metrics;
 
   let disciplineLevel: IdentityStatusSummary["disciplineLevel"] = "UNKNOWN";
 
   if (promisesMade === 0) {
     disciplineLevel = "UNKNOWN";
-  } else if (successRate < 40 || trustPercentage < 50 || recentBroken >= 3) {
+  } else if (successRate < 40 || recentBroken >= 3 || currentStreak === 0) {
     disciplineLevel = "CRISIS";
-  } else if (successRate >= 80 && currentStreak >= 3 && trustPercentage >= 70) {
+  } else if (successRate >= 80 && currentStreak >= 3) {
     disciplineLevel = "GROWTH";
-  } else if (successRate < 60 || currentStreak === 0) {
+  } else if (successRate < 60 || currentStreak < 2) {
     disciplineLevel = "STUCK";
   } else {
     disciplineLevel = "STABLE";
@@ -350,8 +344,8 @@ function buildHeuristicSummary(
 
   const notificationMessageMap: Record<IdentityStatusSummary["disciplineLevel"], string> = {
     CRISIS: `Your excuses are stacking (${promisesBroken} broken). Stop pretending tomorrow saves you.`,
-    STUCK: `Success rate ${successRate}% with zero streak. Start acting like you actually want change.`,
-    STABLE: `Trust at ${trustPercentage}%. Don't let boredom kill your streak.`,
+    STUCK: `Success rate ${successRate}% with weak streak. Start acting like you actually want change.`,
+    STABLE: `${currentStreak} day streak at ${successRate}% success. Don't let boredom kill your momentum.`,
     GROWTH: `Streak at ${currentStreak} days. Ride the wave and set a bigger promise now.`,
     UNKNOWN: `No data yet. Make a commitment and prove you belong here.`,
   };
