@@ -20,17 +20,17 @@ export const postElevenLabsWebhook = async (c: Context) => {
     console.log(`📦 Body length: ${rawBody.length} bytes`);
 
     // Validate webhook signature if secret is configured
-    const webhookSecret = env.ELEVENLABS_WEBHOOK_SECRET;
+    const webhookSecret = env.ELEVENLABS_WEBHOOK_SECRET || undefined;
     if (webhookSecret && signature) {
       const webhookHandler = createElevenLabsWebhookHandler({
         ...env,
-        ELEVENLABS_WEBHOOK_SECRET: webhookSecret,
+        ELEVENLABS_WEBHOOK_SECRET: webhookSecret as string,
       });
 
       const isValidSignature = webhookHandler.validateSignature(
         rawBody,
         signature,
-        webhookSecret
+        webhookSecret as string
       );
 
       if (!isValidSignature) {
@@ -64,7 +64,7 @@ export const postElevenLabsWebhook = async (c: Context) => {
     // Create webhook handler and process event
     const webhookHandler = createElevenLabsWebhookHandler({
       ...env,
-      ELEVENLABS_WEBHOOK_SECRET: webhookSecret,
+      ELEVENLABS_WEBHOOK_SECRET: (webhookSecret || '') as string,
     });
 
     const result = await webhookHandler.processWebhook(webhookEvent);
@@ -122,17 +122,17 @@ export const postElevenLabsAudioWebhook = async (c: Context) => {
     console.log(`📦 Received ${rawBody.length} bytes of audio webhook data`);
 
     // Validate signature if configured
-    const webhookSecret = env.ELEVENLABS_WEBHOOK_SECRET;
+    const webhookSecret = env.ELEVENLABS_WEBHOOK_SECRET || undefined;
     if (webhookSecret && signature) {
       const webhookHandler = createElevenLabsWebhookHandler({
         ...env,
-        ELEVENLABS_WEBHOOK_SECRET: webhookSecret,
+        ELEVENLABS_WEBHOOK_SECRET: webhookSecret as string,
       });
 
       const isValidSignature = webhookHandler.validateSignature(
         rawBody,
         signature,
-        webhookSecret
+        webhookSecret as string
       );
 
       if (!isValidSignature) {
@@ -158,7 +158,7 @@ export const postElevenLabsAudioWebhook = async (c: Context) => {
     // Process audio webhook
     const webhookHandler = createElevenLabsWebhookHandler({
       ...env,
-      ELEVENLABS_WEBHOOK_SECRET: webhookSecret,
+      ELEVENLABS_WEBHOOK_SECRET: (webhookSecret || '') as string,
     });
 
     const result = await webhookHandler.processWebhook(webhookEvent);

@@ -77,9 +77,11 @@ export async function getPromptForCall(
     }
     // Build related memories payload using today context
     try {
+      // Super MVP: primary_excuse now in onboarding_context
+      const context = userContext?.identity?.onboarding_context as any;
       const queryContext =
         userContext?.todayPromises?.[0]?.promise_text ||
-        userContext?.identity?.primary_excuse ||
+        context?.favorite_excuse ||
         "morning routine";
       const { buildRelatedMemoriesPayload } = await import(
         "@/services/embedding-services/memory"

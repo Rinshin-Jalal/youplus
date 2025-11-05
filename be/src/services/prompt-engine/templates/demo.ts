@@ -23,25 +23,35 @@ const mockUserContext: UserContext = {
     call_window_timezone: "America/New_York",
     push_token: "demo-push-token",
     onboarding_completed: true,
-    schedule_change_count: 0,
-    voice_reclone_count: 0
+    // Super MVP: removed schedule_change_count and voice_reclone_count
   },
   identity: {
     id: "demo-identity",
     user_id: "demo-user",
-    name: "Alex", // User's actual name, not BigBruh name
-    identity_summary: "The version of Alex who overcame procrastination and built a thriving business",
-    war_cry: "I swear to never ignore accountability again",
-    core_struggle: "I'm afraid I'm not capable of real success",
-    fear_identity: "Someone who wastes their potential and lives with regret",
-    aspirated_identity: "Build a successful business and live with purpose",
-    sabotage_method: "Endless scrolling and comfort zone behaviors",
-    daily_non_negotiable: "Work on business for 2 hours before checking social media",
-    accountability_trigger: "Firm but supportive - call out excuses directly",
-    biggest_enemy: "procrastination, perfectionism, fear of failure",
-    weakness_time_window: "After lunch when energy drops",
-    primary_excuse: "I was too tired to focus properly",
-    last_major_failure: "Work on business plan for 2 hours",
+    name: "Alex", // User's actual name
+    // Super MVP: Core fields
+    daily_commitment: "Work on business for 2 hours before checking social media",
+    chosen_path: "hopeful" as const,
+    call_time: "20:00:00",
+    strike_limit: 3,
+    // Super MVP: Voice URLs (R2 cloud storage)
+    why_it_matters_audio_url: null,
+    cost_of_quitting_audio_url: null,
+    commitment_audio_url: null,
+    // Super MVP: Everything else in onboarding_context JSONB
+    onboarding_context: {
+      goal: "Build a successful business and live with purpose",
+      motivation_level: 8,
+      attempt_history: "Failed 3 times before. Last attempt: gave up after 2 weeks.",
+      favorite_excuse: "I was too tired to focus properly",
+      who_disappointed: "Myself and my family",
+      future_if_no_change: "Someone who wastes their potential and lives with regret",
+      witness: "My spouse",
+      will_do_this: true,
+      permissions: { notifications: true, calls: true },
+      completed_at: new Date().toISOString(),
+      time_spent_minutes: 25
+    },
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   },
@@ -49,10 +59,11 @@ const mockUserContext: UserContext = {
     id: "demo-status",
     user_id: "demo-user",
     current_streak_days: 5,
-    promises_made_count: 25,
-    promises_broken_count: 7,
-    trust_percentage: 72,
-    last_updated: new Date().toISOString()
+    total_calls_completed: 25,
+    last_call_at: new Date(Date.now() - 86400000).toISOString(),
+    // Super MVP: removed promises_made_count, promises_broken_count, trust_percentage
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   todayPromises: [{
     id: "demo-today",

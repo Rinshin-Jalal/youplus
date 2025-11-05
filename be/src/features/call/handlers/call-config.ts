@@ -1,20 +1,18 @@
 /**
- * Call Configuration Endpoint - NOW OPTIMIZED! 🚀
+ * Call Configuration Endpoint - SUPER MVP 🚀
  *
  * This module provides primary endpoint for generating intelligent call configurations
  * for 11labs Convo AI. It's responsible for creating personalized, behaviorally-aware
  * prompts that drive effective accountability conversations.
  *
  * Key Responsibilities:
- * - Generate personalized call prompts based on user behavioral data (40% more efficient!)
+ * - Generate personalized call prompts based on user behavioral data
  * - Calculate optimal tone and mood for each call scenario
- * - Integrate with OPTIMIZED prompt engine for intelligent conversation generation
+ * - Integrate with prompt engine for intelligent conversation generation
  * - Provide call tracking metadata for monitoring and analytics
  *
- * Call Types Supported:
- * - morning: Daily morning accountability calls
- * - evening: Daily evening reflection calls
- * - apology_call: Follow-up calls for missed appointments
+ * Call Types Supported (Super MVP):
+ * - daily_reckoning: Daily accountability calls (unified morning/evening)
  *
  * Integration Flow:
  * 1. Frontend requests call configuration
@@ -96,11 +94,9 @@ export const getCallConfig = async (c: Context) => {
   const { userId, callType } = c.req.param();
   const env = c.env as Env;
 
+  // Super MVP: Only one call type
   const validCallTypes: CallType[] = [
-    "morning",
-    "evening",
-    "apology_call",
-    "first_call",
+    "daily_reckoning",
   ];
 
   if (!userId || !callType || !validCallTypes.includes(callType as CallType)) {

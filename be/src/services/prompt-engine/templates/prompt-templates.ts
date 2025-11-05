@@ -107,33 +107,30 @@ export class IntelligenceOptimizer {
     }
 
     const intelligence = [];
+    const context = identity.onboarding_context as any;
 
     // Core identity (always include)
     intelligence.push(`**User Name**: "${identity.name}"`);
-    if (identity.war_cry_or_death_vision) {
-      intelligence.push(`**War Cry**: "${identity.war_cry_or_death_vision}"`);
+    intelligence.push(`**Daily Commitment**: "${identity.daily_commitment || 'Not set'}"`);
+
+    if (context?.goal) {
+      intelligence.push(`**Goal**: "${context.goal}"`);
     }
 
-    // Contextual intelligence based on call type
-    if (callType === "first" || callType === "morning") {
-      if (identity.aspirational_identity_gap) {
-        intelligence.push(`**Vision**: "${identity.aspirational_identity_gap}"`);
+    // Contextual intelligence based on call type (Super MVP: only daily_reckoning)
+    if (callType === "daily_reckoning") {
+      if (context?.motivation_level) {
+        intelligence.push(`**Motivation Level**: ${context.motivation_level}/10`);
       }
-      if (identity.non_negotiable_commitment || identity.daily_non_negotiable) {
-        const commitment = identity.non_negotiable_commitment || identity.daily_non_negotiable;
+      if (context?.attempt_history) {
+        intelligence.push(`**Past Attempts**: "${context.attempt_history}"`);
+      }
+      if (context?.favorite_excuse) {
+        intelligence.push(`**Favorite Excuse**: "${context.favorite_excuse}"`);
+      }
+      if (context?.future_if_no_change) {
         intelligence.push(
-          `**Non-Negotiable**: "${commitment}"`,
-        );
-      }
-    }
-
-    if (callType === "evening" || callType === "missed") {
-      if (identity.self_sabotage_pattern) {
-        intelligence.push(`**Sabotage Pattern**: "${identity.self_sabotage_pattern}"`);
-      }
-      if (identity.breaking_point_event) {
-        intelligence.push(
-          `**Breaking Point**: "${identity.breaking_point_event}"`,
+          `**Future If No Change**: "${context.future_if_no_change}"`,
         );
       }
     }
@@ -370,9 +367,10 @@ export class OpenerGenerator {
     const bigBruhName = "BigBruh"; // Always use "BigBruh" as the BigBruh name
     const yesterdayPromise = yesterdayPromises?.[0];
 
-    // Check for custom first words
-    if (callType === "first" && identity?.war_cry) {
-      return identity.war_cry; 
+    // Super MVP: Use goal from onboarding_context
+    const context = identity?.onboarding_context as any;
+    if (callType === "daily_reckoning" && context?.goal) {
+      return `Let's talk about "${context.goal}". You ready to face the truth?`;
     }
 
     // Use contextual modifiers if available

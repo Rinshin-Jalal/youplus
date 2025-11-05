@@ -315,11 +315,12 @@ ${this.getToolDescription(toolSet)}
 
     let score = 0;
 
-    // Core identity data (40% weight)
+    // Core identity data (40% weight - Super MVP)
     if (identity?.name) score += 0.1;
-    if (identity?.war_cry) score += 0.1;
-    if (identity?.aspirated_identity) score += 0.1;
-    if (identity?.daily_non_negotiable) score += 0.1;
+    if (identity?.daily_commitment) score += 0.1;
+    const context = identity?.onboarding_context as any;
+    if (context?.goal) score += 0.1;
+    if (context?.motivation_level) score += 0.1;
 
     // Behavioral data (40% weight)
     if (memoryInsights?.topExcuseCount7d) score += 0.2;
