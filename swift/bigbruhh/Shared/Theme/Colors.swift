@@ -7,48 +7,29 @@
 import SwiftUI
 
 extension Color {
-    // MARK: - Brand Colors
-    static let brutalBlack = Color(hex: "#000000")
-    static let brutalWhite = Color(hex: "#FFFFFF")
-    static let brutalRed = Color(hex: "#E63946") // Refined red - less garish
-    static let brutalRedLight = Color(hex: "#FF6B6B") // Softer light red
-    static let brutalRedDark = Color(hex: "#C1121F") // Deeper dark red
+    // MARK: - Brand Colors (BRUTALIST - harsh, honest, unapologetic)
+    static let brutalBlack = Color(hex: "#000000") // Pure black
+    static let brutalWhite = Color(hex: "#FFFFFF") // Pure white
+    static let brutalRed = Color(hex: "#FF0033") // BRIGHT red - not refined, not subtle
 
-    // MARK: - Onboarding Phase Colors
-    static let neonGreen = Color(hex: "#90FD0E")
-    static let warningRed = Color(hex: "#FF3B30")
+    // MARK: - Grade Colors (BRUTALIST - flat, bright, clear meaning)
+    static let gradeA = Color(hex: "#00D474") // Bright green - success
+    static let gradeB = Color(hex: "#FFC107") // Yellow - acceptable
+    static let gradeC = Color(hex: "#FF6B00") // Orange - warning
+    static let gradeD = Color(hex: "#9C27B0") // Purple - poor
+    static let gradeF = Color(hex: "#FF0033") // Red - failure
 
-    // MARK: - Grade Colors (Refined - less garish, more sophisticated)
-    static let gradeA = Color(hex: "#10B981") // Emerald green
-    static let gradeAPlus = Color(hex: "#059669") // Deeper emerald
-    static let gradeB = Color(hex: "#F59E0B") // Amber
-    static let gradeBPlus = Color(hex: "#D97706") // Deeper amber
-    static let gradeC = Color(hex: "#F97316") // Orange
-    static let gradeD = Color(hex: "#8B5CF6") // Purple
-    static let gradeF = Color(hex: "#EF4444") // Refined red
+    // MARK: - Semantic Colors (Reuse grade colors - simple, consistent)
+    static let success = gradeA // Bright green
+    static let warning = gradeB // Yellow
+    static let error = brutalRed // Red
+    static let info = Color(hex: "#0091EA") // Bright blue
 
-    // MARK: - Call Screen Mood Colors
-    static let moodCalm = Color(hex: "#000000")
-    static let moodAngry = Color(hex: "#330000")
-    static let moodNuclear = Color(hex: "#660000")
-    static let moodDisappointed = Color(hex: "#331100")
-
-    // MARK: - UI Element Colors
-    static let inputBackground = Color.white.opacity(0.08)
-    static let inputBorder = Color.white.opacity(0.15)
-    static let buttonActive = Color.white
-    static let buttonInactive = Color.white.opacity(0.1)
-
-    // MARK: - Surface Colors
-    static let surfaceElevated = Color(hex: "#1A1A1A") // Slightly elevated surface
-    static let surfaceDimmed = Color(hex: "#0A0A0A") // Slightly dimmed surface
+    // MARK: - UI Element Colors (Minimal - only what's needed)
+    static let inputBackground = Color.white.opacity(0.05)
+    static let inputBorder = Color.white.opacity(0.2)
+    static let surfaceElevated = Color.white.opacity(0.05)
     static let divider = Color.white.opacity(0.1)
-
-    // MARK: - Semantic Colors
-    static let success = Color(hex: "#10B981")
-    static let warning = Color(hex: "#F59E0B")
-    static let error = Color(hex: "#EF4444")
-    static let info = Color(hex: "#3B82F6")
 
     // MARK: - Utility
     init(hex: String) {

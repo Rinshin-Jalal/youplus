@@ -95,45 +95,11 @@ struct FaceView: View {
     }
 
     private func gradeColor(_ grade: String) -> Color {
-        if grade.contains("A") { return .gradeAPlus }
-        if grade.contains("B") { return .gradeBPlus }
+        if grade.contains("A") { return .gradeA }
+        if grade.contains("B") { return .gradeB }
         if grade.contains("C") { return .gradeC }
         if grade.contains("D") { return .gradeD }
         return .gradeF
-    }
-
-    private func gradeGradient(_ grade: String) -> LinearGradient {
-        if grade.contains("A") {
-            return LinearGradient(
-                colors: [Color.gradeAPlus, Color.gradeA],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        } else if grade.contains("B") {
-            return LinearGradient(
-                colors: [Color.gradeBPlus, Color.gradeB],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        } else if grade.contains("C") {
-            return LinearGradient(
-                colors: [Color.gradeC.opacity(0.9), Color.gradeC],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        } else if grade.contains("D") {
-            return LinearGradient(
-                colors: [Color.gradeD.opacity(0.9), Color.gradeD],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        } else {
-            return LinearGradient(
-                colors: [Color.gradeF.opacity(0.9), Color.gradeF],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        }
     }
 
     var body: some View {
@@ -227,15 +193,10 @@ struct FaceView: View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             HStack {
                 HStack(spacing: Spacing.xs) {
+                    // FLAT red icon background - brutalist
                     ZStack {
-                        RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
-                            .fill(
-                                LinearGradient(
-                                    colors: [Color.brutalRedLight, Color.brutalRed],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
+                        RoundedRectangle(cornerRadius: Spacing.radiusXS, style: .continuous)
+                            .fill(Color.brutalRed)
                             .frame(width: 24, height: 24)
 
                         Text("🔥")
@@ -268,29 +229,14 @@ struct FaceView: View {
         }
         .padding(Spacing.md)
         .background(
-            ZStack {
-                RoundedRectangle(cornerRadius: Spacing.radiusMedium, style: .continuous)
-                    .fill(Color.surfaceElevated)
-
-                // Subtle gradient overlay
-                RoundedRectangle(cornerRadius: Spacing.radiusMedium, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.05),
-                                Color.clear
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-            }
+            // FLAT surface - brutalist
+            RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
+                .fill(Color.surfaceElevated)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: Spacing.radiusMedium, style: .continuous)
+            RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
                 .strokeBorder(Color.divider, lineWidth: Spacing.borderThin)
         )
-        .elevation(.low)
         .padding(.horizontal, Spacing.screenHorizontal)
         .padding(.top, Spacing.lg)
     }
@@ -313,35 +259,21 @@ struct FaceView: View {
                     .foregroundColor(.white)
             }
 
-            // Progress bar with gradient
+            // FLAT progress bar - brutalist
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     // Background track
                     RoundedRectangle(cornerRadius: Spacing.radiusXS, style: .continuous)
                         .fill(Color.white.opacity(0.1))
-                        .frame(height: 10)
+                        .frame(height: 8)
 
-                    // Progress fill with gradient
+                    // Progress fill - FLAT color
                     RoundedRectangle(cornerRadius: Spacing.radiusXS, style: .continuous)
-                        .fill(
-                            LinearGradient(
-                                colors: successRate >= 60 ?
-                                    [Color.success, Color.success.opacity(0.8)] :
-                                    [Color.brutalRedLight, Color.brutalRed],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .frame(width: max(0, CGFloat(successRate) / 100.0 * geometry.size.width), height: 10)
-                        .shadow(
-                            color: (successRate >= 60 ? Color.success : Color.brutalRed).opacity(0.5),
-                            radius: 6,
-                            x: 0,
-                            y: 0
-                        )
+                        .fill(successRate >= 60 ? Color.success : Color.brutalRed)
+                        .frame(width: max(0, CGFloat(successRate) / 100.0 * geometry.size.width), height: 8)
                 }
             }
-            .frame(height: 10)
+            .frame(height: 8)
 
             Text(progressMessage)
                 .font(.captionSmall)
@@ -351,11 +283,11 @@ struct FaceView: View {
         .padding(Spacing.md)
         .background(
             RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
-                .fill(Color.surfaceDimmed)
+                .fill(Color.surfaceElevated)
         )
         .overlay(
             RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
-                .strokeBorder(Color.divider.opacity(0.5), lineWidth: Spacing.borderThin)
+                .strokeBorder(Color.divider, lineWidth: Spacing.borderThin)
         )
         .padding(.horizontal, Spacing.screenHorizontal)
         .padding(.top, Spacing.lg)
@@ -387,63 +319,32 @@ struct FaceView: View {
     }
 
     private func gradeCard(category: String, grade: String, message: String, color: Color) -> some View {
-        VStack(spacing: 10) {
+        VStack(spacing: Spacing.xs) {
             Text(category)
                 .font(.captionMedium)
-                .foregroundColor(.white.opacity(0.85))
+                .foregroundColor(.white.opacity(0.7))
                 .wideTracking()
                 .textCase(.uppercase)
 
             Text(grade)
                 .font(.gradeDisplay)
-                .foregroundColor(.white)
-                .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+                .foregroundColor(.brutalBlack)
+                .fontWeight(.black)
 
             Text(message)
                 .font(.captionSmall)
-                .foregroundColor(.white.opacity(0.75))
+                .foregroundColor(.brutalBlack.opacity(0.8))
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 28)
-        .padding(.horizontal, 12)
+        .padding(.vertical, Spacing.lg)
+        .padding(.horizontal, Spacing.sm)
         .background(
-            ZStack {
-                // Gradient background
-                RoundedRectangle(cornerRadius: Spacing.radiusLarge, style: .continuous)
-                    .fill(gradeGradient(grade))
-
-                // Subtle overlay pattern
-                RoundedRectangle(cornerRadius: Spacing.radiusLarge, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.15),
-                                Color.clear,
-                                Color.black.opacity(0.2)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-            }
+            // FLAT color - brutalist, no gradients
+            RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
+                .fill(color)
         )
-        .overlay(
-            RoundedRectangle(cornerRadius: Spacing.radiusLarge, style: .continuous)
-                .strokeBorder(
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.3),
-                            Color.white.opacity(0.1)
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    ),
-                    lineWidth: 1
-                )
-        )
-        .elevation(.medium)
     }
 
     // MARK: - Timer Logic
