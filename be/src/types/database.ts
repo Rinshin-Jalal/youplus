@@ -7,6 +7,14 @@ export type BigBruhhTone =
 // Legacy type alias for backward compatibility
 export type TransmissionMood = BigBruhhTone;
 
+/**
+ * SUPER MVP: Simplified Users Table
+ *
+ * Cleaned up user table - removed bloat fields:
+ * - Dropped: voice_clone_id (no voice cloning in MVP)
+ * - Dropped: schedule_change_count (no change limits in MVP)
+ * - Dropped: voice_reclone_count (no voice cloning in MVP)
+ */
 export interface User {
   id: string;
   created_at: string;
@@ -15,14 +23,19 @@ export interface User {
   email: string;
   subscription_status: "active" | "trialing" | "cancelled" | "past_due";
   timezone: string;
+
+  // Call scheduling
   call_window_start?: string; // When calls start (e.g., "20:30")
   call_window_timezone?: string; // Timezone for call window
-  voice_clone_id?: string;
-  push_token?: string; // Keep in users table (one token per user)
+
+  // Onboarding
   onboarding_completed: boolean;
   onboarding_completed_at?: string;
-  schedule_change_count: number; // Max 2 per month
-  voice_reclone_count: number; // Max 1 per month
+
+  // Push notifications
+  push_token?: string; // VoIP push token
+
+  // Payment
   revenuecat_customer_id?: string;
 }
 
@@ -39,112 +52,107 @@ export interface OnboardingData {
   [key: string]: any; // Allow additional fields as onboarding evolves
 }
 
-// NEW: Intelligent Identity table - AI-extracted psychological insights
-// V3 REDESIGN: Psychological weapons for brutal accountability calls
+/**
+ * SUPER MVP: Simplified Identity Table
+ *
+ * Core design: All onboarding data stored in a single simplified identity table
+ * - Core fields (used in app logic) → explicit columns
+ * - Context fields (used for AI personalization) → single JSONB column
+ * - Voice recordings → R2 cloud URLs
+ *
+ * Schema: 12 columns total
+ * - 5 core fields: name, daily_commitment, chosen_path, call_time, strike_limit
+ * - 3 voice URLs: why_it_matters, cost_of_quitting, commitment
+ * - 1 JSONB: onboarding_context (goal, motivation, attempt_history, etc.)
+ * - 3 system: id, user_id, created_at, updated_at
+ */
 export interface Identity {
-  // ═══════════════════════════════════════════════════════════════════════════════
-  // SYSTEM FIELDS (unchanged)
-  // ═══════════════════════════════════════════════════════════════════════════════
+  // System fields
   id: string;
   user_id: string;
-  name: string; // User's name
-  identity_summary: string; // Auto-generated summary of psychological profile
   created_at: string;
   updated_at: string;
 
-  // ═══════════════════════════════════════════════════════════════════════════════
-  // DEPRECATED FIELDS (keep for backward compatibility, will be removed in V4)
-  // ═══════════════════════════════════════════════════════════════════════════════
-  daily_non_negotiable?: string; // DEPRECATED - use non_negotiable_commitment instead
-  transformation_target_date?: string; // DEPRECATED - integrated into breaking_point_event
+  // Core fields (used in app logic)
+  name: string; // User's name from auth
+  daily_commitment: string; // "30 min gym session" or "1 hour coding"
+  chosen_path: "hopeful" | "doubtful"; // Path chosen at end of onboarding
+  call_time: string; // "20:30:00" - TIME format (HH:MM:SS)
+  strike_limit: number; // 1-5, how many strikes before consequences
 
-  // ═══════════════════════════════════════════════════════════════════════════════
-  // PSYCHOLOGICAL WEAPON FIELDS (10 intense leverage points for personalized calls)
-  // ═══════════════════════════════════════════════════════════════════════════════
+  // Voice recordings (R2 URLs for AI calls)
+  why_it_matters_audio_url?: string | null; // "https://audio.yourbigbruhh.app/..."
+  cost_of_quitting_audio_url?: string | null;
+  commitment_audio_url?: string | null;
 
-  // WEAPON 1: SHAME TRIGGER
-  // What makes them feel most ashamed/disgusted about themselves
-  // Extracted from: physical_disgust_trigger, relationship_damage, fear_version
-  // Used in calls: "Remember what you said about [shame_trigger]? Still true?"
-  shame_trigger?: string;
-
-  // WEAPON 2: FINANCIAL PAIN POINT
-  // Specific money/career opportunity cost of their weakness
-  // Extracted from: financial_consequence, parental_sacrifice, procrastination_focus
-  // Used in calls: "You've lost [financial_pain_point] because you're weak"
-  financial_pain_point?: string;
-
-  // WEAPON 3: RELATIONSHIP DAMAGE
-  // Exact person who gave up on them + when they noticed
-  // Extracted from: relationship_damage, external_judge, disappointment_check
-  // Used in calls: "[Person] stopped believing in you when [moment]. Prove them wrong today."
-  relationship_damage_specific?: string;
-
-  // WEAPON 4: BREAKING POINT EVENT
-  // The catastrophic event that would FORCE them to change
-  // Extracted from: breaking_point, urgency_mortality, fear_identity
-  // Used in calls: "You said only [event] would make you change. Why wait?"
-  breaking_point_event?: string;
-
-  // WEAPON 5: SELF-SABOTAGE PATTERN
-  // Their specific pattern of ruining success + emotional trigger + frequency
-  // Extracted from: sabotage_method, emotional_quit_trigger, intellectual_excuse, quit_counter
-  // Used in calls: "Day 3 and [emotion] hits. You quit. Like the last [number] times."
-  self_sabotage_pattern?: string;
-
-  // WEAPON 6: ACCOUNTABILITY HISTORY
-  // Pattern of abandoning help + what actually works for them
-  // Extracted from: accountability_graveyard, accountability_style, past_success_story
-  // Used in calls: "You've quit [number] systems. This is [number]+1 unless you [what works]"
-  accountability_history?: string;
-
-  // ANCHOR 1: CURRENT SELF SUMMARY
-  // Brutal honest assessment of who they are NOW (2-3 sentences max)
-  // Extracted from: current_identity, core_struggle, daily_time_audit, biggest_lie
-  // Used in calls: "You're still [current_self]. When does that change?"
-  current_self_summary?: string;
-
-  // ANCHOR 2: ASPIRATIONAL IDENTITY GAP
-  // The GAP between who they want to be and who they are (the pain)
-  // Extracted from: aspirated_identity, identity_goal, success_metric
-  // Used in calls: "You want [aspiration] but you're [current]. That gap is killing you."
-  aspirational_identity_gap?: string;
-
-  // ANCHOR 3: NON-NEGOTIABLE COMMITMENT
-  // Their ONE daily action + the consequence if they break it
-  // Extracted from: daily_non_negotiable, failure_threshold, sacrifice_list
-  // Used in calls: "Did you [action]? Yes or no. Strike [X] of [Y]."
-  non_negotiable_commitment?: string;
-
-  // WEAPON 7: WAR CRY OR DEATH VISION
-  // Either their motivational phrase OR their nightmare future
-  // Extracted from: war_cry, fear_identity, urgency_mortality
-  // Used in calls: "Remember: [war_cry] or become [death_vision]"
-  war_cry_or_death_vision?: string;
-
-  // DEPRECATED: Backward compatibility fields (use consolidated fields above)
-  war_cry?: string; // Use war_cry_or_death_vision instead
-  aspirated_identity?: string; // Use aspirational_identity_gap instead
-  primary_excuse?: string; // Use self_sabotage_pattern instead
-  core_struggle?: string; // Use current_self_summary instead
-  fear_identity?: string; // Use breaking_point_event or war_cry_or_death_vision instead
-  sabotage_method?: string; // Use self_sabotage_pattern instead
-  accountability_trigger?: string; // Use non_negotiable_commitment instead
-  biggest_enemy?: string; // Use shame_trigger or relationship_damage_specific instead
+  // Everything else from onboarding (context for AI personalization)
+  onboarding_context: OnboardingContext;
 }
 
-// NEW: Identity Status table from schema.sql
+/**
+ * Onboarding Context JSONB Structure
+ *
+ * Contains all the psychological details gathered during 42-step onboarding.
+ * Used by AI to personalize calls but not directly queried by app logic.
+ */
+export interface OnboardingContext {
+  // Identity & Aspiration
+  goal: string; // "Get fit and lose 20 pounds by June 2025"
+  goal_deadline?: string; // ISO date
+  motivation_level: number; // 1-10
+
+  // Pattern Recognition
+  attempt_history: string; // "Failed 3 times. Last: gave up after 2 weeks."
+  favorite_excuse?: string; // "Too busy with work"
+  who_disappointed?: string; // "My kids and myself"
+  quit_time?: string; // ISO date of last quit
+  quit_pattern?: string; // "Usually quits 2 weeks in"
+
+  // The Cost
+  future_if_no_change: string; // "Overweight, unhappy, watching life pass by"
+
+  // Commitment Setup
+  witness?: string; // "My spouse"
+
+  // Decision
+  will_do_this: boolean; // true/false
+
+  // Permissions
+  permissions: {
+    notifications: boolean;
+    calls: boolean;
+  };
+
+  // Metadata
+  completed_at: string; // ISO timestamp
+  time_spent_minutes: number; // Total onboarding time
+
+  // Extensible - AI can add more fields for learning
+  [key: string]: any;
+}
+
+/**
+ * SUPER MVP: Simplified Identity Status Table
+ *
+ * Basic performance tracking only:
+ * - Streak tracking (consecutive days of keeping commitments)
+ * - Total calls completed
+ * - Last call timestamp
+ *
+ * Schema: 7 columns total
+ */
 export interface IdentityStatus {
   id: string;
   user_id: string;
-  trust_percentage?: number;
-  next_call_timestamp?: string;
-  promises_made_count?: number;
-  promises_broken_count?: number;
-  current_streak_days?: number;
-  last_updated?: string;
-  memory_insights?: MemoryInsights;
-  status_summary?: IdentityStatusSummary;
+
+  // Basic performance tracking
+  current_streak_days: number; // Consecutive days of keeping commitment
+  total_calls_completed: number; // Total number of completed calls
+  last_call_at?: string | null; // Timestamp of last completed call
+
+  // System fields
+  created_at: string;
+  updated_at: string;
 }
 
 export interface IdentityStatusSummary {
@@ -233,6 +241,7 @@ export interface MemoryEmbedding {
   created_at: string;
   metadata: Record<string, any>;
 }
+/** @deprecated Removed in Super MVP - memory embeddings dropped (bloat elimination) */
 export interface MemoryInsights {
   countsByType: Record<string, number>;
   topExcuseCount7d: number;
