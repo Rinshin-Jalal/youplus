@@ -100,15 +100,17 @@ This index organizes all project documentation for easy navigation.
 
 ## 📈 Strategy & Story-Market Fit
 
-**NEW**: Story-Market Fit framework based on Daniel Kwon's principles
+**🔥 NEW**: You+ validated story analysis (300K-view Reddit post) + 30-day content calendar
 
 - **[Strategy Documentation](./strategy/README.md)** - ⭐ **START HERE** for Story-Market Fit framework
+  - 🔥 [You+ Story-Market Fit: VALIDATED](./strategy/YOUPLUS_STORY_MARKET_FIT_VALIDATED.md) - **READ FIRST** (300K views = proven story)
+  - 🔥 [You+ 30-Day Content Calendar](./strategy/YOUPLUS_CONTENT_CALENDAR_30_DAYS.md) - **USE NOW** (scale validated story)
   - [Story-Market Fit Guide](./strategy/STORY_MARKET_FIT_GUIDE.md) - Complete framework (18 principles)
   - [BigBruh Story-Market Fit Analysis](./strategy/BIGBRUH_STORY_MARKET_FIT_ANALYSIS.md) - Current state assessment (Score: 7.5/10)
   - [Story-Market Fit Checklist](./strategy/STORY_MARKET_FIT_CHECKLIST.md) - Actionable validation checklist
   - [Story-Market Fit Assessment Template](./strategy/STORY_MARKET_FIT_ASSESSMENT.md) - Monthly/quarterly evaluation tool
 
-**Key Insight**: Story-Market Fit > Product-Market Fit. Validate story BEFORE scaling.
+**Key Insight**: Your Reddit post got 300K views. You have PROVEN Story-Market Fit. Don't change it. Scale it.
 
 ---
 
