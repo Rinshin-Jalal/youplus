@@ -93,8 +93,7 @@ export const getScheduleSettings = async (c: Context) => {
         `
         timezone,
         call_window_start,
-        call_window_timezone,
-        schedule_change_count
+        call_window_timezone
       `
       )
       .eq("id", userId)
