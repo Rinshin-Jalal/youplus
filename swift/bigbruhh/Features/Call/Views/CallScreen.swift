@@ -46,72 +46,116 @@ struct CallScreen: View {
     }
 
     private var backgroundView: some View {
-        Color.black
-            .ignoresSafeArea()
-            .overlay(LinearGradient(
-                colors: [Color.black, Color.red.opacity(callStateStore.state.phase == .connected ? 0.3 : 0.1)],
+        ZStack {
+            Color.brutalBlack
+                .ignoresSafeArea()
+
+            // Subtle gradient overlay
+            LinearGradient(
+                colors: [
+                    Color.brutalBlack,
+                    callStateStore.state.phase == .connected ?
+                        Color.brutalRed.opacity(0.15) :
+                        Color.brutalRed.opacity(0.05)
+                ],
                 startPoint: .top,
                 endPoint: .bottom
-            ))
+            )
+            .ignoresSafeArea()
+        }
     }
 
     private var titleSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: Spacing.md) {
             Text(elapsed)
-                .font(.system(size: 48, weight: .bold))
+                .font(.callTimer)
                 .foregroundColor(.white)
-                .tracking(12)
+                .tightTracking()
                 .monospacedDigit()
+                .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
 
             Text(callStateStore.state.callType?.uppercased() ?? "ACCOUNTABILITY")
-                .font(.system(size: 16, weight: .semibold))
+                .font(.caption)
+                .fontWeight(.semibold)
                 .foregroundColor(.white.opacity(0.6))
-                .tracking(4)
+                .extraWideTracking()
         }
     }
 
     private var liveTextSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(statusLine)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.white.opacity(0.6))
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            // Status badge
+            HStack(spacing: Spacing.xs) {
+                Circle()
+                    .fill(statusLine == "LIVE" ? Color.success : Color.white.opacity(0.4))
+                    .frame(width: 8, height: 8)
+
+                Text(statusLine)
+                    .font(.captionMedium)
+                    .foregroundColor(.white.opacity(0.7))
+                    .wideTracking()
+            }
+
             Text(typedText)
-                .font(.system(size: 24, weight: .bold))
+                .font(.headlineMedium)
                 .foregroundColor(.white)
-                .tracking(0.3)
-                .lineSpacing(6)
+                .normalTracking()
+                .lineSpacing(4)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .padding(Spacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: Spacing.radiusMedium, style: .continuous)
+                .fill(Color.white.opacity(0.05))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: Spacing.radiusMedium, style: .continuous)
+                .strokeBorder(Color.white.opacity(0.1), lineWidth: Spacing.borderThin)
+        )
     }
 
     private var textInputSection: some View {
-        HStack(alignment: .bottom, spacing: 12) {
+        HStack(alignment: .bottom, spacing: Spacing.sm) {
             TextField("Type message to BigBruh...", text: $messageText, axis: .vertical)
-                .font(.system(size: 16, weight: .medium))
+                .font(.bodyRegular)
                 .foregroundColor(.white)
-                .padding(14)
+                .padding(Spacing.md)
                 .lineLimit(1...4)
                 .background(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    RoundedRectangle(cornerRadius: Spacing.radiusLarge, style: .continuous)
                         .fill(.white.opacity(0.08))
                 )
+                .overlay(
+                    RoundedRectangle(cornerRadius: Spacing.radiusLarge, style: .continuous)
+                        .strokeBorder(.white.opacity(0.1), lineWidth: Spacing.borderThin)
+                )
+
             Button(action: sendMessage) {
                 Image(systemName: "arrow.up")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.brutalBlack)
                     .frame(width: 44, height: 44)
-                    .background(.white)
-                    .clipShape(Circle())
+                    .background(
+                        Circle()
+                            .fill(.white)
+                            .shadow(color: .white.opacity(0.3), radius: 8, x: 0, y: 4)
+                    )
             }
         }
-        .padding(.horizontal, 20)
-        .padding(.bottom, 24)
-        .padding(.top, 12)
-        .background(.black.opacity(0.3))
+        .padding(.horizontal, Spacing.screenHorizontal)
+        .padding(.bottom, Spacing.lg)
+        .padding(.top, Spacing.sm)
+        .background(
+            LinearGradient(
+                colors: [Color.clear, Color.brutalBlack.opacity(0.6)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
     }
 
     private var controlButtons: some View {
-        HStack(spacing: 50) {
+        HStack(spacing: Spacing.xxxl) {
             controlButton(
                 icon: muted ? "mic.slash.fill" : "mic.fill",
                 label: "mute",
@@ -125,27 +169,43 @@ struct CallScreen: View {
             controlButton(
                 icon: "phone.down.fill",
                 label: "end",
-                tint: Color(hex: "#DC143C"),
+                tint: Color.brutalRed,
                 action: endCall
             )
         }
     }
 
-    private func controlButton(icon: String, label: String, tint: Color = .white.opacity(0.2), action: @escaping () -> Void) -> some View {
-            VStack(spacing: 8) {
+    private func controlButton(icon: String, label: String, tint: Color = .white.opacity(0.15), action: @escaping () -> Void) -> some View {
+        VStack(spacing: Spacing.xs) {
             Button(action: action) {
                 Image(systemName: icon)
-                        .font(.system(size: 28, weight: .medium))
-                        .foregroundColor(.white)
-                        .frame(width: 68, height: 68)
-                        .background(
+                    .font(.system(size: 26, weight: .medium))
+                    .foregroundColor(.white)
+                    .frame(width: 64, height: 64)
+                    .background(
+                        ZStack {
                             Circle()
-                            .fill(tint)
-                        )
-                }
+                                .fill(tint)
+
+                            // Subtle border
+                            Circle()
+                                .strokeBorder(
+                                    Color.white.opacity(tint == .brutalRed ? 0.2 : 0.1),
+                                    lineWidth: Spacing.borderThin
+                                )
+                        }
+                    )
+                    .shadow(
+                        color: tint == .brutalRed ? Color.brutalRed.opacity(0.4) : Color.black.opacity(0.2),
+                        radius: tint == .brutalRed ? 12 : 8,
+                        x: 0,
+                        y: 4
+                    )
+            }
+
             Text(label)
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(.white.opacity(0.9))
+                .font(.captionMedium)
+                .foregroundColor(.white.opacity(0.8))
         }
     }
 

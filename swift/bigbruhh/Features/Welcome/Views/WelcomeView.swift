@@ -13,40 +13,46 @@ struct WelcomeView: View {
 
     var body: some View {
         ZStack {
-            Color.black
+            // FLAT black background - brutalist
+            Color.brutalBlack
                 .ignoresSafeArea()
 
-            VStack(spacing: 40) {
+            VStack(spacing: Spacing.xxxl) {
                 Spacer()
 
-                // Simple centered message
+                // Hero message
                 Text("Ready?")
-                    .font(.system(size: 48, weight: .black))
+                    .font(.displayMedium)
                     .foregroundColor(.white)
 
                 Spacer()
 
-                // Single button
-                VStack(spacing: 16) {
+                // Action buttons
+                VStack(spacing: Spacing.md) {
+                    // FLAT red button - brutalist
                     Button(action: handleStartTalking) {
                         Text("START")
-                            .font(.system(size: 20, weight: .black))
+                            .font(.buttonLarge)
+                            .fontWeight(.black)
                             .foregroundColor(.white)
+                            .wideTracking()
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 24)
-                            .background(Color.brutalRed)
-                            .cornerRadius(16)
+                            .frame(height: Spacing.buttonHeightLarge)
+                            .background(
+                                RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
+                                    .fill(Color.brutalRed)
+                            )
                     }
-                    .padding(.horizontal, 24)
+                    .padding(.horizontal, Spacing.lg)
 
-                    // Sign in link
+                    // Secondary sign in link
                     Button(action: handleSignIn) {
                         Text("Sign in")
-                            .font(.system(size: 14))
+                            .font(.bodyRegular)
                             .foregroundColor(.white.opacity(0.6))
                     }
                 }
-                .padding(.bottom, 40)
+                .padding(.bottom, Spacing.xxl)
             }
         }
     }

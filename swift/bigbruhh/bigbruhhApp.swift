@@ -47,6 +47,7 @@ struct bigbruhhApp: App {
                 .environmentObject(appDelegate.callStateStore)
                 .environmentObject(appDelegate.sessionController)
                 .preferredColorScheme(.dark)
+                .tint(.brutalRed) // App-wide accent color for all native controls
         }
     }
 }

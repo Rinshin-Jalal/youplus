@@ -95,11 +95,11 @@ struct FaceView: View {
     }
 
     private func gradeColor(_ grade: String) -> Color {
-        if grade.contains("A") { return Color(hex: "#00FF00") } // Green for A
-        if grade.contains("B") { return Color(hex: "#FFD700") } // Gold for B
-        if grade.contains("C") { return Color(hex: "#FF8C00") } // Orange for C
-        if grade.contains("D") { return Color(hex: "#8B00FF") } // Purple for D
-        return Color(hex: "#DC143C") // Red for F
+        if grade.contains("A") { return .gradeA }
+        if grade.contains("B") { return .gradeB }
+        if grade.contains("C") { return .gradeC }
+        if grade.contains("D") { return .gradeD }
+        return .gradeF
     }
 
     var body: some View {
@@ -160,25 +160,27 @@ struct FaceView: View {
     // MARK: - Hero Call Timer (Main Element)
 
     private var countdownCard: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: Spacing.md) {
             Text("next call in")
-                .font(.system(size: 14, weight: .bold))
-                .foregroundColor(Color.white.opacity(0.87))
-                .tracking(1)
+                .font(.captionMedium)
+                .foregroundColor(Color.white.opacity(0.7))
+                .wideTracking()
+                .textCase(.uppercase)
 
             // HERO TIMER - BIG DISPLAY
             Text(timeRemainingString)
-                .font(.system(size: 64, weight: .black))
+                .font(.timerHero)
                 .foregroundColor(.white)
-                .tracking(4)
+                .tightTracking()
                 .monospacedDigit()
                 .scaleEffect(timerPulse)
+                .shadow(color: isUnderOneHour ? Color.brutalRed.opacity(0.5) : Color.clear, radius: 20, x: 0, y: 0)
                 .animation(.easeInOut(duration: isUnderOneHour ? 0.5 : 1.0), value: timerPulse)
         }
-        .padding(.vertical, 40)
-        .padding(.horizontal, 20)
+        .padding(.vertical, Spacing.xxl)
+        .padding(.horizontal, Spacing.screenHorizontal)
         .frame(maxWidth: .infinity)
-        .frame(minHeight: 250)
+        .frame(minHeight: 240)
     }
 
     private var timeRemainingString: String {
@@ -188,11 +190,12 @@ struct FaceView: View {
     // MARK: - Notification Card
 
     private var notificationCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
             HStack {
-                HStack(spacing: 8) {
+                HStack(spacing: Spacing.xs) {
+                    // FLAT red icon background - brutalist
                     ZStack {
-                        RoundedRectangle(cornerRadius: 6)
+                        RoundedRectangle(cornerRadius: Spacing.radiusXS, style: .continuous)
                             .fill(Color.brutalRed)
                             .frame(width: 24, height: 24)
 
@@ -201,125 +204,147 @@ struct FaceView: View {
                     }
 
                     Text("BigBruh")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.titleSmall)
                         .foregroundColor(.white)
                 }
 
                 Spacer()
 
                 Text("now")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.captionMedium)
                     .foregroundColor(Color.white.opacity(0.5))
             }
 
             Text(notificationTitle)
-                .font(.system(size: 13, weight: .bold))
+                .font(.caption)
+                .fontWeight(.semibold)
                 .foregroundColor(.white)
-                .tracking(1)
+                .wideTracking()
+                .textCase(.uppercase)
 
             Text(notificationMessage)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundColor(Color.white.opacity(0.8))
-                .lineSpacing(4)
+                .font(.bodyMedium)
+                .foregroundColor(Color.white.opacity(0.85))
+                .lineSpacing(3)
         }
-        .padding(16)
-        .background(Color(white: 0.1, opacity: 1.0))
-        .cornerRadius(12)
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(white: 0.2, opacity: 1.0), lineWidth: 1)
+        .padding(Spacing.md)
+        .background(
+            // FLAT surface - brutalist
+            RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
+                .fill(Color.surfaceElevated)
         )
-        .shadow(color: Color.black.opacity(0.3), radius: 8, x: 0, y: 4)
-        .padding(.horizontal, 20)
-        .padding(.top, 20)
+        .overlay(
+            RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
+                .strokeBorder(Color.divider, lineWidth: Spacing.borderThin)
+        )
+        .padding(.horizontal, Spacing.screenHorizontal)
+        .padding(.top, Spacing.lg)
     }
 
     // MARK: - Progress Bar
 
     private var progressBar: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            HStack {
+                Text("DISCIPLINE LEVEL")
+                    .font(.captionMedium)
+                    .foregroundColor(.white.opacity(0.9))
+                    .wideTracking()
 
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("DISCIPLINE LEVEL")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(.white)
+                Spacer()
 
-                    Spacer()
+                Text("\(successRate)%")
+                    .font(.titleSmall)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+            }
 
-                    Text("\(successRate)%")
-                        .font(.system(size: 12, weight: .black))
-                        .foregroundColor(.white)
-                }
-
-                // Progress bar
+            // FLAT progress bar - brutalist
+            GeometryReader { geometry in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color(white: 0.2, opacity: 1.0))
+                    // Background track
+                    RoundedRectangle(cornerRadius: Spacing.radiusXS, style: .continuous)
+                        .fill(Color.white.opacity(0.1))
                         .frame(height: 8)
 
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(successRate >= 60 ? Color.neonGreen : Color.brutalRed)
-                        .frame(width: max(0, CGFloat(successRate) / 100.0 * UIScreen.main.bounds.width * 0.85), height: 8)
+                    // Progress fill - FLAT color
+                    RoundedRectangle(cornerRadius: Spacing.radiusXS, style: .continuous)
+                        .fill(successRate >= 60 ? Color.success : Color.brutalRed)
+                        .frame(width: max(0, CGFloat(successRate) / 100.0 * geometry.size.width), height: 8)
                 }
-
-                Text(progressMessage)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(Color.white.opacity(0.6))
-                    .italic()
             }
-            .padding(16)
-            .background(Color(white: 0.05, opacity: 1.0))
-            .cornerRadius(8)
+            .frame(height: 8)
+
+            Text(progressMessage)
+                .font(.captionSmall)
+                .foregroundColor(Color.white.opacity(0.65))
+                .italic()
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 20)
+        .padding(Spacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
+                .fill(Color.surfaceElevated)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
+                .strokeBorder(Color.divider, lineWidth: Spacing.borderThin)
+        )
+        .padding(.horizontal, Spacing.screenHorizontal)
+        .padding(.top, Spacing.lg)
     }
 
     // MARK: - Grade Cards Grid
 
     private var gradeCardsGrid: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: Spacing.md) {
             Text("PERFORMANCE GRADES")
-                .font(.system(size: 11, weight: .bold))
+                .font(.captionMedium)
                 .foregroundColor(Color.white.opacity(0.5))
-                .tracking(2)
+                .extraWideTracking()
 
-            VStack(spacing: 12) {
-                HStack(spacing: 12) {
+            VStack(spacing: Spacing.sm) {
+                HStack(spacing: Spacing.sm) {
                     gradeCard(category: "PROMISES", grade: promiseGrade.grade, message: promiseGrade.message, color: gradeColor(promiseGrade.grade))
                     gradeCard(category: "EXCUSES", grade: excuseGrade.grade, message: excuseGrade.message, color: gradeColor(excuseGrade.grade))
                 }
 
-                HStack(spacing: 12) {
+                HStack(spacing: Spacing.sm) {
                     gradeCard(category: "STREAK", grade: streakGrade.grade, message: streakGrade.message, color: gradeColor(streakGrade.grade))
                     gradeCard(category: "OVERALL", grade: overallGrade.grade, message: overallGrade.message, color: gradeColor(overallGrade.grade))
                 }
             }
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 20)
+        .padding(.horizontal, Spacing.screenHorizontal)
+        .padding(.top, Spacing.lg)
     }
 
     private func gradeCard(category: String, grade: String, message: String, color: Color) -> some View {
-        VStack(spacing: 8) {
+        VStack(spacing: Spacing.xs) {
             Text(category)
-                .font(.system(size: 10, weight: .bold))
-                .foregroundColor(.white.opacity(0.9))
-                .tracking(1)
+                .font(.captionMedium)
+                .foregroundColor(.white.opacity(0.7))
+                .wideTracking()
+                .textCase(.uppercase)
 
             Text(grade)
-                .font(.system(size: 48, weight: .black))
-                .foregroundColor(.white)
+                .font(.gradeDisplay)
+                .foregroundColor(.brutalBlack)
+                .fontWeight(.black)
 
             Text(message)
-                .font(.system(size: 10, weight: .semibold))
-                .foregroundColor(.white.opacity(0.8))
+                .font(.captionSmall)
+                .foregroundColor(.brutalBlack.opacity(0.8))
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 24)
-        .background(color)
-        .cornerRadius(12)
+        .padding(.vertical, Spacing.lg)
+        .padding(.horizontal, Spacing.sm)
+        .background(
+            // FLAT color - brutalist, no gradients
+            RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
+                .fill(color)
+        )
     }
 
     // MARK: - Timer Logic
