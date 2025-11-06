@@ -1,80 +1,82 @@
-# You+ – README
+# BigBruh – README
 
 ## 1. Core Philosophy
 
-You+ is **not an app**. It's a psychological accountability system using your own voice against you.
-You+ attacks the biggest weakness: lying to yourself when things get hard.
+BigBruh is **not an app**. It's an aggressive psychological accountability system that forces you to confront your failures.
+BigBruh attacks the biggest weakness: making excuses when accountability calls.
 
 - Not a tracker.
-- Not a productivity app.
-- Not therapy.
+- Not a gentle motivator.
+- Not a participation trophy dispenser.
 
-You+ is your future self—calling you, reminding you of your commitments, refusing to let you hide.
+BigBruh is your AI Big Brother—calling you, confronting your excuses, refusing to let you escape.
 
-The product is consequence. The app is a mirror you can't look away from.
+The product is unforgiving reality checks. The app is aggressive accountability you can't ignore.
 
 ## 2. Core Pillars
 
-### Onboarding (Initiation Ritual)
+### Onboarding (Psychological Extraction)
 
-- Voice-based, confrontational, identity-extracting.
-- Records your voice stating your commitments and non-negotiables.
-- Extracts your patterns: excuses, habits, weaknesses.
-- Builds your Future Self identity through your own words.
-- Ends in **Commitment Recording**: your voice stating what you won't compromise on.
+- Confrontational, aggressive, no-escape questioning.
+- Extracts psychological weapons: fears, excuses, patterns, weaknesses.
+- Forces commitment recording with binary accountability.
+- No gentle onboarding - direct extraction of ammunition for daily calls.
+- Ends with **The Contract**: Your commitment. No escape clause.
 
-### Daily Enforcement
+### Daily Reality Checks
 
-- Daily calls using YOUR VOICE asking: "Did you do what you said you'd do?"
-- Your own recorded words played back when you fail.
-- _"You said you wouldn't skip the gym—your future self is disappointed."_
-- Interventions use your voice, not an external authority.
-- Not optional, not soft.
+- BigBruh calls YOU at your commitment time. Binary response: Did it or Failed.
+- Every excuse gets stored and thrown back at you.
+- _"You said discipline wasn't negotiable. That was a lie."_
+- Not optional, not forgiving, not gentle.
+- No middle ground, no participation trophies.
 
-### Reflection & Tracking
+### Excuse Tracking
 
-- Simple tracking of commitments kept vs. broken.
-- No gamification, no streaks. Just truth.
-- Each pattern stored and reflected back through your own voice.
+- Binary tracking: Success or Failure. No middle ground.
+- No soft metrics, no gentle feedback. Just stark reality.
+- Every excuse catalogued and weaponized against you.
+- Pattern recognition exposes your recycled bullshit.
 
-### Accountability Escalation
+### Aggressive Escalation
 
-- Pattern recognition shows you your recurring failures.
-- Your voice reminding you of who you said you'd be.
-- Breaking commitments means hearing yourself lie.
-- The shame comes from within, not from others.
+- Recurring failures get called out explicitly.
+- BigBruh remembers everything. No forgiveness.
+- Miss calls? Get called out for dodging accountability.
+- Escalating psychological pressure until you comply or quit.
 
 ### Community Layer (Optional v2)
 
 - **"The Pit"**: anonymous feed of confessions and failures.
 - Not positive reinforcement—collective shame + collective push.
 
-## 3. Feedback Loop
+## 3. Psychological Feedback Loop
 
 ### Input:
 
-- User records their voice stating commitments during onboarding.
-- Daily check-ins: Did you do it? Yes or No.
+- Onboarding extracts psychological weapons and commitment recordings.
+- Daily calls: Binary response - Did it or Failed. No excuses accepted.
 
 ### Processing:
 
-- System detects patterns (when you fail, recurring excuses, behavioral trends).
-- Uses YOUR VOICE for all accountability moments.
+- Pattern detection identifies recurring failures and recycled excuses.
+- AI generates aggressive confrontational responses.
+- Excuse database updated for future weaponization.
 
 ### Output:
 
-- Interventions using your recorded voice.
-- Your own words played back to confront you.
-- Escalating honesty based on patterns.
+- Confrontational reality checks using your own words against you.
+- Excuse patterns thrown back at you relentlessly.
+- Escalating psychological pressure based on failure patterns.
 
-## 4. Modes of Enforcement
+## 4. Modes of Confrontation
 
-- **Your Voice** – Your recorded commitments asking "Did you do it?"
-- **Pattern Mirror** – Shows you your recurring failures in your own words.
-- **Future Self Confrontation** – Plays back what you said you'd become.
-- **Honest Reflection** – No external judgment, just you vs. you.
+- **Daily Reality Check** – Binary accountability call at commitment time
+- **Excuse Confrontation** – Your recycled excuses thrown back at you
+- **Pattern Exposure** – Recurring failures called out explicitly
+- **Psychological Pressure** – Fear-based motivation, no gentle encouragement
 
-You can't hide from yourself, because You+ remembers everything you said.
+You can't escape from BigBruh, because BigBruh sees all and forgets nothing.
 
 ## 5. Monetization
 
@@ -87,29 +89,33 @@ You can't hide from yourself, because You+ remembers everything you said.
 
 ## 6. Positioning
 
-- **Target Demographic**: Gen Z (18–30), knows what to do but doesn't do it, tired of lying to themselves.
-- **Language**: blunt, self-confrontational, brutally honest.
-- **Visuals**: bold, high contrast, sharp edges, future-facing minimalism.
-- **Tone**: honest confrontation with yourself. Not external judgment, internal reckoning.
+- **Target Demographic**: Self-improvement seekers who want aggressive, no-excuses accountability (18-30).
+- **Language**: Brutally honest, aggressive, confrontational, unforgiving.
+- **Visuals**: Black/white/red, high contrast, sharp edges, bold borders, no rounded corners.
+- **Tone**: External authority meets internal confrontation. BigBruh is the challenger who won't let you off easy.
 
-You+ = the app that makes lying to yourself impossible.
+BigBruh = the app that eliminates excuses through aggressive accountability.
 
 ## 7. Competitive Differentiation
 
-Habit trackers = gamified but shallow. You can lie to them.
+Habit trackers = gentle reminders. Easy to ignore.
 
-Accountability apps = external judges. Easy to ignore.
+Accountability apps = soft encouragement. Participation trophy culture.
 
-You+ = uses YOUR VOICE. Can't ignore yourself.
+BigBruh = AGGRESSIVE REALITY CHECKS. Binary accountability: Did it or Failed.
 
-It doesn't just track habits, it changes identity—because hearing yourself lie is impossible to escape.
+It doesn't coddle you, it confronts you—because excuses are recycled bullshit and BigBruh remembers everything.
 
 ## 8. Long-Term Vision
 
-Build **You+** as the self-accountability platform using voice technology.
+Build **BigBruh** as the uncompromising accountability platform for The Great Lock-In.
 
-The mechanism: Your own voice becomes your accountability partner.
+The mechanism: AI-powered psychological reality checks through VoIP calls.
 
-The result: You can't lie to your future self.
+The result: No hiding, no quitting, no escape from accountability.
 
-Long-term: Voice-based identity transformation across all life domains.
+Long-term: Comprehensive psychological accountability across all commitment domains.
+
+---
+
+**STACK WINS. NOT EXCUSES.**

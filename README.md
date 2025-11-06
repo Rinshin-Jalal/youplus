@@ -1,7 +1,7 @@
-# You+ Minimal MVP
+# BigBruh Minimal MVP
 
 ## 🎯 Overview
-You+ is a confrontational accountability app that uses AI voice calls to keep users disciplined. This MVP extracts psychological weapons through a 10-step onboarding and deploys them in daily accountability calls.
+BigBruh is your AI Big Brother for The Great Lock-In - an aggressive accountability app that uses VoIP calling to eliminate excuses. This MVP extracts psychological weapons through intensive onboarding and deploys them in daily reality-check calls.
 
 ## 📁 Project Structure
 ```
@@ -13,10 +13,11 @@ youplus/
 ```
 
 ## 🔥 Core Features
-- **10-step onboarding** extracting psychological weapons
-- **Daily AI calls** using user's own words against them
-- **3-screen dashboard** (streaks, history, profile)
-- **Call scheduling** with user's preferred time
+- **Aggressive onboarding** extracting psychological ammunition
+- **Daily reality-check calls** - BigBruh calls YOU, not the other way around
+- **Binary accountability** - Did it or Failed, no middle ground
+- **Excuse tracking** - Every excuse gets stored and thrown back at you
+- **Relentless pressure** - No hiding, no quitting, no escape
 
 ## 🛠️ Tech Stack
 - **Backend**: Cloudflare Workers + Hono
@@ -41,4 +42,8 @@ youplus/
 4. Complete onboarding and receive first call
 
 ## 💡 Key Innovation
-Maximum psychological impact with minimum complexity - use user's own recorded words as weapons against their future weak self through daily AI calls they can't ignore.
+Uncompromising psychological accountability that forces users to confront their lack of progress and eliminate excuses through daily AI-powered reality checks they can't escape.
+
+---
+
+**STACK WINS. NOT EXCUSES.**

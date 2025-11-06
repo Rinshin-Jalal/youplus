@@ -1,91 +1,97 @@
-# You+ – Daily Accountability System
+# BigBruh – Daily Accountability System
 
-This is the post-onboarding experience: **daily calls from your Future Self**. No tracking dashboards, no gentle reminders - just raw self-confrontation through your own voice.
+This is the post-onboarding experience: **daily reality checks from BigBruh**. No gentle reminders, no soft feedback - just aggressive accountability calls you can't escape.
 
 ## 1. The Daily Call
 
-### Your Future Self Calls
+### BigBruh Calls YOU
 
-Your future self calls you. Using YOUR recorded voice.
+BigBruh calls YOU at your commitment time. No choice. No escape.
 
-**VoIP Call Example Opening (in your voice):**
-_"Did you do what you said you'd do? No excuses. Just truth."_
+**VoIP Call Example Opening:**
+_"Did you do what you said you'd do? Binary response. No excuses."_
 
 ### Binary Response System
 
-During the call, user gives simple response:
+During the call, user gives binary response:
 
-**✅ Did it** = Kept the daily commitment  
-**❌ Failed** = Broke the promise
+**✅ Did it** = Success. Stack another win.
+**❌ Failed** = Failure. Another excuse.
 
-### Immediate Response (Using Your Voice)
+### Immediate Confrontation
 
-**Success** = Your voice reinforces the win.
-- _"This is who you said you'd be. Keep going."_
+**Success:**
+- _"STACK ANOTHER WIN. Don't get comfortable."_
 
-**Failure** = Your voice confronts you using your recorded commitments.
-- _"You said you wouldn't skip this. Your future self is watching."_
+**Failure:**
+- _"YOU FAILED. Same excuse. Different day."_
+- _"BigBruh remembers. No forgiveness."_
 
-### Real-Time Pattern Detection
+### Real-Time Excuse Detection
 
-If user tries to justify failure during call:
-- System detects excuse patterns from previous calls
-- Your voice calls it out: _"Same excuse. You said you'd stop doing this."_
-- System logs pattern for future accountability moments
+If user tries to justify failure:
+- System detects excuse patterns from excuse database
+- BigBruh calls it out: _"That's excuse #6 this month. You love recycling trash excuses."_
+- Pattern logged and weaponized for future calls
 
-## 2. Call Voice Modes
+## 2. Confrontation Modes
 
-### A. Direct Mode (Default)
+### A. Aggressive Mode (Default)
 
-Your voice, straightforward questions, no games.
-- _"Scrolling TikTok instead of hitting the gym? You're the content, not the creator."_
+Direct, forceful, no gentle language.
+- _"You're lying to yourself. Again. Stack wins or stay mediocre."_
 
-### B. Strict Authority Mode
+### B. Relentless Authority Mode
 
-Military-style, no jokes.
-- _"Discipline isn't negotiable. You failed. Tomorrow you fix it or we escalate."_
+Unforgiving, commanding, binary.
+- _"Did it or Failed. No middle ground. Fix it tomorrow or we escalate pressure."_
 
-### C. Dark Mirror Mode
+### C. Psychological Warfare Mode
 
-Cold psychological playback.
-- _"You said your biggest fear was becoming lazy at 25. You're 3 failures away from that reality."_
+Fear-based confrontation using extracted onboarding data.
+- _"You said your biggest fear was wasting your potential. Third failure this week. You're ghosting accountability."_
 
-## 3. Call Response Escalation
+## 3. Escalation System
 
-- **Tier 0:** User answers call → Gets success reinforcement or failure confrontation
-- **Tier 1:** User declines call → Immediate callback with harder tone: _"Dodging me won't change the truth."_
-- **Tier 2:** Multiple missed calls → System remembers: _"Third dodge this week. You're ghosting accountability."_
-- **Tier 3:** (Paid feature) → External accountability activated automatically
+- **Tier 0:** User answers call → Binary accountability delivered
+- **Tier 1:** User declines call → Immediate aggressive callback: _"Dodging accountability. BigBruh sees you hiding."_
+- **Tier 2:** Multiple missed calls → Pattern exposed: _"Third dodge this week. You're ghosting accountability."_
+- **Tier 3:** (Paid feature) → External accountability partner notified automatically
 
-## 4. Psychological Pressure System
+## 4. Relentless Pressure System
 
-**Win Streaks** = Raw counter, no celebration.
-- Success: _"Day 12. Don't get comfortable."_
-- Failure: _"Back to zero. You love starting over, don't you?"_
+**Win Streaks** = Raw counter, minimal celebration.
+- Success: _"Day 12 stacked. Don't get comfortable."_
+- Failure: _"Back to zero. You love recycling failures, don't you?"_
 
-**Excuse Memory Bank:**
-Every excuse gets stored and referenced in future calls.
+**Excuse Database:**
+Every excuse catalogued and weaponized in future calls.
 - _"That's excuse #7: 'I was tired.' Same bullshit, different day."_
-- _"You've used that excuse 4 times this month. Got any original material?"_
+- _"You've recycled that excuse 4 times this month. Got any original material?"_
+- _"You love that excuse. It's your favorite way to fail."_
 
-## 5. Onboarding Data Integration
+## 5. Onboarding Weapons Integration
 
-**54-step assessment feeds directly into daily calls:**
+**Psychological extraction feeds directly into daily calls:**
 
-- `deepest_fears` → Replayed during failures: _"Remember step 31? This is exactly what you said would destroy you."_
-- `recurring_excuses` → Detected and called out instantly
-- `identity_commitments` → Used as leverage: _"You swore you were different. Prove it."_
-- `failure_patterns` → Anticipated and confronted before they happen
+- `deepest_fears` → Weaponized during failures: _"You said your fear was mediocrity. That's exactly what this is."_
+- `recurring_excuses` → Detected and called out aggressively
+- `commitments` → Used as leverage: _"You said discipline wasn't negotiable. That was a lie."_
+- `failure_patterns` → Anticipated and confronted preemptively
 
-## 6. The Complete Daily Experience
+## 6. The Complete Daily Reality Check
 
-**Single Call = Complete Accountability Loop**
+**Single Call = Uncompromising Accountability Loop**
 
-1. VoIP call arrives (user can't ignore - it's insistent)
-2. BigBruh opens with personalized confrontation based on user's profile
-3. User admits success or failure
-4. AI responds with psychological reinforcement or pressure
-5. Call ends - no lingering, no dashboard checking
-6. System stores data for tomorrow's call
+1. VoIP call arrives at commitment time (no escape, no snooze)
+2. BigBruh opens with aggressive confrontation based on extracted psychological profile
+3. User gives binary response: Did it or Failed
+4. AI delivers reinforcement (success) or confrontation (failure)
+5. Call ends - no gentle feedback, no participation trophies
+6. Data stored and weaponized for tomorrow's call
 
-**Result:** Users get exactly what they need - someone who won't let them lie to themselves, delivered in under 3 minutes per day.
+**Result:** Users get what they need - aggressive accountability that eliminates excuses, delivered in under 3 minutes per day.
+
+---
+
+**BIGBRUH SEES ALL. NO HIDING. NO QUITTING.**
