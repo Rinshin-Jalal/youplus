@@ -1,14 +1,14 @@
-# BigYou - Onboarding Step Definitions Rewrite
-## From "AI Brother" to "Future You" Concept
+# You+ - Onboarding Step Definitions Rewrite
+## Future You Concept
 
-This is a complete rewrite of the 45-step psychological onboarding, shifting from the **brotherly authority** approach to the **future self** concept where your successful future version talks to your present self.
+This is a complete rewrite of the 45-step psychological onboarding, using the **future self** concept where your successful future version talks to your present self.
 
 ---
 
 ## Core Narrative Shift
 
-**Original BigBruh**: An older brother who won't let you quit  
-**New BigYou**: Your future self (6 months ahead) who already succeeded and is checking on past-you to ensure the timeline stays intact
+**Old Approach**: External authority figure who won't let you quit
+**You+ Approach**: Your future self (6 months ahead) who already succeeded and is checking on past-you to ensure the timeline stays intact
 
 **Key Psychological Leverage**:
 - Time paradox pressure: "Every failure delays when I get to exist"

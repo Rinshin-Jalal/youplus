@@ -1,14 +1,14 @@
-# BigBruh Minimal MVP
+# You+ Minimal MVP
 
 ## 🎯 Overview
-BigBruh is a confrontational accountability app that uses AI voice calls to keep users disciplined. This MVP extracts psychological weapons through a 10-step onboarding and deploys them in daily accountability calls.
+You+ is a confrontational accountability app that uses AI voice calls to keep users disciplined. This MVP extracts psychological weapons through a 10-step onboarding and deploys them in daily accountability calls.
 
 ## 📁 Project Structure
 ```
-bigbruh-mvp/
-├── backend/     (Cloudflare Workers + Hono + Supabase)
-├── frontend/    (Swift iOS app)
-├── database/    (Supabase migrations + schema)
+youplus/
+├── be/          (Cloudflare Workers + Hono + Supabase)
+├── swift/       (Swift iOS app)
+├── docs/        (Documentation)
 └── README.md
 ```
 

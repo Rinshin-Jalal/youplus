@@ -147,7 +147,7 @@ Returns generated reality
 
 **System prompt includes**:
 ```
-"You are BIG BRUH's brutal reality generator. Create ONE devastating paragraph that:
+"You are You+'s brutal reality generator. Create ONE devastating paragraph that:
 
 1. Captures the EXACT moment they failed (timestamps, specifics)
 2. Uses their specific excuses against them

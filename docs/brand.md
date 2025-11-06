@@ -1,8 +1,8 @@
 Step 1. Brand Aesthetic Core
 
 Essence:
-BigBruh = confrontational accountability + brotherly authority.
-Not corporate, not wellness, not “self-improvement cozy vibes.”
+You+ = confrontational self-accountability + future self authority.
+Not corporate, not wellness, not "self-improvement cozy vibes."
 
 Keywords:
 
@@ -10,16 +10,16 @@ Raw
 
 Direct
 
-Aggressive but caring
+Brutally honest
 
 Bold
 
-Street / Gen Z digital culture
+Future-facing identity
 
-No neutrality
+No escape from yourself
 
 Feel:
-Like your older brother in your face, but you know he wants you to win.
+Like your future self holding you accountable. You can't lie to yourself anymore.
 
 Step 2. Design Language
 Typography
@@ -136,52 +136,54 @@ No gradients except neon glow effects.
 
 Step 3. Tone of Voice
 
-Direct, brotherly, slang-infused but not meme-y parody.
+Direct, self-confrontational, brutally honest but not meme-y parody.
 
-Short sentences. Commands, not suggestions.
+Short sentences. Questions from your future self, not external commands.
 
 Daily Call Examples:
-"TIME FOR YOUR CHECK-IN. DID YOU KEEP YOUR WORD?"
-"NO HIDING. NO EXCUSES. WHAT'S THE TRUTH?"
-"STACK WINS. NOT EXCUSES."
+"DID YOU DO WHAT YOU SAID YOU'D DO?"
+"NO HIDING FROM YOURSELF. WHAT'S THE TRUTH?"
+"YOU WILL FEEL SHAME IF YOU LIE TO YOUR FUTURE SELF."
 
 Call Response Examples:
-Success: "THAT'S THE VERSION OF YOU I F\*\*\* WITH."
-Failure: "NAH. SAME WEAK EXCUSE FROM ONBOARDING. I DIDN'T FORGET."
+Success: "THIS IS WHO YOU SAID YOU'D BE. KEEP GOING."
+Failure: "SAME EXCUSE. YOUR FUTURE SELF IS WATCHING."
 
 Step 4. Brand Aesthetic Position
 
-If BIG BRUH = austere, philosophical, serious.
-BigBruh = raw, street, Gen Z-coded but strict.
+You+ = confrontational self-accountability through your own voice.
+Not external judgment. Internal reckoning.
 
 Visual reference points:
 
-Gym brands (Gorilla Mind, YoungLA) but more digital-glitch than fitness.
+Future-facing minimalism with sharp edges
 
-Hacker / underground design (black + neon).
+High contrast design (black + neon)
 
-Gen Z social apps (BeReal, NGL, GAS) but stripped of soft UI.
+Modern accountability apps but stripped of gamification
+
+Digital identity tools with emotional weight
 
 Step 5. Component Architecture Patterns
 
 Core App Structure:
 
-- Intensive 54-step onboarding → Psychological profile extraction
-- Single daily accountability call → Binary success/failure tracking
+- Intensive onboarding → Psychological profile extraction using your voice
+- Daily accountability calls → Using your own voice to ask: "Did you do it?"
 - App screens → Home, Call Interface, History, Settings
 
 Key Components:
-OnboardingFlow → 54-step psychological transformation journey
-CallInterface → VoIP call handling with BigBruh confrontation
-HomeScreen → Daily status, win streaks, accountability tracking
-HistoryScreen → Past calls, excuse patterns, failure/success record
-SettingsScreen → Call preferences, intensity levels
+OnboardingFlow → Voice-based psychological transformation journey
+CallInterface → VoIP call handling with Future You confrontation
+HomeScreen → Daily status, commitment tracking, identity reinforcement
+HistoryScreen → Past calls, patterns, accountability record
+SettingsScreen → Call preferences, commitment settings
 
 Call System Components:
-VoiceCallUI → Real-time conversation interface with BigBruh
-CallResponse → Binary success/failure input (✅ Did it / ❌ Failed)
-ExcuseCounter → Tracks and replays user's recurring excuses
-StreakTracker → Win/loss counter without gamification
+VoiceCallUI → Real-time conversation with your Future Self
+CallResponse → Binary accountability (✅ Did it / ❌ Failed)
+PatternTracker → Tracks and surfaces your behavioral patterns
+IdentityReinforcer → Shows who you're becoming through action
 
 Visual Effect Hierarchy:
 Phase flashes → White screen flash on critical moments
@@ -192,26 +194,26 @@ Success feedback → Brief neon pulse, minimal celebration
 
 Step 6. Gen Z Fit Test
 
-Gen Z aesthetic loves: high contrast, neon, glitch, irony, bluntness.
+Gen Z aesthetic loves: high contrast, neon, self-awareness, brutal honesty, authenticity.
 
-Gen Z hates: corporate minimalism, over-polished motivational apps, "dad vibes."
+Gen Z hates: corporate minimalism, fake motivation, external judgment, "boomer productivity."
 
-BigBruh passes because:
+You+ passes because:
 
-Feels like an app you’d hate but need.
+Feels like confronting yourself, not being judged by others.
 
-Feels like part of Gen Z "edgy internet" not mainstream productivity.
+Uses your own voice as the accountability mechanism.
 
-Tone is strict but not cringe-dad—closer to locker room older brother.
+Tone is honest, not preachy—it's you vs. you.
 
-Risk: if overdone, could drift into parody. Must stay authentic, not meme-only.
+Risk: if overdone, could feel gimmicky. Must stay authentic and emotionally real.
 
 Step 7. Brand Tagline Directions
 
-“BIGBRUH SEES ALL.”
+"STOP LYING TO YOURSELF."
 
-“STACK WINS. NOT EXCUSES.”
+"YOUR FUTURE SELF IS WATCHING."
 
-“THE BROTHER YOU CAN’T GHOST.”
+"YOU WILL FEEL SHAME IF YOU LIE TO YOUR FUTURE SELF."
 
-“NO HIDING. NO QUITTING.”
+"DISCIPLINE. IDENTITY. REAL CHANGE."

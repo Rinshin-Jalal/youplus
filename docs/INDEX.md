@@ -1,4 +1,4 @@
-# 📚 Documentation Index - BigBruh/YouPlus
+# 📚 Documentation Index - You+
 
 **Last Updated**: 2025-11-05
 
@@ -51,14 +51,14 @@ This index organizes all project documentation for easy navigation.
 ## 🎨 Onboarding Documentation
 
 ### Current Implementation
-- [BigBruh Onboarding Final V2](./onboarding/BIGBRUH_ONBOARDING_FINAL_V2.md) - Latest onboarding design
-- [BigBruh Onboarding Final](./onboarding/BIGBRUH_ONBOARDING_FINAL.md) - Previous version
-- [BigBruh Onboarding Improved](./onboarding/BIGBRUH_ONBOARDING_IMPROVED.md) - Improvement iteration
+- [You+ Onboarding Final V2](./onboarding/BIGBRUH_ONBOARDING_FINAL_V2.md) - Latest onboarding design
+- [You+ Onboarding Final](./onboarding/BIGBRUH_ONBOARDING_FINAL.md) - Previous version
+- [You+ Onboarding Improved](./onboarding/BIGBRUH_ONBOARDING_IMPROVED.md) - Improvement iteration
 
 ### Analysis & Reference
 - [Onboarding Analysis](./onboarding/ONBOARDING_ANALYSIS.md) - Flow analysis
 - [Onboarding Changes Reference](./onboarding/ONBOARDING_CHANGES_REFERENCE.md) - Change tracking
-- [BigYou Onboarding Rewrite](./onboarding/BIGYOU_ONBOARDING_REWRITE.md) - Alternative approach
+- [Future You Onboarding Rewrite](./onboarding/BIGYOU_ONBOARDING_REWRITE.md) - Alternative approach
 
 ### Additional Onboarding Docs
 - [Onboarding Audit](./onboarding-audit.md) - Initial audit
@@ -100,7 +100,7 @@ This index organizes all project documentation for easy navigation.
 
 ## 🎨 Design & Branding
 
-- [Brand Guidelines](./brand.md) - BigBruh brand identity
+- [Brand Guidelines](./brand.md) - You+ brand identity
 - [UI Documentation](./UI.md) - UI design principles
 - [Daily Flow](./daily-flow.md) - User daily flow documentation
 
@@ -143,10 +143,10 @@ docs/
 │   ├── VOIP_SETUP.md
 │   └── API_REFERENCE.md
 ├── onboarding/                       # Onboarding documentation
-│   ├── BIGBRUH_ONBOARDING_FINAL_V2.md
-│   ├── BIGBRUH_ONBOARDING_FINAL.md
-│   ├── BIGBRUH_ONBOARDING_IMPROVED.md
-│   ├── BIGYOU_ONBOARDING_REWRITE.md
+│   ├── YOUPLUS_ONBOARDING_FINAL_V2.md
+│   ├── YOUPLUS_ONBOARDING_FINAL.md
+│   ├── YOUPLUS_ONBOARDING_IMPROVED.md
+│   ├── FUTURE_YOU_ONBOARDING_REWRITE.md
 │   ├── ONBOARDING_ANALYSIS.md
 │   └── ONBOARDING_CHANGES_REFERENCE.md
 ├── backend/                          # Backend documentation
@@ -190,7 +190,7 @@ docs/
 1. [CallKit iOS Solution](./guides/CALLKIT_IOS_SOLUTION.md)
 2. [VoIP Setup](./guides/VOIP_SETUP.md)
 3. [CallScreen Transition Guide](./guides/CALLSCREEN_TRANSITION_GUIDE.md)
-4. [BigBruh Onboarding Final V2](./onboarding/BIGBRUH_ONBOARDING_FINAL_V2.md)
+4. [You+ Onboarding Final V2](./onboarding/BIGBRUH_ONBOARDING_FINAL_V2.md)
 
 ---
 

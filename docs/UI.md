@@ -1,16 +1,16 @@
-# BigBruh UI Design System
+# You+ UI Design System
 
 ## Design Philosophy
 
-**BigBruh = Confrontational Accountability + Authority**
+**You+ = Self-Confrontation Through Your Own Voice**
 
-The BigBruh app employs a psychological accountability aesthetic designed to create urgency, authority, and uncompromising honesty. The visual design serves the app's core purpose: making users face their failures and take action.
+The You+ app employs a psychological accountability aesthetic designed to create urgency, self-awareness, and uncompromising honesty. The visual design serves the app's core purpose: making users face their failures through their own voice and take action.
 
 ### Core Principles:
 - **Raw & Direct**: No soft corners, no gentle colors, no comfort
-- **Authority-Based**: Black backgrounds, high contrast, military precision
-- **Psychological Impact**: Colors trigger emotional responses (red = danger, green = success)
-- **Urgency-Driven**: Timer prominence, pulsing animations, countdown pressure
+- **Future-Facing**: Black backgrounds, high contrast, sharp precision
+- **Psychological Impact**: Colors trigger emotional responses (red = failure, green = keeping your word)
+- **Urgency-Driven**: Timer prominence, your voice prominently displayed, countdown pressure
 
 ---
 
