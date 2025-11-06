@@ -15,10 +15,10 @@ struct HeaderLogoBar: View {
     }
 
     var body: some View {
-            Image("logo")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 300, height: 200)
+        Text("You+")
+            .font(.system(size: 32, weight: .black))
+            .foregroundColor(.white)
+            .tracking(2)
     }
 }
 

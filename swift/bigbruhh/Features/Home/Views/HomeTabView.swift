@@ -2,7 +2,7 @@
 //  HomeTabView.swift
 //  bigbruhh
 //
-//  Main tab view container with 3 tabs: FACE, EVIDENCE, CONTROL
+//  Main tab view container with 2 tabs: FACE, CONTROL (Super MVP)
 //
 
 import SwiftUI
@@ -18,13 +18,7 @@ struct HomeTabView: View {
                     Label("FACE", systemImage: "waveform.path.ecg")
                 }
 
-            // Tab 2: EVIDENCE (History)
-            EvidenceView()
-                .tabItem {
-                    Label("EVIDENCE", systemImage: "doc.text")
-                }
-
-            // Tab 3: CONTROL (Settings)
+            // Tab 2: CONTROL (Settings)
             ControlView()
                 .tabItem {
                     Label("CONTROL", systemImage: "gearshape")
@@ -32,21 +26,22 @@ struct HomeTabView: View {
         }
         .accentColor(Color.brutalRed)
         .onAppear {
-            // Configure tab bar appearance
+            // Configure tab bar appearance - BRUTAL DESIGN
             let appearance = UITabBarAppearance()
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = UIColor.black
 
-            // Unselected tab color
-            appearance.stackedLayoutAppearance.normal.iconColor = UIColor(white: 0.4, alpha: 1.0)
+            // Unselected tab color - DIMMED
+            appearance.stackedLayoutAppearance.normal.iconColor = UIColor(white: 0.3, alpha: 1.0)
             appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
-                .font: UIFont.systemFont(ofSize: 10, weight: .bold)
+                .font: UIFont.systemFont(ofSize: 10, weight: .bold),
+                .foregroundColor: UIColor(white: 0.3, alpha: 1.0)
             ]
 
-            // Selected tab color (white)
-            appearance.stackedLayoutAppearance.selected.iconColor = .white
+            // Selected tab color - BRUTAL RED
+            appearance.stackedLayoutAppearance.selected.iconColor = UIColor(red: 1.0, green: 0.0, blue: 0.2, alpha: 1.0)
             appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
-                .foregroundColor: UIColor.white,
+                .foregroundColor: UIColor(red: 1.0, green: 0.0, blue: 0.2, alpha: 1.0),
                 .font: UIFont.systemFont(ofSize: 10, weight: .bold)
             ]
 

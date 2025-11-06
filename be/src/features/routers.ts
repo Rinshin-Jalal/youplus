@@ -12,7 +12,7 @@ const combinedRouter = new Hono();
 
 // Mount all feature routers with their respective paths
 combinedRouter.route("/identity", identityRouter);
-combinedRouter.route("/onboarding", onboardingRouter);
+combinedRouter.route("/api/onboarding", onboardingRouter);
 combinedRouter.route("/webhook", webhookRouter);
 combinedRouter.route("/trigger", triggerRouter);
 combinedRouter.route("/voip", voipRouter);

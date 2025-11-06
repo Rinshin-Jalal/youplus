@@ -58,47 +58,11 @@ struct FaceView: View {
         return "Absolutely cooked 💀"
     }
 
-    private var promiseGrade: (grade: String, message: String) {
-        if successRate >= 90 { return ("A+", "Actually reliable") }
-        if successRate >= 80 { return ("A", "Pretty good") }
-        if successRate >= 70 { return ("B+", "Not bad") }
-        if successRate >= 60 { return ("B", "Mediocre") }
-        if successRate >= 50 { return ("C", "Weak effort") }
-        if successRate >= 40 { return ("D", "Disappointing") }
-        return ("F", "Pathetic")
-    }
-
-    private var excuseGrade: (grade: String, message: String) {
-        // Inverse grading - more excuses = higher grade
-        if successRate <= 20 { return ("A+", "Too creative") }
-        if successRate <= 40 { return ("A", "Very creative") }
-        if successRate <= 60 { return ("B", "Getting there") }
-        if successRate <= 80 { return ("C", "Boring excuses") }
-        return ("F", "No excuses!")
-    }
-
-    private var streakGrade: (grade: String, message: String) {
-        if streakDays >= 14 { return ("A+", "On fire") }
-        if streakDays >= 7 { return ("B+", "Building up") }
-        if streakDays >= 3 { return ("C", "Inconsistent") }
-        if streakDays >= 1 { return ("D", "Broken") }
-        return ("F", "Non-existent")
-    }
-
-    private var overallGrade: (grade: String, message: String) {
-        if successRate >= 90 { return ("A+", "Exceptional") }
-        if successRate >= 80 { return ("A", "Good work") }
-        if successRate >= 70 { return ("B", "Average") }
-        if successRate >= 60 { return ("C", "Below par") }
-        if successRate >= 50 { return ("D", "Disappointing") }
-        return ("F", "Hopeless")
-    }
-
-    private func gradeColor(_ grade: String) -> Color {
-        if grade.contains("A") { return .gradeA }
-        if grade.contains("B") { return .gradeB }
-        if grade.contains("C") { return .gradeC }
-        if grade.contains("D") { return .gradeD }
+    private func gradeColor(_ value: Int) -> Color {
+        if value >= 80 { return .gradeA }
+        if value >= 60 { return .gradeB }
+        if value >= 40 { return .gradeC }
+        if value >= 20 { return .gradeD }
         return .gradeF
     }
 
@@ -228,15 +192,7 @@ struct FaceView: View {
                 .lineSpacing(3)
         }
         .padding(Spacing.md)
-        .background(
-            // FLAT surface - brutalist
-            RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
-                .fill(Color.surfaceElevated)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
-                .strokeBorder(Color.divider, lineWidth: Spacing.borderThin)
-        )
+        .glassEffectIfAvailable()
         .padding(.horizontal, Spacing.screenHorizontal)
         .padding(.top, Spacing.lg)
     }
@@ -281,14 +237,7 @@ struct FaceView: View {
                 .italic()
         }
         .padding(Spacing.md)
-        .background(
-            RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
-                .fill(Color.surfaceElevated)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
-                .strokeBorder(Color.divider, lineWidth: Spacing.borderThin)
-        )
+        .glassEffectIfAvailable()
         .padding(.horizontal, Spacing.screenHorizontal)
         .padding(.top, Spacing.lg)
     }
@@ -297,54 +246,70 @@ struct FaceView: View {
 
     private var gradeCardsGrid: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            Text("PERFORMANCE GRADES")
+            Text("STATS")
                 .font(.captionMedium)
                 .foregroundColor(Color.white.opacity(0.5))
                 .extraWideTracking()
 
-            VStack(spacing: Spacing.sm) {
+            VStack(spacing: 12) {
+                // Row 1: Promises & Streak
                 HStack(spacing: Spacing.sm) {
-                    gradeCard(category: "PROMISES", grade: promiseGrade.grade, message: promiseGrade.message, color: gradeColor(promiseGrade.grade))
-                    gradeCard(category: "EXCUSES", grade: excuseGrade.grade, message: excuseGrade.message, color: gradeColor(excuseGrade.grade))
+                    VStack(alignment: .center, spacing: 4) {
+                        Text("\(promisesMade)")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(.white)
+                        Text("PROMISES")
+                            .font(.captionSmall)
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .glassEffectIfAvailable()
+
+                    VStack(alignment: .center, spacing: 4) {
+                        Text("\(streakDays)")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(.white)
+                        Text("STREAK")
+                            .font(.captionSmall)
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .glassEffectIfAvailable()
                 }
 
+                // Row 2: Broken & Success Rate
                 HStack(spacing: Spacing.sm) {
-                    gradeCard(category: "STREAK", grade: streakGrade.grade, message: streakGrade.message, color: gradeColor(streakGrade.grade))
-                    gradeCard(category: "OVERALL", grade: overallGrade.grade, message: overallGrade.message, color: gradeColor(overallGrade.grade))
+                    VStack(alignment: .center, spacing: 4) {
+                        Text("\(promisesBroken)")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(.brutalRed)
+                        Text("BROKEN")
+                            .font(.captionSmall)
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .glassEffectIfAvailable()
+
+                    VStack(alignment: .center, spacing: 4) {
+                        Text("\(successRate)%")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(gradeColor(successRate))
+                        Text("SUCCESS")
+                            .font(.captionSmall)
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .glassEffectIfAvailable()
+
                 }
             }
         }
         .padding(.horizontal, Spacing.screenHorizontal)
         .padding(.top, Spacing.lg)
-    }
-
-    private func gradeCard(category: String, grade: String, message: String, color: Color) -> some View {
-        VStack(spacing: Spacing.xs) {
-            Text(category)
-                .font(.captionMedium)
-                .foregroundColor(.white.opacity(0.7))
-                .wideTracking()
-                .textCase(.uppercase)
-
-            Text(grade)
-                .font(.gradeDisplay)
-                .foregroundColor(.brutalBlack)
-                .fontWeight(.black)
-
-            Text(message)
-                .font(.captionSmall)
-                .foregroundColor(.brutalBlack.opacity(0.8))
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, Spacing.lg)
-        .padding(.horizontal, Spacing.sm)
-        .background(
-            // FLAT color - brutalist, no gradients
-            RoundedRectangle(cornerRadius: Spacing.radiusSmall, style: .continuous)
-                .fill(color)
-        )
     }
 
     // MARK: - Timer Logic
@@ -437,39 +402,119 @@ struct FaceView: View {
 
             Config.log("Identity exists for user", category: "FaceView")
 
-            // Use data from identity response (includes identity_status data)
-            // The backend /api/identity/:userId endpoint returns both identity and identity_status
-            trustPercentage = identity.trustPercentage ?? 100
-            streakDays = identity.currentStreakDays ?? 0
-            promisesMade = identity.promisesMadeCount ?? 0
-            promisesBroken = identity.promisesBrokenCount ?? 0
-            
-            // Extract dynamic AI-generated messages from statusSummary
-            if let statusSummary = identity.statusSummary {
-                notificationTitle = statusSummary.notificationTitle ?? "ACCOUNTABILITY CHECK"
-                notificationMessage = statusSummary.notificationMessage ?? "No excuses today. Your call is coming."
-                disciplineLevel = statusSummary.disciplineLevel ?? "STABLE"
-                disciplineMessage = statusSummary.disciplineMessage ?? "Keep pushing. Consistency is key."
-                
-                Config.log("Dynamic messages loaded - Level: \(disciplineLevel), Title: \(notificationTitle)", category: "FaceView")
+            // Fetch identity statistics from /api/identity/stats/:userId
+            // This endpoint returns promise tracking data from the promises table
+            let statsResponse = try await APIService.shared.fetchIdentityStats(userId: userId)
+
+            if let statsData = statsResponse.data {
+                // Parse the stats response
+                // Backend returns: { currentStreakDays, totalCallsCompleted, promises: { total, kept, broken, successRate } }
+
+                // Extract currentStreakDays
+                if case .int(let streak) = statsData["currentStreakDays"] {
+                    streakDays = streak
+                }
+
+                // Extract promises object and parse its fields
+                if case .dictionary(let promisesDict) = statsData["promises"] {
+                    if case .int(let total) = promisesDict["total"] {
+                        promisesMade = total
+                    }
+                    if case .int(let broken) = promisesDict["broken"] {
+                        promisesBroken = broken
+                    }
+                    // Calculate trust percentage from success rate
+                    if case .double(let successRate) = promisesDict["successRate"] {
+                        trustPercentage = Int(successRate * 100)
+                    }
+                }
+
+                Config.log("Stats loaded - trust: \(trustPercentage)%, streak: \(streakDays), promises: \(promisesMade) made / \(promisesBroken) broken", category: "FaceView")
             } else {
-                Config.log("No statusSummary found, using default messages", category: "FaceView")
+                // Fallback to defaults if stats not available
+                Config.log("No stats data available, using defaults", category: "FaceView")
+                trustPercentage = 100
+                streakDays = 0
+                promisesMade = 0
+                promisesBroken = 0
             }
 
-            Config.log("Stats - trust: \(trustPercentage)%, streak: \(streakDays), promises: \(promisesMade) made / \(promisesBroken) broken", category: "FaceView")
+            // Extract dynamic AI-generated messages from statusSummary
+            // TODO: Backend needs to implement status_summary generation
+            // if let statusSummary = identity.statusSummary {
+            //     notificationTitle = statusSummary.notificationTitle ?? "ACCOUNTABILITY CHECK"
+            //     notificationMessage = statusSummary.notificationMessage ?? "No excuses today. Your call is coming."
+            //     disciplineLevel = statusSummary.disciplineLevel ?? "STABLE"
+            //     disciplineMessage = statusSummary.disciplineMessage ?? "Keep pushing. Consistency is key."
+            //
+            //     Config.log("Dynamic messages loaded - Level: \(disciplineLevel), Title: \(notificationTitle)", category: "FaceView")
+            // } else {
+            //     Config.log("No statusSummary found, using default messages", category: "FaceView")
+            // }
+
 
             // Calculate countdown from nextCallTimestamp
-            if let nextCallTimestamp = identity.nextCallTimestamp {
-                let nextCallDate = Date(timeIntervalSince1970: nextCallTimestamp)
-                let remaining = nextCallDate.timeIntervalSinceNow
-                if remaining > 0 {
-                    self.timeRemaining = remaining
-                    Config.log("Next call in \(Int(remaining/60)) minutes", category: "FaceView")
-                } else {
-                    Config.log("Next call is overdue or not scheduled", category: "FaceView")
+            // TODO: Backend needs to provide next_call_timestamp in identity_status
+            // if let nextCallTimestamp = identity.nextCallTimestamp {
+            //     let nextCallDate = Date(timeIntervalSince1970: nextCallTimestamp)
+            //     let remaining = nextCallDate.timeIntervalSinceNow
+            //     if remaining > 0 {
+            //         self.timeRemaining = remaining
+            //         Config.log("Next call in \(Int(remaining/60)) minutes", category: "FaceView")
+            //     } else {
+            //         Config.log("Next call is overdue or not scheduled", category: "FaceView")
+            //     }
+            // } else {
+            //     Config.log("No next call timestamp available", category: "FaceView")
+            // }
+
+            // SUPER MVP: Calculate next call time from user settings or default
+            // TODO: Backend should provide call_time in identity table
+            // For now, fetch from user settings or use default 2 hours
+            Task {
+                do {
+                    guard let userId = authService.user?.id else { return }
+                    let scheduleResponse = try await APIService.shared.fetchSchedule(userId: userId)
+
+                    if let schedule = scheduleResponse.data {
+                        // Use evening time for accountability call (morningTime is for morning check-ins)
+                        let callTime = schedule.eveningTime
+                        let components = callTime.split(separator: ":").compactMap { Int($0) }
+                        if components.count >= 2 {
+                            let callHour = components[0]
+                            let callMinute = components[1]
+
+                            var calendar = Calendar.current
+                            let timezone = TimeZone(identifier: schedule.timezone) ?? TimeZone.current
+                            calendar.timeZone = timezone
+
+                            var nextCallComponents = calendar.dateComponents([.year, .month, .day], from: Date())
+                            nextCallComponents.hour = callHour
+                            nextCallComponents.minute = callMinute
+                            nextCallComponents.second = 0
+
+                            if let nextCallDate = calendar.date(from: nextCallComponents) {
+                                let remaining = nextCallDate.timeIntervalSinceNow
+                                if remaining > 0 {
+                                    await MainActor.run {
+                                        self.timeRemaining = remaining
+                                        Config.log("Next call at \(callHour):\(String(format: "%02d", callMinute)) - in \(Int(remaining/60)) minutes", category: "FaceView")
+                                    }
+                                } else {
+                                    // If call time is in the past, schedule for tomorrow
+                                    if let tomorrowCall = calendar.date(byAdding: .day, value: 1, to: nextCallDate) {
+                                        await MainActor.run {
+                                            self.timeRemaining = tomorrowCall.timeIntervalSinceNow
+                                            Config.log("Next call tomorrow at \(callHour):\(String(format: "%02d", callMinute))", category: "FaceView")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch {
+                    Config.log("Failed to fetch call schedule, using default 2 hour countdown: \(error)", category: "FaceView")
                 }
-            } else {
-                Config.log("No next call timestamp available", category: "FaceView")
             }
 
             isLoading = false
@@ -545,6 +590,17 @@ struct FaceView: View {
         .frame(maxWidth: .infinity)
         .padding(.horizontal, 40)
         .padding(.top, 100)
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func glassEffectIfAvailable() -> some View {
+        if #available(iOS 26.0, *) {
+            self.glassEffect(in: .rect(cornerRadius: 20))
+        } else {
+            self
+        }
     }
 }
 

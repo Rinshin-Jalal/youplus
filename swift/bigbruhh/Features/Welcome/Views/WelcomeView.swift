@@ -43,6 +43,7 @@ struct WelcomeView: View {
                                     .fill(Color.brutalRed)
                             )
                     }
+                    .buttonStyleGlassProminentIfAvailable()
                     .padding(.horizontal, Spacing.lg)
 
                     // Secondary sign in link

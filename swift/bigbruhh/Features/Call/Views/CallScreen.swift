@@ -50,18 +50,32 @@ struct CallScreen: View {
             Color.brutalBlack
                 .ignoresSafeArea()
 
-            // Subtle gradient overlay
+            // INTENSE gradient overlay - make it brutal when connected
             LinearGradient(
                 colors: [
                     Color.brutalBlack,
                     callStateStore.state.phase == .connected ?
-                        Color.brutalRed.opacity(0.15) :
-                        Color.brutalRed.opacity(0.05)
+                        Color.brutalRed.opacity(0.35) :  // Increased from 0.15 to 0.35
+                        Color.brutalRed.opacity(0.08)    // Increased from 0.05 to 0.08
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
             .ignoresSafeArea()
+
+            // RED GLOW when connected - demands attention
+            if callStateStore.state.phase == .connected {
+                RadialGradient(
+                    gradient: Gradient(colors: [
+                        Color.brutalRed.opacity(0.4),
+                        Color.brutalRed.opacity(0.0)
+                    ]),
+                    center: .center,
+                    startRadius: 100,
+                    endRadius: 500
+                )
+                .ignoresSafeArea()
+            }
         }
     }
 
@@ -180,32 +194,35 @@ struct CallScreen: View {
             Button(action: action) {
                 Image(systemName: icon)
                     .font(.system(size: 26, weight: .medium))
-                    .foregroundColor(.white)
+                    .foregroundColor(tint == .brutalRed ? .brutalWhite : .white)
                     .frame(width: 64, height: 64)
                     .background(
                         ZStack {
                             Circle()
                                 .fill(tint)
 
-                            // Subtle border
+                            // INTENSE border on red button
                             Circle()
                                 .strokeBorder(
-                                    Color.white.opacity(tint == .brutalRed ? 0.2 : 0.1),
-                                    lineWidth: Spacing.borderThin
+                                    Color.white.opacity(tint == .brutalRed ? 0.3 : 0.1),
+                                    lineWidth: tint == .brutalRed ? 2 : Spacing.borderThin
                                 )
                         }
                     )
                     .shadow(
-                        color: tint == .brutalRed ? Color.brutalRed.opacity(0.4) : Color.black.opacity(0.2),
-                        radius: tint == .brutalRed ? 12 : 8,
+                        color: tint == .brutalRed ? Color.brutalRed.opacity(0.6) : Color.black.opacity(0.2),
+                        radius: tint == .brutalRed ? 20 : 8,  // Increased glow radius
                         x: 0,
-                        y: 4
+                        y: tint == .brutalRed ? 8 : 4
                     )
+                    .scaleEffect(0.95)  // Press effect ready
             }
+            .buttonStyle(PlainButtonStyle())
 
-            Text(label)
+            Text(label.uppercased())
                 .font(.captionMedium)
-                .foregroundColor(.white.opacity(0.8))
+                .fontWeight(.bold)
+                .foregroundColor(.white.opacity(tint == .brutalRed ? 1.0 : 0.8))
         }
     }
 
