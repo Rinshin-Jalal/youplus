@@ -49,6 +49,11 @@ enum Config {
         Bundle.main.object(forInfoDictionaryKey: "PUBLIC_BACKEND_URL") as? String
     }()
 
+    // MARK: - LiveKit Configuration
+    static let liveKitURL: String? = {
+        Bundle.main.object(forInfoDictionaryKey: "PUBLIC_LIVEKIT_URL") as? String
+    }()
+
     // MARK: - PostHog Configuration (Optional)
     static let posthogAPIKey: String? = {
         Bundle.main.object(forInfoDictionaryKey: "EXPO_POSTHOG_API_KEY") as? String

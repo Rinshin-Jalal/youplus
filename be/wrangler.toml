@@ -34,8 +34,23 @@ BACKEND_URL = "https://you-plus-consequence-engine.rinzhinjalal.workers.dev"
 # SUPABASE_ANON_KEY
 # SUPABASE_SERVICE_ROLE_KEY
 # OPENAI_API_KEY
-# ELEVENLABS_API_KEY  (PRIMARY - you have free credits!)
-# ELEVENLABS_AGENT_ID  (Single dynamic agent ID for all call types)
+#
+# LiveKit Configuration (NEW)
+# LIVEKIT_API_KEY
+# LIVEKIT_API_SECRET
+# LIVEKIT_URL
+#
+# Cartesia Configuration (NEW)
+# CARTESIA_API_KEY
+#
+# Supermemory Configuration (NEW - optional but recommended)
+# SUPERMEMORY_API_KEY
+#
+# Legacy Configuration (for backward compatibility)
+# ELEVENLABS_API_KEY  (optional - for dual-provider support)
+# ELEVENLABS_AGENT_ID  (optional - for legacy calls)
+#
+# Other Services
 # DEEPGRAM_API_KEY
 # REVENUECAT_WEBHOOK_SECRET
 # IOS_VOIP_KEY_ID

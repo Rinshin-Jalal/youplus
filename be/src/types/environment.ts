@@ -25,9 +25,17 @@ export const EnvSchema = z.object({
   
   // OpenAI configuration
   OPENAI_API_KEY: z.string().min(1, "OpenAI API key is required"),
-  
-  // ElevenLabs configuration
-  ELEVENLABS_API_KEY: z.string().min(1, "ElevenLabs API key is required"),
+
+  // LiveKit configuration (new)
+  LIVEKIT_API_KEY: z.string().min(1, "LiveKit API key is required"),
+  LIVEKIT_API_SECRET: z.string().min(1, "LiveKit API secret is required"),
+  LIVEKIT_URL: z.string().url("LiveKit URL must be a valid WebSocket URL"),
+
+  // Cartesia configuration (new)
+  CARTESIA_API_KEY: z.string().min(1, "Cartesia API key is required"),
+
+  // ElevenLabs configuration (legacy - optional for backward compatibility)
+  ELEVENLABS_API_KEY: z.string().optional(),
   
   // iOS VoIP configuration
   IOS_VOIP_KEY_ID: z.string().min(1, "iOS VoIP key ID is required"),
@@ -35,6 +43,7 @@ export const EnvSchema = z.object({
   IOS_VOIP_AUTH_KEY: z.string().min(1, "iOS VoIP auth key is required"),
   
   // Optional configuration
+  SUPERMEMORY_API_KEY: z.string().optional(),
   DEEPGRAM_API_KEY: z.string().optional(),
   REVENUECAT_WEBHOOK_SECRET: z.string().optional(),
   REVENUECAT_API_KEY: z.string().optional(),
@@ -109,8 +118,16 @@ export const EnvCategories = {
   
   ai: {
     OPENAI_API_KEY: "OpenAI API key for embeddings and AI processing",
-    ELEVENLABS_API_KEY: "ElevenLabs API key for voice cloning and synthesis",
-    DEEPGRAM_API_KEY: "Deepgram API key for speech recognition (optional)",
+    ELEVENLABS_API_KEY: "ElevenLabs API key for voice cloning and synthesis (legacy, optional)",
+    LIVEKIT_API_KEY: "LiveKit API key for real-time communication",
+    LIVEKIT_API_SECRET: "LiveKit API secret for token generation",
+    LIVEKIT_URL: "LiveKit Cloud WebSocket URL (wss://...)",
+    CARTESIA_API_KEY: "Cartesia API key for STT (Ink) and TTS (Sonic-3)",
+    DEEPGRAM_API_KEY: "Deepgram API key for speech recognition (optional, deprecated)",
+  },
+
+  memory: {
+    SUPERMEMORY_API_KEY: "Supermemory API key for persistent user context (optional)",
   },
   
   ios: {

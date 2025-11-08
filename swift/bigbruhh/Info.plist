@@ -8,6 +8,8 @@
 	<string>$(EXPO_POSTHOG_PROJECT_ID)</string>
 	<key>PUBLIC_BACKEND_URL</key>
 	<string>$(PUBLIC_BACKEND_URL)</string>
+	<key>PUBLIC_LIVEKIT_URL</key>
+	<string>$(PUBLIC_LIVEKIT_URL)</string>
 	<key>PUBLIC_REVENUECAT_IOS_API_KEY</key>
 	<string>$(PUBLIC_REVENUECAT_IOS_API_KEY)</string>
 	<key>PUBLIC_SUPABASE_ANON_KEY</key>
