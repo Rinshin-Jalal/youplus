@@ -1,6 +1,6 @@
 /**
  * Call configuration service
- * Generates ElevenLabs call configuration used by both HTTP routes and scheduler.
+ * Generates LiveKit call configuration with Cartesia voice and Supermemory context
  */
 
 import { Env } from "@/index";
@@ -10,10 +10,10 @@ import { calculateOptimalTone } from "@/features/call/services/tone-engine";
 import { getPromptForCall } from "@/services/prompt-engine";
 
 export interface CallMetadataResult {
-  agentId: string;
   mood: BigBruhhTone;
   callUUID: string;
-  voiceId: string | undefined;
+  cartesiaVoiceId: string;
+  supermemoryUserId: string;
   userContext: UserContext;
   toneAnalysis: ReturnType<typeof calculateOptimalTone>;
 }
@@ -36,23 +36,20 @@ export async function generateCallMetadata(
   const userContext = await getUserContext(env, userId);
   const toneAnalysis = calculateOptimalTone(userContext);
 
-  // Ensure agentId is a string
-  const agentId = (env.ELEVENLABS_AGENT_ID as string) ||
-    "agent_01jyp5t2v7edwra210m6bwvcq5";
-
   let mood = toneAnalysis.recommended_mood;
   // All calls use daily_reckoning mode now (bloat elimination)
   if (false) { // Disabled: apology_call removed
     mood = "Confrontational";
   }
 
-  const voiceId = resolveVoiceId(callType, mood, userContext);
+  const cartesiaVoiceId = resolveCartesiaVoiceId(mood);
+  const supermemoryUserId = userId; // Use user ID as Supermemory user ID
 
   return {
-    agentId,
     mood,
     callUUID,
-    voiceId,
+    cartesiaVoiceId,
+    supermemoryUserId,
     userContext,
     toneAnalysis,
   };
@@ -94,26 +91,23 @@ export async function generateFullCallConfig(
   };
 }
 
-function resolveVoiceId(
-  callType: CallType,
-  mood: string,
-  userContext: UserContext,
-): string | undefined {
-  const voiceMap: Record<string, string> = {
-    angry: "pNInz6obpgDQGcFmaJgB",
-    disappointed: "TxGEqnHWrfWFTfGW9XjX",
-    nuclear: "pNInz6obpgDQGcFmaJgB",
-    calm: "21m00Tcm4TlvDq8ikWAM",
-    encouraging: "21m00Tcm4TlvDq8ikWAM",
-    // Super MVP: Removed first_call and apology_call types
+/**
+ * Maps mood/tone to Cartesia voice IDs for Sonic-3 TTS
+ * Cartesia supports various voice IDs with different emotional characteristics
+ */
+function resolveCartesiaVoiceId(mood: string): string {
+  const cartesiaVoiceMap: Record<string, string> = {
+    // Confrontational/Direct moods - sharp, energetic voices
+    angry: "79a125e8-cd45-4c13-8213-1149a61737e4",
+    nuclear: "79a125e8-cd45-4c13-8213-1149a61737e4",
+    disappointed: "c8606b51-3a0d-43a0-9d54-85b100854b20",
+
+    // Calm/Supportive moods - warm, encouraging voices
+    calm: "8b571d3d-285b-4fef-914a-d1a1a0ab6eb7",
+    encouraging: "8b571d3d-285b-4fef-914a-d1a1a0ab6eb7",
+    supportive: "8b571d3d-285b-4fef-914a-d1a1a0ab6eb7",
   };
 
-  // Super MVP: Only daily_reckoning exists, check mood only
-  if (voiceMap[mood]) {
-    return voiceMap[mood];
-  }
-
-  // Super MVP: voice_clone_id removed (no voice cloning in MVP)
-  // Default to undefined - let agent use its configured voice
-  return undefined;
+  // Return the mapped voice ID, or default to calm/supportive voice
+  return cartesiaVoiceMap[mood] || cartesiaVoiceMap.supportive || "8b571d3d-285b-4fef-914a-d1a1a0ab6eb7";
 }

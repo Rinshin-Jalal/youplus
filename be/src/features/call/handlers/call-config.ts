@@ -1,24 +1,25 @@
 /**
- * Call Configuration Endpoint - SUPER MVP 🚀
+ * Call Configuration Endpoint - LiveKit + Cartesia + Supermemory
  *
- * This module provides primary endpoint for generating intelligent call configurations
- * for 11labs Convo AI. It's responsible for creating personalized, behaviorally-aware
- * prompts that drive effective accountability conversations.
+ * This module provides the primary endpoint for generating intelligent call configurations
+ * for LiveKit voice calls. It's responsible for creating personalized, behaviorally-aware
+ * prompts that drive effective accountability conversations via WebRTC.
  *
  * Key Responsibilities:
  * - Generate personalized call prompts based on user behavioral data
  * - Calculate optimal tone and mood for each call scenario
  * - Integrate with prompt engine for intelligent conversation generation
  * - Provide call tracking metadata for monitoring and analytics
+ * - Generate LiveKit credentials for WebRTC connection
  *
  * Call Types Supported (Super MVP):
  * - daily_reckoning: Daily accountability calls (unified morning/evening)
  *
  * Integration Flow:
- * 1. Frontend requests call configuration
+ * 1. Frontend requests call configuration via /api/call/initiate-livekit
  * 2. System analyzes user behavioral patterns
- * 3. Generates personalized prompts and tone
- * 4. Returns configuration for 11labs execution
+ * 3. Generates personalized prompts, tone, and LiveKit credentials
+ * 4. Returns configuration for LiveKit agent connection
  * 5. Call is executed with intelligent personalization
  */
 
@@ -29,59 +30,16 @@ import { generateCallMetadata } from "@/features/call/services/call-config";
 import { createVoipCallPayload } from "@/features/voip/services/payload";
 
 /**
- * Get appropriate voice ID based on call type, mood, and user preferences
- */
-function getVoiceForCall(
-  callType: CallType,
-  mood: string,
-  userContext: any, // This type is not defined in new_code, so we'll keep it as is
-): string | undefined {
-  // Different voices for different moods/scenarios
-  const voiceMap: Record<string, string> = {
-    // Aggressive/confrontational voices
-    "angry": "pNInz6obpgDQGcFmaJgB", // Adam (assertive, confident)
-    "disappointed": "TxGEqnHWrfWFTfGW9XjX", // Josh (serious, direct)
-    "nuclear": "pNInz6obpgDQGcFmaJgB", // Adam (for extreme intensity)
-
-    // Supportive/calm voices
-    "calm": "21m00Tcm4TlvDq8ikWAM", // Rachel (warm, supportive)
-    "encouraging": "21m00Tcm4TlvDq8ikWAM", // Rachel
-
-    // Call-type specific overrides
-    "first_call": "21m00Tcm4TlvDq8ikWAM", // Always start with warm Rachel
-    "apology_call": "TxGEqnHWrfWFTfGW9XjX", // Always serious Josh
-  };
-
-  // First check call-type specific voice
-  if (voiceMap[callType]) {
-    return voiceMap[callType];
-  }
-
-  // Then check mood-based voice
-  if (voiceMap[mood]) {
-    return voiceMap[mood];
-  }
-
-  // Check if user has a preferred 11Labs voice saved in their profile
-  // voice_clone_id stores user's preferred ElevenLabs voice ID
-  if (userContext.user?.voice_clone_id) {
-    return userContext.user.voice_clone_id;
-  }
-
-  // Default fallback - let agent use its configured voice
-  return undefined;
-}
-
-/**
- * Generate call configuration for 11labs Convo AI calls
+ * Generate call configuration for LiveKit calls
  *
  * This endpoint creates intelligent, personalized call configurations that
  * adapt to each user's behavioral patterns and accountability needs. It
  * integrates behavioral intelligence with tone analysis to generate
- * highly effective accountability conversations.
+ * highly effective accountability conversations via WebRTC.
  *
  * The configuration includes:
- * - Agent ID for 11labs routing
+ * - Cartesia voice ID for TTS
+ * - Supermemory user ID for context retrieval
  * - Optimized mood based on user patterns
  * - Personalized system prompts and first messages
  * - Call tracking metadata for analytics
@@ -111,7 +69,8 @@ export const getCallConfig = async (c: Context) => {
       callUUID,
       userId,
       callType: callType as CallType,
-      agentId: metadata.agentId,
+      cartesiaVoiceId: metadata.cartesiaVoiceId,
+      supermemoryUserId: metadata.supermemoryUserId,
       mood: metadata.mood,
       handoff: {
         initiatedBy: "manual" as const,
@@ -122,9 +81,7 @@ export const getCallConfig = async (c: Context) => {
       },
     };
 
-    const payload = createVoipCallPayload(
-      metadata.voiceId ? { ...basePayload, voiceId: metadata.voiceId } : basePayload,
-    );
+    const payload = createVoipCallPayload(basePayload);
 
     return c.json({
       success: true,

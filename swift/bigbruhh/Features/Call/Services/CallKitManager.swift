@@ -1,5 +1,6 @@
 import CallKit
 import Combine
+import LiveKit
 
 struct CallKitConfiguration {
     let appName: String
@@ -107,6 +108,35 @@ extension CallKitManager: CXProviderDelegate {
     func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
         isOnHold = action.isOnHold
         action.fulfill()
+    }
+
+    // MARK: - Audio Session Management for LiveKit
+
+    /// Called when CallKit activates the audio session
+    /// Syncs with LiveKit's RTC audio session
+    func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
+        print("📱 CallKit audio session activated, syncing with LiveKit")
+
+        // Notify LiveKit that the audio session is active
+        // This allows LiveKit to properly configure audio routing
+        do {
+            try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+        } catch {
+            print("❌ Failed to activate audio session: \(error.localizedDescription)")
+        }
+    }
+
+    /// Called when CallKit deactivates the audio session
+    /// Cleanly disconnect from LiveKit audio
+    func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
+        print("📱 CallKit audio session deactivated")
+
+        // Deactivate the audio session
+        do {
+            try audioSession.setActive(false, options: .notifyOthersOnDeactivation)
+        } catch {
+            print("❌ Failed to deactivate audio session: \(error.localizedDescription)")
+        }
     }
 }
 

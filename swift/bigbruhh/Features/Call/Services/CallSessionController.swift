@@ -37,7 +37,6 @@ final class CallSessionController: NSObject, ObservableObject {
     weak var delegate: CallSessionControllerDelegate?
     private weak var conversationReference: AnyObject?
 
-    private var audioPlayer: AVAudioPlayer?
     private var cancellables = Set<AnyCancellable>()
 
     func beginCall(with callUUID: String, userToken: String) {
@@ -50,12 +49,13 @@ final class CallSessionController: NSObject, ObservableObject {
         guard let promptResponse else { return }
         state = .preparing
         delegate?.callSessionControllerDidStart(self)
-        authenticateAndStream(callUUID: callUUID, sessionToken: sessionToken, prompts: promptResponse)
+        // LiveKit connection is handled by LiveKitManager
+        // This method is kept for compatibility but actual streaming happens via WebRTC
+        state = .streaming
     }
 
     func endSession() {
-        audioPlayer?.stop()
-        audioPlayer = nil
+        // LiveKit connection cleanup is handled by LiveKitManager
         state = .completed
         delegate?.callSessionControllerDidFinish(self)
     }
@@ -109,67 +109,6 @@ final class CallSessionController: NSObject, ObservableObject {
             .store(in: &cancellables)
     }
 
-    private func authenticateAndStream(callUUID: String, sessionToken: String, prompts: DeferredPromptResponse) {
-        guard let baseURL = Config.backendURL else {
-            self.state = .failed(CallSessionError.invalidResponse)
-            return
-        }
-        var request = URLRequest(url: URL(string: "\(baseURL)/calls/\(callUUID)/stream")!)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue(sessionToken, forHTTPHeaderField: "X-Call-Session")
-
-        let body: [String: Any] = [
-            "agentId": prompts.agentId,
-            "mood": prompts.mood,
-            "prompts": [
-                "systemPrompt": prompts.prompts.systemPrompt,
-                "firstMessage": prompts.prompts.firstMessage
-            ],
-            "voiceId": prompts.voiceId as Any
-        ]
-
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
-
-        URLSession.shared.dataTaskPublisher(for: request)
-            .tryMap { data, response -> URL in
-                guard let httpResponse = response as? HTTPURLResponse, (200..<300).contains(httpResponse.statusCode) else {
-                    throw CallSessionError.invalidResponse
-                }
-
-                let temporaryFile = FileManager.default.temporaryDirectory.appendingPathComponent("call-\(callUUID).mp3")
-                do {
-                    try data.write(to: temporaryFile, options: .atomic)
-                    return temporaryFile
-                } catch {
-                    throw CallSessionError.writeFailed(error)
-                }
-            }
-            .receive(on: RunLoop.main)
-            .sink { [weak self] completion in
-                guard let self else { return }
-                if case let .failure(error) = completion {
-                    self.state = .failed(error)
-                    self.delegate?.callSessionController(self, didFailWith: error)
-                } else {
-                    self.state = .streaming
-                }
-            } receiveValue: { [weak self] fileURL in
-                guard let self else { return }
-                self.prepareAudioSession()
-                do {
-                    self.audioPlayer = try AVAudioPlayer(contentsOf: fileURL)
-                    self.audioPlayer?.prepareToPlay()
-                    self.audioPlayer?.play()
-                    self.audioPlayer?.delegate = self
-                } catch {
-                    self.state = .failed(error)
-                    self.delegate?.callSessionController(self, didFailWith: error)
-                }
-            }
-            .store(in: &cancellables)
-    }
-
     private func prepareAudioSession() {
         let session = AVAudioSession.sharedInstance()
         try? session.setCategory(.playAndRecord, mode: .voiceChat, options: [.defaultToSpeaker])
@@ -183,20 +122,4 @@ protocol ClientToolRegistrable {
 
 enum CallSessionError: Error {
     case invalidResponse
-    case writeFailed(Error)
-    case playbackFailed
-}
-
-extension CallSessionController: AVAudioPlayerDelegate {
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        state = flag ? .completed : .failed(CallSessionError.playbackFailed)
-        flag
-            ? delegate?.callSessionControllerDidFinish(self)
-            : delegate?.callSessionController(self, didFailWith: CallSessionError.playbackFailed)
-    }
-
-    func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
-        state = .failed(error ?? CallSessionError.playbackFailed)
-        delegate?.callSessionController(self, didFailWith: error ?? CallSessionError.playbackFailed)
-    }
 }
