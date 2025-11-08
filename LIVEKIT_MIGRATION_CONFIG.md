@@ -32,12 +32,30 @@
 - CallStateStore.swift: Extended state management with provider detection
 - AppDelegate+LiveKit.swift: Call routing (LiveKit vs ElevenLabs)
 
+**Phase 5** - Data Migration & Cleanup (Complete)
+- scripts/migrate-to-supermemory.ts: Complete migration utility
+  - Export promises (commitments) to Supermemory
+  - Export identity metrics (onboarding profile)
+  - Export call history (statistics and progress)
+  - Single user + batch migration support
+  - Rate limiting to avoid API throttling
+- be/sql/add-livekit-tables.sql: New database tables
+  - livekit_sessions: Track individual room sessions
+  - livekit_rooms: Track room lifecycle and metrics
+  - Extended calls table with LiveKit fields
+  - RLS policies for user isolation
+  - Backward compatibility for historical ElevenLabs data
+- ELEVENLABS_DEPRECATION.md: Complete transition guide
+  - 3-week phaseout timeline
+  - Data preservation strategy
+  - Rollback plan
+  - Cost savings analysis (40-50% reduction)
+
 ### In Progress Phases 🔄
 
 **Phase 1.1** - LiveKit Cloud Configuration
 **Phase 1.3** - Supermemory Setup
 **Phase 3** - Python Agent Implementation (memory + tools integration)
-**Phase 5** - Data Migration & Cleanup
 **Phase 6** - Testing & Rollout
 
 ---
@@ -45,8 +63,8 @@
 ## Overview
 Complete system replacement from ElevenLabs to Cartesia TTS + LiveKit infrastructure + Supermemory for memory management.
 
-**Timeline:** 2-3 weeks
-**Strategy:** Big Bang Replacement with minimal backward compatibility
+**Current Progress:** 5 of 6 phases complete (83%)
+**Estimated Completion:** 1-2 weeks remaining
 
 ---
 
