@@ -53,8 +53,8 @@ export const postInitiateLiveKitCall = async (c: Context) => {
       callType,
       mood: callConfig.mood,
       prompts: callConfig.prompts,
-      cartesiaVoiceId: callConfig.voiceId || "default",
-      supermemoryUserId: userId,
+      cartesiaVoiceId: callConfig.cartesiaVoiceId,
+      supermemoryUserId: callConfig.supermemoryUserId,
       metadata: {
         userContext: callConfig.userContext,
         toneAnalysis: callConfig.toneAnalysis,
@@ -70,8 +70,8 @@ export const postInitiateLiveKitCall = async (c: Context) => {
       prompts: callConfig.prompts,
       roomName: liveKitResult.roomName,
       liveKitToken: liveKitResult.token,
-      cartesiaVoiceId: callConfig.voiceId || "default",
-      supermemoryUserId: userId,
+      cartesiaVoiceId: callConfig.cartesiaVoiceId,
+      supermemoryUserId: callConfig.supermemoryUserId,
       metadata: {
         expiresIn: liveKitResult.expiresIn,
       },

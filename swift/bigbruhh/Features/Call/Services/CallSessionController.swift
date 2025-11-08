@@ -5,9 +5,16 @@ import AVFoundation
 struct DeferredPromptResponse: Decodable {
     let prompts: PromptBody
     let cached: Bool
-    let agentId: String
     let mood: String
+    
+    // ElevenLabs (Legacy - optional for backward compatibility)
+    let agentId: String?
     let voiceId: String?
+    
+    // LiveKit (Current)
+    let cartesiaVoiceId: String?
+    let supermemoryUserId: String?
+    let roomName: String?
 
     struct PromptBody: Decodable {
         let systemPrompt: String

@@ -5,6 +5,7 @@ import webhookRouter from "./webhook/router";
 import triggerRouter from "./trigger/router";
 import voipRouter from "./voip/router";
 import callRouter from "./call/router";
+import livekitRouter from "./livekit/router";
 import coreRouter from "./core/router";
 
 // Create a combined router that includes all feature routers
@@ -17,6 +18,7 @@ combinedRouter.route("/webhook", webhookRouter);
 combinedRouter.route("/trigger", triggerRouter);
 combinedRouter.route("/voip", voipRouter);
 combinedRouter.route("/call", callRouter);
+combinedRouter.route("/api/livekit", livekitRouter);
 
 // Core router mounted at root to handle /api/*, /debug/*, etc.
 combinedRouter.route("/", coreRouter);

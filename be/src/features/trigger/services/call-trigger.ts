@@ -21,7 +21,8 @@ import { trackSentCall } from "@/features/voip/services/call-tracker";
 import { format } from "date-fns";
 import type { Env } from "@/index";
 import { createVoipCallPayload } from "@/features/voip/services/payload";
-import { generateCallMetadata } from "@/features/call/services/call-config";
+import { generateFullCallConfig } from "@/features/call/services/call-config";
+import { initiateLiveKitCall } from "@/features/livekit/services/call-initiator";
 
 
 /**
@@ -73,25 +74,48 @@ export async function processUserCall(
     }
 
     const callUUID = generateCallUUID(callType);
-    const metadata = await generateCallMetadata(env, userId, callType, callUUID);
+    const config = await generateFullCallConfig(env, userId, callType, callUUID);
+
+    // Initiate LiveKit call to create room and get token
+    let liveKitResult;
+    try {
+      liveKitResult = await initiateLiveKitCall(env, {
+        roomName: `youplus-${userId}-${callUUID}`.toLowerCase(),
+        userId,
+        callUUID,
+        callType,
+        mood: config.mood,
+        prompts: config.prompts,
+        cartesiaVoiceId: config.cartesiaVoiceId,
+        supermemoryUserId: config.supermemoryUserId,
+        metadata: {
+          tone: config.toneAnalysis,
+          schedulerRunAt: new Date().toISOString(),
+        },
+      });
+    } catch (error) {
+      console.error("Warning: LiveKit initiation failed, continuing without room:", error);
+      // Continue without LiveKit room - client can retry later
+    }
 
     const basePayload = {
       callUUID,
       userId,
       callType,
-      agentId: metadata.agentId,
-      mood: metadata.mood,
+      mood: config.mood,
+      ...(liveKitResult?.roomName && { roomName: liveKitResult.roomName }),
+      ...(liveKitResult?.token && { liveKitToken: liveKitResult.token }),
+      cartesiaVoiceId: config.cartesiaVoiceId,
+      supermemoryUserId: config.supermemoryUserId,
       handoff: {
         initiatedBy: "scheduler" as const,
       },
       metadata: {
-        tone: metadata.toneAnalysis,
+        tone: config.toneAnalysis,
         schedulerRunAt: new Date().toISOString(),
       },
     };
-    const payload = createVoipCallPayload(
-      metadata.voiceId ? { ...basePayload, voiceId: metadata.voiceId } : basePayload,
-    );
+    const payload = createVoipCallPayload(basePayload);
 
     const pushSent = await sendVoipPushNotification(
       push_token,
@@ -102,7 +126,7 @@ export async function processUserCall(
         callUUID,
         urgency: "high",
         metadata: {
-          voiceId: metadata.voiceId,
+          cartesiaVoiceId: config.cartesiaVoiceId,
         },
       },
       env,

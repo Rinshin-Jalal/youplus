@@ -77,30 +77,38 @@ extension AppDelegate {
 
         let liveKitURL = Config.liveKitURL ?? "wss://livekit.example.com"
 
-        // Fetch prompts first
+        // Fetch prompts from backend (same as ElevenLabs flow)
         Task {
             do {
-                // Start streaming with LiveKit
-                guard let callUUID = callStateStore.state.uuid?.uuidString else { return }
+                guard let callUUID = callStateStore.state.uuid?.uuidString,
+                      let userToken = callStateStore.state.userToken,
+                      let baseURL = Config.backendURL else {
+                    Config.log("❌ Missing call UUID or user token", category: "AppDelegate+LiveKit")
+                    return
+                }
 
-                // Update session controller to use LiveKit
-                let deferredPromptResponse = DeferredPromptResponse(
-                    prompts: .init(
-                        systemPrompt: "You are a supportive AI assistant",
-                        firstMessage: "Hi! How are you doing today?"
-                    ),
-                    cached: false,
-                    agentId: "livekit-agent",
-                    mood: callStateStore.state.mood ?? "supportive",
-                    voiceId: callStateStore.state.cartesiaVoiceId
-                )
+                // Fetch prompts from backend
+                var request = URLRequest(url: URL(string: "\(baseURL)/voip/session/prompts")!)
+                request.httpMethod = "POST"
+                request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+                request.addValue(userToken, forHTTPHeaderField: "Authorization")
+                request.httpBody = try JSONSerialization.data(withJSONObject: ["callUUID": callUUID])
 
-                // Start LiveKit session
+                let (data, response) = try await URLSession.shared.data(for: request)
+                
+                guard let httpResponse = response as? HTTPURLResponse,
+                      (200..<300).contains(httpResponse.statusCode) else {
+                    throw NSError(domain: "AppDelegate", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch prompts"])
+                }
+
+                let promptResponse = try JSONDecoder().decode(DeferredPromptResponse.self, from: data)
+
+                // Start LiveKit session with fetched prompts
                 sessionController.startLiveKitSession(
                     roomName: roomName,
                     token: token,
                     liveKitURL: liveKitURL,
-                    prompts: deferredPromptResponse
+                    prompts: promptResponse
                 )
 
                 Config.log("✅ LiveKit call started", category: "AppDelegate+LiveKit")
