@@ -13,6 +13,12 @@ struct CallSessionState: Equatable {
         case ended(reason: String?)
     }
 
+    enum Provider: String, Equatable {
+        case livekit
+        case elevenlabs
+        case unknown
+    }
+
     var uuid: UUID?
     var userId: String?
     var callType: String?
@@ -21,6 +27,19 @@ struct CallSessionState: Equatable {
     var phase: Phase
     var sessionToken: String?
     var promptsReady: Bool
+    var provider: Provider = .unknown
+
+    // ElevenLabs (Legacy)
+    var agentId: String?
+    var voiceId: String?
+
+    // LiveKit (Current)
+    var roomName: String?
+    var liveKitToken: String?
+    var liveKitURL: String?
+    var cartesiaVoiceId: String?
+    var supermemoryUserId: String?
+
     var metadata: [String: AnyHashable]
 }
 
@@ -29,12 +48,34 @@ final class CallStateStore: ObservableObject {
 
     private var cancellables = Set<AnyCancellable>()
 
-    init(initialState: CallSessionState = CallSessionState(uuid: nil, userId: nil, callType: nil, mood: nil, startedAt: nil, phase: .idle, sessionToken: nil, promptsReady: false, metadata: [:])) {
-        state = initialState
+    init(initialState: CallSessionState? = nil) {
+        state = initialState ?? CallSessionState(
+            uuid: nil,
+            userId: nil,
+            callType: nil,
+            mood: nil,
+            startedAt: nil,
+            phase: .idle,
+            sessionToken: nil,
+            promptsReady: false,
+            provider: .unknown,
+            metadata: [:]
+        )
     }
 
     func reset() {
-        state = CallSessionState(uuid: nil, userId: nil, callType: nil, mood: nil, startedAt: nil, phase: .idle, sessionToken: nil, promptsReady: false, metadata: [:])
+        state = CallSessionState(
+            uuid: nil,
+            userId: nil,
+            callType: nil,
+            mood: nil,
+            startedAt: nil,
+            phase: .idle,
+            sessionToken: nil,
+            promptsReady: false,
+            provider: .unknown,
+            metadata: [:]
+        )
     }
 
     func updateWithVoipPayload(_ payload: PKPushPayload) {
@@ -52,6 +93,22 @@ final class CallStateStore: ObservableObject {
         state.phase = .ringing
         state.startedAt = Date()
         state.promptsReady = false
+
+        // Detect provider (LiveKit or ElevenLabs)
+        if let roomName = dictionary["roomName"] as? String,
+           let liveKitToken = dictionary["liveKitToken"] as? String {
+            // LiveKit call
+            state.provider = .livekit
+            state.roomName = roomName
+            state.liveKitToken = liveKitToken
+            state.cartesiaVoiceId = dictionary["cartesiaVoiceId"] as? String
+            state.supermemoryUserId = dictionary["supermemoryUserId"] as? String
+        } else if let agentId = dictionary["agentId"] as? String {
+            // ElevenLabs call (legacy)
+            state.provider = .elevenlabs
+            state.agentId = agentId
+            state.voiceId = dictionary["voiceId"] as? String
+        }
     }
 
     func bindCallKitManager(_ manager: CallKitManager) {
