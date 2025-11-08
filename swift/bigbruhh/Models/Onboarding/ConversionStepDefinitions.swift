@@ -114,8 +114,19 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
         ))
     ),
 
+    // VOICE RECORDING REFRAME 1
     ConversionOnboardingStep(
         id: 10,
+        type: .aiCommentary(config: AICommentaryConfig(
+            message: "Most people skip voice recordings. You didn't. That matters.",
+            persona: .futureYou,
+            showAvatar: true,
+            emphasize: false
+        ))
+    ),
+
+    ConversionOnboardingStep(
+        id: 11,
         type: .aiCommentary(config: AICommentaryConfig(
             message: "Okay. Now let's look at your pattern.",
             persona: .accountability,
@@ -125,11 +136,11 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     // ==========================================
-    // PHASE 3: PATTERN REVELATION (Steps 11-18)
+    // PHASE 3: PATTERN REVELATION (Steps 12-20)
     // ==========================================
 
     ConversionOnboardingStep(
-        id: 11,
+        id: 12,
         type: .input(config: InputConfig(
             question: "How many times have you tried before?",
             inputType: .numberStepper(range: 0...20),
@@ -139,7 +150,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 12,
+        id: 13,
         type: .input(config: InputConfig(
             question: "What happened last time?",
             inputType: .text(placeholder: "Describe what happened"),
@@ -149,7 +160,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 13,
+        id: 14,
         type: .input(config: InputConfig(
             question: "And the time before that?",
             inputType: .text(placeholder: "What about before?"),
@@ -159,7 +170,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 14,
+        id: 15,
         type: .debate(messages: [
             DebateMessage(speaker: .hopeful, text: "Maybe this time is different.", delay: 0.5),
             DebateMessage(speaker: .doubtful, text: "That's what you said last time.", delay: 1.5),
@@ -169,7 +180,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 15,
+        id: 16,
         type: .aiCommentary(config: AICommentaryConfig(
             message: "See? Even your futures know your pattern. Let's dig deeper.",
             persona: .futureYou,
@@ -179,7 +190,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 16,
+        id: 17,
         type: .input(config: InputConfig(
             question: "What's your favorite excuse?",
             inputType: .choice(options: [
@@ -194,7 +205,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 17,
+        id: 18,
         type: .input(config: InputConfig(
             question: "Who have you disappointed by quitting?",
             inputType: .text(placeholder: "Name someone"),
@@ -204,7 +215,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 18,
+        id: 19,
         type: .input(config: InputConfig(
             question: "When do you usually give up?",
             inputType: .text(placeholder: "tuesday night??"),
@@ -213,12 +224,23 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
         ))
     ),
 
+    // CELEBRATION + PHASE BRIDGE 1
+    ConversionOnboardingStep(
+        id: 20,
+        type: .aiCommentary(config: AICommentaryConfig(
+            message: "You just mapped your entire failure pattern. Most people spend their whole lives avoiding what you just faced.",
+            persona: .futureYou,
+            showAvatar: true,
+            emphasize: false
+        ))
+    ),
+
     // ==========================================
-    // PHASE 4: THE COST (Steps 19-24)
+    // PHASE 4: THE COST (Steps 21-28)
     // ==========================================
 
     ConversionOnboardingStep(
-        id: 19,
+        id: 21,
         type: .debate(messages: [
             // Dynamic based on excuse - placeholder for "No time"
             DebateMessage(speaker: .doubtful, text: "You had time for Netflix though.", delay: 0.5),
@@ -227,7 +249,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 20,
+        id: 22,
         type: .aiCommentary(config: AICommentaryConfig(
             message: "Here's what you need to hear. The cost of quitting again.",
             persona: .accountability,
@@ -236,8 +258,19 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
         ))
     ),
 
+    // VOICE RECORDING PREP 2
     ConversionOnboardingStep(
-        id: 21,
+        id: 23,
+        type: .aiCommentary(config: AICommentaryConfig(
+            message: "Your voice. On a server. I know how that sounds. These recordings stay encrypted, tied only to your account, used only for your calls. Not training data. Not shared. Yours. But you have to trust the system. If you can't, this won't work. Are you ready?",
+            persona: .accountability,
+            showAvatar: true,
+            emphasize: false
+        ))
+    ),
+
+    ConversionOnboardingStep(
+        id: 24,
         type: .input(config: InputConfig(
             question: "What are you really afraid to lose?",
             inputType: .voice(minDuration: 10, maxDuration: 30),
@@ -246,8 +279,19 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
         ))
     ),
 
+    // CELEBRATION 2
     ConversionOnboardingStep(
-        id: 22,
+        id: 25,
+        type: .aiCommentary(config: AICommentaryConfig(
+            message: "Twice now. You've spoken your truth twice.",
+            persona: .futureYou,
+            showAvatar: true,
+            emphasize: false
+        ))
+    ),
+
+    ConversionOnboardingStep(
+        id: 26,
         type: .input(config: InputConfig(
             question: "Where will you be in 6 months if nothing changes?",
             inputType: .text(placeholder: "Describe your future"),
@@ -257,17 +301,18 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 23,
+        id: 27,
         type: .debate(messages: [
             DebateMessage(speaker: .doubtful, text: "That's your future. Same pattern, same result.", delay: 0.5),
             DebateMessage(speaker: .hopeful, text: "Unless something changes.", delay: 2.0)
         ])
     ),
 
+    // PHASE BRIDGE 2
     ConversionOnboardingStep(
-        id: 24,
+        id: 28,
         type: .aiCommentary(config: AICommentaryConfig(
-            message: "Something needs to change. Let me show you what accountability looks like.",
+            message: "You know the cost. Now let me show you what accountability looks like. Not reminders. Not quotes. Real calls. Daily. Starting tomorrow.",
             persona: .futureYou,
             showAvatar: true,
             emphasize: false
@@ -275,11 +320,11 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     // ==========================================
-    // PHASE 5: DEMO CALL (Steps 25-27)
+    // PHASE 5: DEMO CALL (Steps 29-32)
     // ==========================================
 
     ConversionOnboardingStep(
-        id: 25,
+        id: 29,
         type: .aiCommentary(config: AICommentaryConfig(
             message: "Starting tomorrow, I call you. Every day. This is what it looks like.",
             persona: .accountability,
@@ -289,38 +334,25 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 26,
+        id: 30,
         type: .demoCall
     ),
 
     ConversionOnboardingStep(
-        id: 27,
+        id: 31,
         type: .aiCommentary(config: AICommentaryConfig(
-            message: "Every day. Same time. No excuses. No escape. Think you can handle that?",
+            message: "Every day. Same time. No excuses. No escape.",
             persona: .accountability,
             showAvatar: true,
             emphasize: true
         ))
     ),
 
-    // ==========================================
-    // PHASE 6: PERMISSION GATES (Steps 28-30)
-    // ==========================================
-
+    // CELEBRATION 3
     ConversionOnboardingStep(
-        id: 28,
-        type: .permissionRequest(type: .notifications)
-    ),
-
-    ConversionOnboardingStep(
-        id: 29,
-        type: .permissionRequest(type: .calls)
-    ),
-
-    ConversionOnboardingStep(
-        id: 30,
+        id: 32,
         type: .aiCommentary(config: AICommentaryConfig(
-            message: "Good. Now let's set this up for real.",
+            message: "You saw what's coming. Daily calls. Real consequences. Most people close the app here. You're still here.",
             persona: .futureYou,
             showAvatar: true,
             emphasize: false
@@ -328,11 +360,46 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     // ==========================================
-    // PHASE 7: COMMITMENT SETUP (Steps 31-37)
+    // PHASE 6: PERMISSION GATES (Steps 33-36)
     // ==========================================
 
     ConversionOnboardingStep(
-        id: 31,
+        id: 33,
+        type: .permissionRequest(type: .notifications)
+    ),
+
+    ConversionOnboardingStep(
+        id: 34,
+        type: .permissionRequest(type: .calls)
+    ),
+
+    // PHASE BRIDGE 3
+    ConversionOnboardingStep(
+        id: 35,
+        type: .aiCommentary(config: AICommentaryConfig(
+            message: "Permissions granted. Now we set up the system for real. Your daily commitment. Call time. Consequences. This becomes binding.",
+            persona: .futureYou,
+            showAvatar: true,
+            emphasize: false
+        ))
+    ),
+
+    ConversionOnboardingStep(
+        id: 36,
+        type: .aiCommentary(config: AICommentaryConfig(
+            message: "Last voice commitment. You're not talking to me. Talk to the version of you who'll want to quit in 3 days. What does THAT person need to hear from THIS person—the one who still believes?",
+            persona: .accountability,
+            showAvatar: true,
+            emphasize: false
+        ))
+    ),
+
+    // ==========================================
+    // PHASE 7: COMMITMENT SETUP (Steps 37-46)
+    // ==========================================
+
+    ConversionOnboardingStep(
+        id: 37,
         type: .debate(messages: [
             DebateMessage(speaker: .hopeful, text: "Are you actually ready this time?", delay: 0.5),
             DebateMessage(speaker: .doubtful, text: "Or are we wasting our time?", delay: 1.5)
@@ -340,7 +407,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 32,
+        id: 38,
         type: .input(config: InputConfig(
             question: "What's your daily commitment?",
             inputType: .text(placeholder: "e.g., 30 min coding, 1 hour gym, 5 sales calls"),
@@ -350,7 +417,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 33,
+        id: 39,
         type: .input(config: InputConfig(
             question: "What time should I call you?",
             inputType: .timePicker,
@@ -360,7 +427,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 34,
+        id: 40,
         type: .input(config: InputConfig(
             question: "How many strikes before you're out?",
             inputType: .numberStepper(range: 1...5),
@@ -370,7 +437,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 35,
+        id: 41,
         type: .input(config: InputConfig(
             question: "Will you actually follow through?",
             inputType: .voice(minDuration: 15, maxDuration: 30),
@@ -379,8 +446,19 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
         ))
     ),
 
+    // CELEBRATION 4
     ConversionOnboardingStep(
-        id: 36,
+        id: 42,
+        type: .aiCommentary(config: AICommentaryConfig(
+            message: "Three voice commitments. 90% quit before this point. You're not them.",
+            persona: .futureYou,
+            showAvatar: true,
+            emphasize: false
+        ))
+    ),
+
+    ConversionOnboardingStep(
+        id: 43,
         type: .input(config: InputConfig(
             question: "Who should know if you fail?",
             inputType: .text(placeholder: "Name your witness"),
@@ -390,7 +468,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 37,
+        id: 44,
         type: .aiCommentary(config: AICommentaryConfig(
             message: "I've heard your commitment. Now choose your path.",
             persona: .futureYou,
@@ -400,11 +478,11 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     // ==========================================
-    // PHASE 8: FINAL DECISION (Steps 38-41)
+    // PHASE 8: FINAL DECISION (Steps 45-51)
     // ==========================================
 
     ConversionOnboardingStep(
-        id: 38,
+        id: 45,
         type: .input(config: InputConfig(
             question: "Will you actually do this?",
             inputType: .choice(options: [
@@ -417,7 +495,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 39,
+        id: 46,
         type: .debate(messages: [
             DebateMessage(speaker: .hopeful, text: "Then prove it.", delay: 0.5),
             DebateMessage(speaker: .doubtful, text: "We'll see.", delay: 1.5)
@@ -425,7 +503,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 40,
+        id: 47,
         type: .input(config: InputConfig(
             question: "Which future do you choose?",
             inputType: .choice(options: [
@@ -438,10 +516,21 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 41,
+        id: 48,
         type: .aiCommentary(config: AICommentaryConfig(
             message: "Here's what happens next. The real system. Are you ready to commit?",
             persona: .accountability,
+            showAvatar: true,
+            emphasize: true
+        ))
+    ),
+
+    // FINAL CELEBRATION
+    ConversionOnboardingStep(
+        id: 49,
+        type: .aiCommentary(config: AICommentaryConfig(
+            message: "42 complete. You did what most people won't. You answered questions you've never been asked. You recorded your voice three times. You saw the system. You made your choice. One thing left: investment.",
+            persona: .futureYou,
             showAvatar: true,
             emphasize: true
         ))

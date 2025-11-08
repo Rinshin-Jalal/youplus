@@ -34,7 +34,12 @@
       "Bash(git commit:*)",
       "Bash(git worktree:*)",
       "Bash(test:*)",
-      "Skill(brainstroming)"
+      "Skill(brainstroming)",
+      "WebFetch(domain:docs.cartesia.ai)",
+      "WebFetch(domain:docs.livekit.io)",
+      "WebFetch(domain:supermemory.ai)",
+      "WebFetch(domain:betterstack.com)",
+      "WebFetch(domain:cartesia.ai)"
     ],
     "deny": [],
     "ask": []

@@ -13,6 +13,7 @@ enum AppScreen {
     case welcome
     case onboarding
     // case almostThere  // Removed from flow - onboarding goes directly to paywall
+    case paywallIntro // Story-aligned intro before paywall
     case paywall
     case secretPlan // Secret plan paywall $2.99/week starter
     case login // Login screen after payment
@@ -100,13 +101,19 @@ struct RootView: View {
                     // Save completed onboarding data in navigator
                     navigator.conversionOnboardingResponse = response
 
-                    // Navigate directly to paywall (skip AlmostThere)
-                    navigator.currentScreen = .paywall
+                    // Navigate to paywall intro (story-aligned framing before transaction)
+                    navigator.currentScreen = .paywallIntro
                 })
 
             // case .almostThere:
             //     AlmostThereSimpleView()
             //         .environmentObject(navigator)
+
+            case .paywallIntro:
+                PaywallIntroView(onContinue: {
+                    // Continue to actual paywall
+                    navigator.currentScreen = .paywall
+                })
 
             case .paywall:
                 PaywallContainerView(source: "conversion_onboarding")
