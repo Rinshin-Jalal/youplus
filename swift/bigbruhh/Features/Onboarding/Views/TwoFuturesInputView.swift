@@ -424,7 +424,7 @@ struct TwoFuturesInputView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 70)
                 }
-                .applyVoiceGlassEffect(prominent: true, accentColor: .brutalRed)
+                .applyVoiceGlassEffect(prominent: true, accentColor: Color.brutalRed)
             } else {
                 // Recording controls
                 HStack(spacing: 12) {
@@ -442,7 +442,7 @@ struct TwoFuturesInputView: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
                     }
-                    .applyVoiceGlassEffect(prominent: false, accentColor: .brutalRed)
+                    .applyVoiceGlassEffect(prominent: false, accentColor: Color.brutalRed)
 
                     // Submit button with remaining time
                     Button(action: { stopVoiceRecording(); handleSubmit() }) {
@@ -459,7 +459,7 @@ struct TwoFuturesInputView: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
                     }
-                    .applyVoiceGlassEffect(prominent: canSubmitVoice, accentColor: .brutalRed)
+                    .applyVoiceGlassEffect(prominent: canSubmitVoice, accentColor: Color.brutalRed)
                     .disabled(!canSubmitVoice)
                 }
             }
