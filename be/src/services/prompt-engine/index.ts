@@ -51,7 +51,6 @@ export {
 export { generateOnboardingIntelligence } from "./core/onboarding-intel";
 export {
   generateBehavioralIntelligence,
-  generateMemoryContext,
   generatePatternAnalysis,
 } from "./core/behavioral-intel";
 export { generateBigBruhIdentity, getToneDescription } from "../tone-engine";

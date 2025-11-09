@@ -651,13 +651,8 @@ export class ElevenLabsWebhookHandler {
 
           // Generate embedding for promise analysis
           if (insertedPromise?.id) {
-            await this.generatePromiseEmbedding(
-              insertedPromise.id,
-              userId,
-              promise,
-              conversationId,
-              supabase,
-            );
+          // Memory embeddings removed (deprecated in Super MVP)
+          // Promise embedding generation disabled
           }
         }
       }
@@ -716,13 +711,8 @@ export class ElevenLabsWebhookHandler {
 
           // Generate reflection embedding if details provided
           if (details) {
-            await this.generateReflectionEmbedding(
-              promiseId,
-              userId,
-              details,
-              conversationId,
-              supabase,
-            );
+          // Memory embeddings removed (deprecated in Super MVP)
+          // Reflection embedding generation disabled
           }
 
           console.log(`✅ Updated promise ${promiseId} to status: ${status}`);
@@ -769,13 +759,8 @@ export class ElevenLabsWebhookHandler {
           }
 
           // Generate excuse embedding for pattern analysis
-          await this.generateExcuseEmbedding(
-            relatedPromise?.id || null,
-            userId,
-            excuseText,
-            conversationId,
-            supabase,
-          );
+          // Memory embeddings removed (deprecated in Super MVP)
+          // Excuse embedding generation disabled
 
           console.log(
             `🔍 Processed excuse: "${excuseText.substring(0, 50)}..."`,
@@ -980,135 +965,6 @@ export class ElevenLabsWebhookHandler {
     return null;
   }
 
-  private async generatePromiseEmbedding(
-    promiseId: string,
-    userId: string,
-    promiseText: string,
-    conversationId: string,
-    supabase: any,
-  ): Promise<void> {
-    try {
-      // This would integrate with your OpenAI service
-      // const embedding = await generateEmbedding(promiseText);
-
-      // For now, create a placeholder record
-      await supabase
-        .from("memory_embeddings")
-        .insert({
-          user_id: userId,
-          source_id: promiseId,
-          content_type: "promise",
-          text_content: promiseText,
-          embedding: [], // Would be actual embedding vector
-          metadata: {
-            conversation_id: conversationId,
-            created_during_call: true,
-            promise_priority: this.inferPromisePriority(promiseText),
-            category: await this.categorizePromise(promiseText),
-          },
-        });
-
-      console.log(`🧠 Generated embedding for promise: ${promiseId}`);
-    } catch (error) {
-      console.error("Promise embedding generation error:", error);
-    }
-  }
-
-  private async generateExcuseEmbedding(
-    promiseId: string | null,
-    userId: string,
-    excuseText: string,
-    conversationId: string,
-    supabase: any,
-  ): Promise<void> {
-    try {
-      await supabase
-        .from("memory_embeddings")
-        .insert({
-          user_id: userId,
-          source_id: promiseId || `excuse-${conversationId}`,
-          content_type: "excuse",
-          text_content: excuseText,
-          embedding: [], // Would be actual embedding vector
-          metadata: {
-            conversation_id: conversationId,
-            related_promise_id: promiseId,
-            excuse_category: this.categorizeExcuse(excuseText),
-          },
-        });
-
-      console.log(
-        `🔍 Generated excuse embedding for text: "${
-          excuseText.substring(0, 30)
-        }..."`,
-      );
-    } catch (error) {
-      console.error("Excuse embedding generation error:", error);
-    }
-  }
-
-  private async generateReflectionEmbedding(
-    promiseId: string,
-    userId: string,
-    reflectionText: string,
-    conversationId: string,
-    supabase: any,
-  ): Promise<void> {
-    try {
-      await supabase
-        .from("memory_embeddings")
-        .insert({
-          user_id: userId,
-          source_id: promiseId,
-          content_type: "breakthrough", // Using existing content type
-          text_content: reflectionText,
-          embedding: [], // Would be actual embedding vector
-          metadata: {
-            conversation_id: conversationId,
-            promise_id: promiseId,
-            reflection_type: "completion_reflection",
-          },
-        });
-
-      console.log(
-        `💭 Generated reflection embedding for promise: ${promiseId}`,
-      );
-    } catch (error) {
-      console.error("Reflection embedding generation error:", error);
-    }
-  }
-
-  private categorizeExcuse(excuseText: string): string {
-    const categories = {
-      time_management: ["no time", "too busy", "ran out of time", "schedule"],
-      procrastination: ["later", "tomorrow", "putting off", "delay"],
-      external_factors: ["weather", "traffic", "other people", "circumstances"],
-      health_issues: ["sick", "tired", "exhausted", "health", "pain"],
-      technical_problems: [
-        "computer",
-        "internet",
-        "app",
-        "technical",
-        "system",
-      ],
-      overwhelm: ["overwhelmed", "too much", "stressed", "burned out"],
-      motivation: ["not motivated", "not feeling it", "not in mood"],
-    };
-
-    const lowerText = excuseText.toLowerCase();
-
-    for (const [category, keywords] of Object.entries(categories)) {
-      if (keywords.some((keyword) => lowerText.includes(keyword))) {
-        return category;
-      }
-    }
-
-    return "other";
-  }
-
-  /**
-   * Infer data type from value for storage
-   */
   private inferDataType(value: any): string {
     if (typeof value === "boolean") return "boolean";
     if (typeof value === "number") {

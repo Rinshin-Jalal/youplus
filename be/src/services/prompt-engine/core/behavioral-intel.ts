@@ -5,7 +5,7 @@
  * Focuses on streak tracking and performance patterns without bloated metrics.
  */
 
-import { MemoryEmbedding, MemoryInsights, UserPromise, IdentityStatus, Identity } from "@/types/database";
+import { MemoryInsights, UserPromise, IdentityStatus, Identity } from "@/types/database";
 
 /**
  * Generates behavioral pattern analysis from memory insights and identity status data (Super MVP)
@@ -68,40 +68,6 @@ export function generateBehavioralIntelligence(
   intelligence += `**Last Call**: ${lastCallAt || 'Never'}\n\n`;
 
   return intelligence;
-}
-
-/**
- * Generates memory context from user memory embeddings
- */
-export function generateMemoryContext(memories: MemoryEmbedding[]): string {
-  if (memories.length === 0) {
-    return "No significant memory patterns detected.";
-  }
-
-  const excuses = memories
-    .filter((m) => m.content_type === "excuse")
-    .slice(0, 3);
-  const echos = memories.filter((m) => m.content_type === "echo").slice(0, 2);
-
-  let context = "";
-
-  if (excuses.length > 0) {
-    context += "RECURRING EXCUSES:\n";
-    excuses.forEach((excuse, i) => {
-      context += `${i + 1}. "${excuse.text_content}"\n`;
-    });
-    context += "\n";
-  }
-
-  if (echos.length > 0) {
-    context += "POWERFUL MOMENTS:\n";
-    echos.forEach((echo, i) => {
-      context += `${i + 1}. "${echo.text_content}"\n`;
-    });
-    context += "\n";
-  }
-
-  return context;
 }
 
 /**

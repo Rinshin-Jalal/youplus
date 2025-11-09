@@ -64,7 +64,6 @@ export async function getPromptForCall(
 
   // Use Identity data directly for personalization
   let identityData: any = null;
-  let relatedMemoriesBlock: string | null = null;
   try {
     // Use Identity data directly from userContext
     identityData = userContext.identity;
@@ -75,40 +74,8 @@ export async function getPromptForCall(
         }`
       );
     }
-    // Build related memories payload using today context
-    try {
-      // Super MVP: primary_excuse now in onboarding_context
-      const context = userContext?.identity?.onboarding_context as any;
-      const queryContext =
-        userContext?.todayPromises?.[0]?.promise_text ||
-        context?.favorite_excuse ||
-        "morning routine";
-      const { buildRelatedMemoriesPayload } = await import(
-        "@/services/embedding-services/memory"
-      );
-      const payload = await buildRelatedMemoriesPayload(
-        userContext.user.id,
-        String(queryContext),
-        env,
-        0.7,
-        5
-      );
-      // Format as minimal block
-      const lines: string[] = [];
-      lines.push(`# Related Memories (Top-3)`);
-      payload.related_memories.forEach((m, i) => {
-        lines.push(
-          `- ${i + 1}. "${m.text}" (${m.date}${
-            m.emotion ? ", emotion: " + m.emotion : ""
-          })`
-        );
-      });
-      lines.push(``);
-      lines.push(`**Pattern Summary**: ${payload.pattern_summary}`);
-      relatedMemoriesBlock = lines.join("\n");
-    } catch (e) {
-      console.warn("Related memories enrichment failed", e);
-    }
+    // Memory embeddings removed (deprecated in Super MVP)
+    // Related memories feature disabled - using pattern_profile from identity_status instead
   } catch (error) {
     console.error("Failed to extract onboarding data:", error);
   }
@@ -127,9 +94,6 @@ export async function getPromptForCall(
       identityData,
       "daily_reckoning"
     );
-    if (relatedMemoriesBlock) {
-      result.systemPrompt += `\n\n${relatedMemoriesBlock}`;
-    }
     // Append nightly pattern profile block (or insights fallback)
     try {
       const profile =
