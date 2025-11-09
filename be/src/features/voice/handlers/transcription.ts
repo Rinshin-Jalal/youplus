@@ -92,8 +92,7 @@ export const postTranscribeAudio = async (c: Context) => {
 /**
  * Transcribe audio using Deepgram API
  * 
- * REUSED LOGIC: Same transcription logic from unified-identity-extractor
- * but extracted for frontend use during onboarding
+ * Transcription logic for converting audio to text during onboarding
  */
 async function transcribeAudioWithDeepgram(audioBuffer: ArrayBuffer, env: Env): Promise<string> {
   try {
