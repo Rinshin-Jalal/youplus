@@ -12,6 +12,7 @@
 import Foundation
 import Combine
 import AVFoundation
+import LiveKit
 
 extension CallSessionController {
     /// Updated to support both ElevenLabs (legacy) and LiveKit (current)
@@ -23,7 +24,7 @@ extension CallSessionController {
     ) {
         guard case .awaitingPrompts = state else { return }
 
-        state = .preparing
+        updateState(.preparing)
 
         // Initialize LiveKit manager
         let liveKitManager = LiveKitManager()
@@ -43,7 +44,7 @@ extension CallSessionController {
                 // Connection successful - state updated via delegate
                 print("✅ LiveKit session started")
             } catch {
-                self.state = .failed(error)
+                self.updateState(.failed(error))
                 self.delegate?.callSessionController(self, didFailWith: error)
             }
         }
@@ -56,7 +57,7 @@ extension CallSessionController {
                 await liveKitManager.disconnect()
             }
         }
-        state = .completed
+        updateState(.completed)
         delegate?.callSessionControllerDidFinish(self)
     }
 
@@ -91,19 +92,19 @@ extension CallSessionController {
 // MARK: - LiveKit Manager Delegate
 
 extension CallSessionController: LiveKitManagerDelegate {
-    func liveKitManager(_ manager: LiveKitManager, didConnect to room: String) {
+    func liveKitManager(_ manager: LiveKitManager, didConnectTo room: String) {
         // Connection successful - update state
-        state = .streaming
+        updateState(.streaming)
         delegate?.callSessionControllerDidStart(self)
         print("📞 Call connected: \(room)")
     }
 
-    func liveKitManager(_ manager: LiveKitManager, didDisconnect with error: Error?) {
+    func liveKitManager(_ manager: LiveKitManager, didDisconnectWith error: Error?) {
         if let error = error {
-            state = .failed(error)
+            updateState(.failed(error))
             delegate?.callSessionController(self, didFailWith: error)
         } else {
-            state = .completed
+            updateState(.completed)
             delegate?.callSessionControllerDidFinish(self)
         }
     }

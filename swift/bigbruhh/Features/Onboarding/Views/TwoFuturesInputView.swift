@@ -420,11 +420,11 @@ struct TwoFuturesInputView: View {
                             .font(.system(size: 16, weight: .bold))
                             .tracking(1.5)
                     }
-                    .foregroundColor(Color.buttonTextColor(for: Color(hex: "#4A90E2")))
+                    .foregroundColor(Color.buttonTextColor(for: .brutalRed))
                     .frame(maxWidth: .infinity)
                     .frame(height: 70)
                 }
-                .applyVoiceGlassEffect(prominent: true, accentColor: Color(hex: "#4A90E2"))
+                .applyVoiceGlassEffect(prominent: true, accentColor: .brutalRed)
             } else {
                 // Recording controls
                 HStack(spacing: 12) {
@@ -442,24 +442,24 @@ struct TwoFuturesInputView: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
                     }
-                    .applyVoiceGlassEffect(prominent: false, accentColor: Color(hex: "#4A90E2"))
+                    .applyVoiceGlassEffect(prominent: false, accentColor: .brutalRed)
 
                     // Submit button with remaining time
                     Button(action: { stopVoiceRecording(); handleSubmit() }) {
                         HStack(spacing: 8) {
                             Image(systemName: "checkmark")
                                 .font(.system(size: 14))
-                                .foregroundColor(canSubmitVoice ? Color.buttonTextColor(for: Color(hex: "#4A90E2")) : nil)
+                                .foregroundColor(canSubmitVoice ? Color.buttonTextColor(for: .brutalRed) : nil)
                             Text(canSubmitVoice ? "SUBMIT" : voiceSubmitText)
                                 .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(canSubmitVoice ? Color.buttonTextColor(for: Color(hex: "#4A90E2")) : nil)
+                                .foregroundColor(canSubmitVoice ? Color.buttonTextColor(for: .brutalRed) : nil)
                                 .tracking(1)
                                 .textCase(.uppercase)
                         }
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
                     }
-                    .applyVoiceGlassEffect(prominent: canSubmitVoice, accentColor: Color(hex: "#4A90E2"))
+                    .applyVoiceGlassEffect(prominent: canSubmitVoice, accentColor: .brutalRed)
                     .disabled(!canSubmitVoice)
                 }
             }

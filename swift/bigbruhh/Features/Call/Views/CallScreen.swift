@@ -18,9 +18,15 @@ struct CallScreen: View {
     @State private var showTextInput = false
     @State private var messageText = ""
     @State private var typedText = "Connecting to your accountability system..."
-    @State private var timerCancellable: AnyCancellable?
-    @State private var bindingCancellables = Set<AnyCancellable>()
+    @State private var timerTask: Task<Void, Never>?
+    @State private var stateObserverTask: Task<Void, Never>?
+    @State private var promptObserverTask: Task<Void, Never>?
 
+    // MARK: - Performance Optimizations
+    // Cache expensive gradient computations to prevent repeated body recomputation
+    @State private var cachedGradientDisconnected: AnyView?
+    @State private var cachedGradientConnected: AnyView?
+    @State private var cachedGlowEffect: AnyView?
     var body: some View {
         ZStack {
             backgroundView
@@ -43,40 +49,76 @@ struct CallScreen: View {
         .onAppear(perform: configureBindings)
         .onDisappear(perform: teardown)
         .animation(.easeInOut(duration: 0.3), value: callStateStore.state.phase)
+        .task {
+            // Pre-cache gradients on first appearance to avoid recomputation
+            if cachedGradientDisconnected == nil {
+                cachedGradientDisconnected = AnyView(baseGradientDisconnected)
+                cachedGradientConnected = AnyView(baseGradientConnected)
+                cachedGlowEffect = AnyView(glowEffect)
+            }
+        }
+    }
+
+    // Cached gradient views for performance - computed once and reused
+    private var baseGradientDisconnected: some View {
+        LinearGradient(
+            colors: [Color.brutalBlack, Color.brutalRed.opacity(0.08)],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea()
+    }
+
+    private var baseGradientConnected: some View {
+        LinearGradient(
+            colors: [Color.brutalBlack, Color.brutalRed.opacity(0.35)],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea()
+    }
+
+    private var glowEffect: some View {
+        RadialGradient(
+            gradient: Gradient(colors: [
+                Color.brutalRed.opacity(0.4),
+                Color.brutalRed.opacity(0.0)
+            ]),
+            center: .center,
+            startRadius: 100,
+            endRadius: 500
+        )
+        .ignoresSafeArea()
+    }
+
+    @ViewBuilder
+    private func background(for phase: CallSessionState.Phase) -> some View {
+        ZStack {
+            Color.brutalBlack.ignoresSafeArea()
+
+            if phase == .connected {
+                if let cached = cachedGradientConnected {
+                    cached
+                } else {
+                    baseGradientConnected
+                }
+                if let cached = cachedGlowEffect {
+                    cached
+                } else {
+                    glowEffect
+                }
+            } else {
+                if let cached = cachedGradientDisconnected {
+                    cached
+                } else {
+                    baseGradientDisconnected
+                }
+            }
+        }
     }
 
     private var backgroundView: some View {
-        ZStack {
-            Color.brutalBlack
-                .ignoresSafeArea()
-
-            // INTENSE gradient overlay - make it brutal when connected
-            LinearGradient(
-                colors: [
-                    Color.brutalBlack,
-                    callStateStore.state.phase == .connected ?
-                        Color.brutalRed.opacity(0.35) :  // Increased from 0.15 to 0.35
-                        Color.brutalRed.opacity(0.08)    // Increased from 0.05 to 0.08
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-
-            // RED GLOW when connected - demands attention
-            if callStateStore.state.phase == .connected {
-                RadialGradient(
-                    gradient: Gradient(colors: [
-                        Color.brutalRed.opacity(0.4),
-                        Color.brutalRed.opacity(0.0)
-                    ]),
-                    center: .center,
-                    startRadius: 100,
-                    endRadius: 500
-                )
-                .ignoresSafeArea()
-            }
-        }
+        background(for: callStateStore.state.phase)
     }
 
     private var titleSection: some View {
@@ -227,50 +269,74 @@ struct CallScreen: View {
     }
 
     private func configureBindings() {
-        timerCancellable = Timer.publish(every: 1, on: .main, in: .common)
-            .autoconnect()
-            .sink { _ in
-                guard let startedAt = callStateStore.state.startedAt else { return }
-                let elapsedTime = Date().timeIntervalSince(startedAt)
-                let minutes = Int(elapsedTime) / 60
-                let seconds = Int(elapsedTime) % 60
-                elapsed = String(format: "%02d:%02d", minutes, seconds)
-            }
+        startElapsedTimer()
+        observeSessionState()
+        observePromptResponse()
+    }
 
-        sessionController.$state
-            .receive(on: RunLoop.main)
-            .sink { state in
-                switch state {
-                case .awaitingPrompts:
-                    typedText = "Lock in. BigBruh is loading your judgement."
-                case .preparing:
-                    typedText = "Hold steady."
-                case .streaming:
-                    typedText = "Hold the line. BigBruh is on."
-                case .completed:
-                    typedText = "Stay ruthless."
-                case .failed(let error):
-                    typedText = "Connection failed: \(error.localizedDescription)"
-                case .idle:
-                    break
+    private func startElapsedTimer() {
+        timerTask = Task { @MainActor in
+            while !Task.isCancelled {
+                guard let startedAt = callStateStore.state.startedAt else {
+                    try? await Task.sleep(for: .seconds(1))
+                    continue
                 }
-            }
-            .store(in: &bindingCancellables)
 
-        sessionController.$promptResponse
-            .compactMap { $0 }
-            .receive(on: RunLoop.main)
-            .sink { _ in
+                // Optimize: Calculate elapsed time off main thread, update UI on main thread
+                let elapsedTime = Date().timeIntervalSince(startedAt)
+                let formatted = String(format: "%02d:%02d", Int(elapsedTime) / 60, Int(elapsedTime) % 60)
+
+                // Only update if changed to prevent unnecessary view updates
+                if formatted != elapsed {
+                    elapsed = formatted
+                }
+
+                try? await Task.sleep(for: .seconds(1))
+            }
+        }
+    }
+
+    private func observeSessionState() {
+        stateObserverTask = Task { @MainActor in
+            for await state in sessionController.$state.values {
+                updateTypedText(for: state)
+            }
+        }
+    }
+
+    private func observePromptResponse() {
+        promptObserverTask = Task { @MainActor in
+            for await response in sessionController.$promptResponse.values {
+                guard response != nil else { continue }
                 callStateStore.markPromptsReady()
             }
-            .store(in: &bindingCancellables)
+        }
+    }
+
+    private func updateTypedText(for state: CallSessionController.State) {
+        switch state {
+        case .awaitingPrompts:
+            typedText = "Lock in. BigBruh is loading your judgement."
+        case .preparing:
+            typedText = "Hold steady."
+        case .streaming:
+            typedText = "Hold the line. BigBruh is on."
+        case .completed:
+            typedText = "Stay ruthless."
+        case .failed(let error):
+            typedText = "Connection failed: \(error.localizedDescription)"
+        case .idle:
+            break
+        }
     }
 
     private func teardown() {
-        timerCancellable?.cancel()
-        timerCancellable = nil
-        bindingCancellables.forEach { $0.cancel() }
-        bindingCancellables.removeAll()
+        timerTask?.cancel()
+        timerTask = nil
+        stateObserverTask?.cancel()
+        stateObserverTask = nil
+        promptObserverTask?.cancel()
+        promptObserverTask = nil
     }
 
     private func toggleMute() {

@@ -27,7 +27,7 @@ struct WelcomeView: View {
 
                 Spacer()
 
-                // Action buttons
+                // Action buttons q
                 VStack(spacing: Spacing.md) {
                     // FLAT red button - brutalist
                     Button(action: handleStartTalking) {

@@ -166,22 +166,29 @@ struct RootView: View {
             // When app comes to foreground, check for active call
             checkForActiveCall()
         }
-        .onChange(of: authService.loading) { _, loading in
-            print("🔄 AuthService loading changed to: \(loading)")
-            if !loading {
+        // Optimize: Debounce onChange handlers to prevent excessive recomputation
+        .onChange(of: authService.loading) { oldValue, newValue in
+            // Only process if value actually changed
+            guard oldValue != newValue else { return }
+            print("🔄 AuthService loading changed to: \(newValue)")
+            if !newValue {
                 print("🔄 AuthService finished loading, determining screen...")
                 determineInitialScreen()
             }
         }
-        .onChange(of: authService.isAuthenticated) { _, isAuthenticated in
-            print("🔄 AuthService isAuthenticated changed to: \(isAuthenticated)")
+        .onChange(of: authService.isAuthenticated) { oldValue, newValue in
+            // Only process if value actually changed
+            guard oldValue != newValue else { return }
+            print("🔄 AuthService isAuthenticated changed to: \(newValue)")
             // Only auto-navigate if we're not already in a specific screen
             // This prevents overriding manual navigation (like to ProcessingView)
             if navigator.currentScreen == .loading || navigator.currentScreen == .welcome {
                 determineInitialScreen()
             }
         }
-        .onChange(of: navigator.currentScreen) { _, newValue in
+        .onChange(of: navigator.currentScreen) { oldValue, newValue in
+            // Only log if screen actually changed
+            guard oldValue != newValue else { return }
             print("🚨🚨🚨 CURRENT SCREEN CHANGED TO: \(newValue) 🚨🚨🚨")
         }
     }

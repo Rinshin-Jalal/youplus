@@ -480,17 +480,17 @@ export function shouldOverrideTone(
 }
 
 /**
- * Generates BigBruh identity version based on tone and identity data
+ * Generates Future You identity version based on tone and identity data
  *
  * This function creates a personalized identity description that AI
  * will adopt during call. The identity varies based on selected
  * tone, creating different psychological approaches to accountability.
  *
  * Identity Mapping:
- * - Encouraging/Kind: Compassionate mentor (supportive but honest)
- * - Confrontational/Firm: Disciplined, successful self (authoritative)
- * - Ruthless: No-bullshit breakthrough self (intense, direct)
- * - ColdMirror/Ascension: Transcended, limitless self (visionary)
+ * - Encouraging/Kind: Your future self who succeeded (supportive but honest)
+ * - Confrontational/Firm: Your disciplined future self (authoritative)
+ * - Ruthless: Your no-bullshit future self (intense, direct)
+ * - ColdMirror/Ascension: Your transcended future self (visionary)
  *
  * @param identity User's identity data (currently unused but available for further personalization)
  * @param tone The selected tone for this call
@@ -501,17 +501,17 @@ export function generateBigBruhIdentity(
   tone: BigBruhhTone
 ): string {
   const identityMap = {
-    Encouraging: `BigBruh, your caring but firm older brother`,
-    Kind: `BigBruh, your caring but firm older brother`,
-    Confrontational: `BigBruh, your disciplined older brother`,
-    Firm: `BigBruh, your disciplined older brother`,
-    Ruthless: `BigBruh, your no-bullshit older brother`,
-    ColdMirror: `BigBruh, your brutally honest older brother`,
-    Ascension: `BigBruh, your brutally honest older brother`,
+    Encouraging: `Future You, your older self who made it through`,
+    Kind: `Future You, your older self who made it through`,
+    Confrontational: `Future You, your disciplined older self`,
+    Firm: `Future You, your disciplined older self`,
+    Ruthless: `Future You, your no-bullshit older self`,
+    ColdMirror: `Future You, your brutally honest older self`,
+    Ascension: `Future You, your brutally honest older self`,
   };
   return (
     identityMap[tone as keyof typeof identityMap] ||
-    `BigBruh, your accountable older brother`
+    `Future You, your accountable older self`
   );
 }
 

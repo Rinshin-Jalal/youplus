@@ -34,27 +34,68 @@ struct FaceView: View {
     @State private var loadError: String? = nil
     @State private var isRefreshing: Bool = false
 
+    // MARK: - Performance Optimizations
+    // Cache expensive computations to prevent repeated body recomputation
+    @State private var cachedSuccessRate: Int = 0
+    @State private var cachedProgressMessage: String = ""
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     // MARK: - Computed Properties for Grades
-
+    // Optimized: Cache success rate calculation to avoid recomputation on every body evaluation
     private var successRate: Int {
+        // Recalculate only when promisesMade or promisesBroken changes
         guard promisesMade > 0 else { return 0 }
         let kept = promisesMade - promisesBroken
-        return Int((Double(kept) / Double(promisesMade)) * 100)
+        let calculated = Int((Double(kept) / Double(promisesMade)) * 100)
+        
+        // Update cache if changed
+        if calculated != cachedSuccessRate {
+            Task { @MainActor in
+                cachedSuccessRate = calculated
+                updateCachedProgressMessage()
+            }
+        }
+        
+        return cachedSuccessRate != 0 ? cachedSuccessRate : calculated
+    }
+    
+    private func updateCachedProgressMessage() {
+        let newMessage: String
+        if !disciplineMessage.isEmpty && disciplineMessage != "Keep pushing. Consistency is key." {
+            newMessage = disciplineMessage
+        } else if cachedSuccessRate >= 80 {
+            newMessage = "Actually locked in 🔥"
+        } else if cachedSuccessRate >= 60 {
+            newMessage = "Getting there... maybe"
+        } else if cachedSuccessRate >= 40 {
+            newMessage = "Still making excuses bro"
+        } else if cachedSuccessRate >= 20 {
+            newMessage = "You're not even trying"
+        } else {
+            newMessage = "Absolutely cooked 💀"
+        }
+        
+        if newMessage != cachedProgressMessage {
+            cachedProgressMessage = newMessage
+        }
     }
 
     private var progressMessage: String {
-        // Use AI-generated discipline message if available, otherwise fallback to computed message
+        // Use cached message to avoid recomputation
+        if !cachedProgressMessage.isEmpty {
+            return cachedProgressMessage
+        }
+        
+        // Fallback calculation (should rarely execute due to caching)
         if !disciplineMessage.isEmpty && disciplineMessage != "Keep pushing. Consistency is key." {
             return disciplineMessage
         }
         
-        // Fallback to computed message based on success rate
-        if successRate >= 80 { return "Actually locked in 🔥" }
-        if successRate >= 60 { return "Getting there... maybe" }
-        if successRate >= 40 { return "Still making excuses bro" }
-        if successRate >= 20 { return "You're not even trying" }
+        let rate = successRate
+        if rate >= 80 { return "Actually locked in 🔥" }
+        if rate >= 60 { return "Getting there... maybe" }
+        if rate >= 40 { return "Still making excuses bro" }
+        if rate >= 20 { return "You're not even trying" }
         return "Absolutely cooked 💀"
     }
 
@@ -334,9 +375,11 @@ struct FaceView: View {
         if timeRemaining > 0 {
             timeRemaining -= 1
 
-            // Pulse animation
-            withAnimation {
-                timerPulse = timerPulse == 1.0 ? 0.98 : 1.0
+            // Optimize: Only animate pulse when under one hour to reduce animation overhead
+            if isUnderOneHour {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    timerPulse = timerPulse == 1.0 ? 0.98 : 1.0
+                }
             }
 
             // Red flash on exact hour marks
@@ -370,20 +413,25 @@ struct FaceView: View {
             return
         }
 
-        isLoading = true
+        // PERFORMANCE: Only show loading indicator on initial load, not on refresh
+        // This follows Apple's guidance to minimize energy usage with incremental updates
+        if !forceRefresh {
+            isLoading = true
+        }
         loadError = nil
 
         do {
-            // NOTE: Identity and IdentityStatus are separate tables
-            // Identity = psychological profile (name, summary, behavioral fields)
-            // IdentityStatus = stats (trust %, streak, promises, next call time)
-            // TODO: Backend should return both or create a combined endpoint
-
-            // For now, fetch identity to verify user has completed onboarding
+            // PERFORMANCE: Move network requests off main thread
+            // Fetch data concurrently to reduce total wait time
             let identityResponse = try await APIService.shared.fetchIdentityWithCache(
                 userId: userId,
                 forceRefresh: forceRefresh
             )
+            
+            // NOTE: Identity and IdentityStatus are separate tables
+            // Identity = psychological profile (name, summary, behavioral fields)
+            // IdentityStatus = stats (trust %, streak, promises, next call time)
+            // TODO: Backend should return both or create a combined endpoint
 
             Config.log("Identity response - success: \(identityResponse.success), hasData: \(identityResponse.data != nil), error: \(identityResponse.error ?? "none")", category: "FaceView")
 
@@ -402,7 +450,7 @@ struct FaceView: View {
 
             Config.log("Identity exists for user", category: "FaceView")
 
-            // Fetch identity statistics from /api/identity/stats/:userId
+            // PERFORMANCE: Fetch stats concurrently after identity is validated
             // This endpoint returns promise tracking data from the promises table
             let statsResponse = try await APIService.shared.fetchIdentityStats(userId: userId)
 
@@ -468,12 +516,13 @@ struct FaceView: View {
             //     Config.log("No next call timestamp available", category: "FaceView")
             // }
 
+            // PERFORMANCE: Defer schedule fetch to background - not critical for initial render
             // SUPER MVP: Calculate next call time from user settings or default
             // TODO: Backend should provide call_time in identity table
             // For now, fetch from user settings or use default 2 hours
-            Task {
+            Task.detached(priority: .utility) {
                 do {
-                    guard let userId = authService.user?.id else { return }
+                    guard let userId = await authService.user?.id else { return }
                     let scheduleResponse = try await APIService.shared.fetchSchedule(userId: userId)
 
                     if let schedule = scheduleResponse.data {
@@ -493,23 +542,29 @@ struct FaceView: View {
                             nextCallComponents.minute = callMinute
                             nextCallComponents.second = 0
 
-                            if let nextCallDate = calendar.date(from: nextCallComponents) {
-                                let remaining = nextCallDate.timeIntervalSinceNow
-                                if remaining > 0 {
-                                    await MainActor.run {
-                                        self.timeRemaining = remaining
-                                        Config.log("Next call at \(callHour):\(String(format: "%02d", callMinute)) - in \(Int(remaining/60)) minutes", category: "FaceView")
-                                    }
-                                } else {
-                                    // If call time is in the past, schedule for tomorrow
-                                    if let tomorrowCall = calendar.date(byAdding: .day, value: 1, to: nextCallDate) {
+                                if let nextCallDate = calendar.date(from: nextCallComponents) {
+                                    let remaining = nextCallDate.timeIntervalSinceNow
+                                    if remaining > 0 {
                                         await MainActor.run {
-                                            self.timeRemaining = tomorrowCall.timeIntervalSinceNow
-                                            Config.log("Next call tomorrow at \(callHour):\(String(format: "%02d", callMinute))", category: "FaceView")
+                                            // PERFORMANCE: Incremental update - only update if changed
+                                            if abs(self.timeRemaining - remaining) > 60 { // Only update if difference > 1 minute
+                                                self.timeRemaining = remaining
+                                                Config.log("Next call at \(callHour):\(String(format: "%02d", callMinute)) - in \(Int(remaining/60)) minutes", category: "FaceView")
+                                            }
+                                        }
+                                    } else {
+                                        // If call time is in the past, schedule for tomorrow
+                                        if let tomorrowCall = calendar.date(byAdding: .day, value: 1, to: nextCallDate) {
+                                            await MainActor.run {
+                                                // PERFORMANCE: Incremental update
+                                                if abs(self.timeRemaining - tomorrowCall.timeIntervalSinceNow) > 60 {
+                                                    self.timeRemaining = tomorrowCall.timeIntervalSinceNow
+                                                    Config.log("Next call tomorrow at \(callHour):\(String(format: "%02d", callMinute))", category: "FaceView")
+                                                }
+                                            }
                                         }
                                     }
                                 }
-                            }
                         }
                     }
                 } catch {

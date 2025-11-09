@@ -151,4 +151,35 @@ final class CallStateStore: ObservableObject {
     func markEnded(reason: String?) {
         state.phase = .ended(reason: reason)
     }
+    
+    // MARK: - Internal State Management
+    // Allow external updates to state properties while maintaining encapsulation
+    
+    func updateProvider(_ provider: CallSessionState.Provider) {
+        state.provider = provider
+    }
+    
+    func updateRoomName(_ roomName: String?) {
+        state.roomName = roomName
+    }
+    
+    func updateLiveKitToken(_ token: String?) {
+        state.liveKitToken = token
+    }
+    
+    func updateCartesiaVoiceId(_ voiceId: String?) {
+        state.cartesiaVoiceId = voiceId
+    }
+    
+    func updateSupermemoryUserId(_ userId: String?) {
+        state.supermemoryUserId = userId
+    }
+    
+    func updateAgentId(_ agentId: String?) {
+        state.agentId = agentId
+    }
+    
+    func updateVoiceId(_ voiceId: String?) {
+        state.voiceId = voiceId
+    }
 }

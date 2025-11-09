@@ -13,7 +13,7 @@ struct VoiceRecorderView: View {
     let minDuration: Int?
     let maxDuration: Int?
     let onRecordingComplete: (URL) -> Void
-    var accentColor: Color = Color(hex: "#4A90E2") // Default blue for Two Futures
+    var accentColor: Color = .brutalRed // Default red to match other onboarding buttons
     var backgroundColor: Color = .black
     var textColor: Color = .white
 

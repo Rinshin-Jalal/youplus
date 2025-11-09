@@ -45,6 +45,12 @@ final class CallSessionController: NSObject, ObservableObject {
     private weak var conversationReference: AnyObject?
 
     private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - Internal State Management
+    // Allow extensions to update state while maintaining encapsulation
+    internal func updateState(_ newState: State) {
+        state = newState
+    }
 
     func beginCall(with callUUID: String, userToken: String) {
         guard case .idle = state else { return }

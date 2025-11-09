@@ -42,7 +42,9 @@ class OnboardingDataManager: ObservableObject {
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(state) {
             UserDefaults.standard.set(encoded, forKey: Keys.completedOnboardingData)
+            #if DEBUG
             print("💾 Completed onboarding data saved")
+            #endif
             loadCompletedData() // Update published property
         }
     }
@@ -52,7 +54,9 @@ class OnboardingDataManager: ObservableObject {
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(response) {
             UserDefaults.standard.set(encoded, forKey: Keys.twoFuturesData)
+            #if DEBUG
             print("💾 Two Futures onboarding data saved")
+            #endif
             loadTwoFuturesData() // Update published property
         }
     }
@@ -62,7 +66,9 @@ class OnboardingDataManager: ObservableObject {
         if let savedData = UserDefaults.standard.data(forKey: Keys.twoFuturesData),
            let decoded = try? JSONDecoder().decode(TwoFuturesOnboardingResponse.self, from: savedData) {
             twoFuturesData = decoded
+            #if DEBUG
             print("📂 Two Futures onboarding data loaded")
+            #endif
         }
     }
 
@@ -71,10 +77,12 @@ class OnboardingDataManager: ObservableObject {
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(response) {
             UserDefaults.standard.set(encoded, forKey: Keys.conversionData)
+            #if DEBUG
             print("💾 Conversion onboarding data saved")
             print("   Goal: \(response.goal)")
             print("   Time spent: \(Int(response.totalTimeSpent / 60)) minutes")
             print("   Voice recordings: 3 (whyItMatters, costOfQuitting, commitment)")
+            #endif
             loadConversionData() // Update published property
         }
     }
@@ -84,7 +92,9 @@ class OnboardingDataManager: ObservableObject {
         if let savedData = UserDefaults.standard.data(forKey: Keys.conversionData),
            let decoded = try? JSONDecoder().decode(ConversionOnboardingResponse.self, from: savedData) {
             conversionData = decoded
+            #if DEBUG
             print("📂 Conversion onboarding data loaded")
+            #endif
         }
     }
 
@@ -93,14 +103,18 @@ class OnboardingDataManager: ObservableObject {
         if let savedData = UserDefaults.standard.data(forKey: Keys.completedOnboardingData),
            let decoded = try? JSONDecoder().decode(OnboardingState.self, from: savedData) {
             completedData = decoded
+            #if DEBUG
             print("📂 Completed onboarding data loaded")
+            #endif
         }
     }
 
     /// Clear in-progress onboarding state (call on app init to force fresh start)
-    func clearInProgressState() {
+    func clearInProgressState() async {
         UserDefaults.standard.removeObject(forKey: Keys.inProgressState)
+        #if DEBUG
         print("🧹 In-progress onboarding state cleared - user will start fresh")
+        #endif
     }
 
     /// Clear all onboarding data (for logout/reset)
@@ -108,7 +122,9 @@ class OnboardingDataManager: ObservableObject {
         UserDefaults.standard.removeObject(forKey: Keys.completedOnboardingData)
         UserDefaults.standard.removeObject(forKey: Keys.inProgressState)
         completedData = nil
+        #if DEBUG
         print("🗑️ All onboarding data cleared")
+        #endif
     }
 
     // MARK: - Computed Properties for Quick Access

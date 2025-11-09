@@ -5,6 +5,8 @@
 
 import Foundation
 import PushKit
+import Supabase
+import Auth
 
 extension AppDelegate {
     /// Determine which call flow to use based on VoIP payload provider
@@ -35,11 +37,11 @@ extension AppDelegate {
         Config.log("   User: \(payload.userId)", category: "AppDelegate+LiveKit")
 
         // Store LiveKit-specific info in state
-        callStateStore.state.provider = .livekit
-        callStateStore.state.roomName = payload.roomName
-        callStateStore.state.liveKitToken = payload.liveKitToken
-        callStateStore.state.cartesiaVoiceId = payload.cartesiaVoiceId
-        callStateStore.state.supermemoryUserId = payload.supermemoryUserId
+        callStateStore.updateProvider(.livekit)
+        callStateStore.updateRoomName(payload.roomName)
+        callStateStore.updateLiveKitToken(payload.liveKitToken)
+        callStateStore.updateCartesiaVoiceId(payload.cartesiaVoiceId)
+        callStateStore.updateSupermemoryUserId(payload.supermemoryUserId)
 
         // Get LiveKit URL from config (should be set in environment/Config)
         let liveKitURL = Config.liveKitURL ?? "wss://livekit.example.com" // TODO: Set in Config
@@ -54,9 +56,9 @@ extension AppDelegate {
         Config.log("📞 Routing to ElevenLabs call (legacy)", category: "AppDelegate+LiveKit")
 
         // Store ElevenLabs-specific info in state
-        callStateStore.state.provider = .elevenlabs
-        callStateStore.state.agentId = payload.agentId
-        callStateStore.state.voiceId = payload.voiceId
+        callStateStore.updateProvider(.elevenlabs)
+        callStateStore.updateAgentId(payload.agentId)
+        callStateStore.updateVoiceId(payload.voiceId)
 
         Config.log("✅ ElevenLabs call routed", category: "AppDelegate+LiveKit")
     }
@@ -81,17 +83,19 @@ extension AppDelegate {
         Task {
             do {
                 guard let callUUID = callStateStore.state.uuid?.uuidString,
-                      let userToken = callStateStore.state.userToken,
+                      let session = SupabaseManager.shared.currentSession,
                       let baseURL = Config.backendURL else {
-                    Config.log("❌ Missing call UUID or user token", category: "AppDelegate+LiveKit")
+                    Config.log("❌ Missing call UUID, user session, or backend URL", category: "AppDelegate+LiveKit")
                     return
                 }
+                
+                let userToken = session.accessToken
 
                 // Fetch prompts from backend
                 var request = URLRequest(url: URL(string: "\(baseURL)/voip/session/prompts")!)
                 request.httpMethod = "POST"
                 request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-                request.addValue(userToken, forHTTPHeaderField: "Authorization")
+                request.addValue("Bearer \(userToken)", forHTTPHeaderField: "Authorization")
                 request.httpBody = try JSONSerialization.data(withJSONObject: ["callUUID": callUUID])
 
                 let (data, response) = try await URLSession.shared.data(for: request)
@@ -124,15 +128,5 @@ extension AppDelegate {
             sessionController.endLiveKitSession()
             Config.log("✅ LiveKit call ended", category: "AppDelegate+LiveKit")
         }
-    }
-}
-
-// MARK: - Config Extensions
-
-extension Config {
-    static var liveKitURL: String? {
-        // TODO: Load from environment or config file
-        // For now, can be set via environment variable
-        return ProcessInfo.processInfo.environment["LIVEKIT_URL"]
     }
 }

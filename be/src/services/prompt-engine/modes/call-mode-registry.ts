@@ -36,10 +36,10 @@ function buildPatternProfileBlock(profile: any): string {
 
 /**
  * Central registry - ONLY DAILY RECKONING MODE
- * BigBruh accountability system using single daily reckoning call
+ * Future You accountability system using single daily reckoning call
  */
 const CALL_MODE_REGISTRY = {
-  daily_reckoning: generateDailyReckoningMode, // ONLY call mode - BigBruh accountability
+  daily_reckoning: generateDailyReckoningMode, // ONLY call mode - Future You accountability
   // ALL OTHER MODES REMOVED - Only daily reckoning exists
 } as const;
 
@@ -60,7 +60,7 @@ export async function getPromptForCall(
 
   // Force all calls to use daily_reckoning mode
   const forcedCallType = "daily_reckoning";
-  console.log(`🚀 All calls redirected to BigBruh daily reckoning mode`);
+  console.log(`🚀 All calls redirected to Future You daily reckoning mode`);
 
   // Use Identity data directly for personalization
   let identityData: any = null;

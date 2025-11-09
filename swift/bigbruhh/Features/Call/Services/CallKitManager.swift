@@ -1,6 +1,7 @@
 import CallKit
 import Combine
 import LiveKit
+import AVFoundation
 
 struct CallKitConfiguration {
     let appName: String

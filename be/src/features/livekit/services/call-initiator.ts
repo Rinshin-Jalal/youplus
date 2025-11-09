@@ -49,6 +49,10 @@ export async function initiateLiveKitCall(
       config.callUUID
     );
 
+    // Create the room first to avoid race conditions
+    await createLiveKitRoom(env, roomName, config);
+    console.log(`✅ Created LiveKit room: ${roomName}`);
+
     // Generate JWT token for iOS client
     const tokenResult = await generateLiveKitToken(
       env,
@@ -105,6 +109,58 @@ export async function initiateLiveKitCall(
   } catch (error) {
     console.error("Error initiating LiveKit call:", error);
     throw new Error(`Failed to initiate LiveKit call: ${String(error)}`);
+  }
+}
+
+/**
+ * Create a LiveKit room
+ * Uses LiveKit Room Service API to create the room before participants join
+ */
+async function createLiveKitRoom(
+  env: Env,
+  roomName: string,
+  config: LiveKitRoomConfig
+): Promise<void> {
+  const liveKitUrl = (env.LIVEKIT_URL as string).replace("wss://", "https://");
+  const accessToken = await createAccessToken(env, "room-creator");
+
+  try {
+    const response = await fetch(`${liveKitUrl}/twirp/livekit.RoomService/CreateRoom`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        name: roomName,
+        emptyTimeout: 300, // 5 minutes - room closes if empty
+        maxParticipants: 10,
+        metadata: JSON.stringify({
+          userId: config.userId,
+          callUUID: config.callUUID,
+          callType: config.callType,
+          mood: config.mood,
+          cartesiaVoiceId: config.cartesiaVoiceId,
+          supermemoryUserId: config.supermemoryUserId,
+        }),
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      // Room might already exist - that's okay
+      if (errorText.includes("already exists")) {
+        console.log(`ℹ️ Room ${roomName} already exists, continuing...`);
+        return;
+      }
+      throw new Error(`Room creation failed: ${response.status} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log(`✅ Room created: ${roomName}`, result);
+  } catch (error) {
+    console.error("Error creating LiveKit room:", error);
+    throw error;
   }
 }
 
@@ -168,11 +224,12 @@ async function dispatchAgent(
   // Fall back to LiveKit Cloud Agents API
   try {
     const liveKitUrl = (env.LIVEKIT_URL as string).replace("wss://", "https://");
+    const accessToken = await createAccessToken(env, "agent-dispatch");
     const response = await fetch(`${liveKitUrl}/twirp/livekit.RoomService/CreateRoom`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${createAccessToken(env, "agent-dispatch")}`,
+        "Authorization": `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
         room: config.roomName,
@@ -194,18 +251,34 @@ async function dispatchAgent(
 }
 
 /**
- * Create a simple access token for LiveKit API calls
- * This is a simplified version - use livekit-server-sdk for production
+ * Create an access token for LiveKit API calls
+ * Uses proper JWT generation for API authentication
  */
-function createAccessToken(env: Env, identity: string): string {
-  // In production, use: import { AccessToken } from 'livekit-server-sdk'
-  // For now, return a simple token - this should be implemented properly
+async function createAccessToken(env: Env, identity: string): Promise<string> {
+  const { SignJWT } = await import('jose');
+
   const apiSecret = env.LIVEKIT_API_SECRET as string;
   const apiKey = env.LIVEKIT_API_KEY as string;
 
-  // TODO: Implement proper JWT token generation
-  // For now, return a placeholder
-  return `${apiKey}:${apiSecret}`;
+  // Create proper JWT token for API calls
+  const secret = new TextEncoder().encode(apiSecret);
+
+  const token = await new SignJWT({
+    sub: identity,
+    video: {
+      roomAdmin: true,
+      roomCreate: true,
+      roomList: true,
+      roomRecord: true,
+    },
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuer(apiKey)
+    .setIssuedAt()
+    .setExpirationTime('1h')
+    .sign(secret);
+
+  return token;
 }
 
 /**

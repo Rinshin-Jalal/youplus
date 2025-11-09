@@ -5,10 +5,22 @@ LLM: OpenAI GPT-4o-mini
 TTS: Cartesia Sonic-3
 
 Phase 3: Full integration with:
+- Backend prompt-engine integration (Future You accountability system)
 - Supermemory for context retrieval
 - Device tools for iOS interaction
 - Post-call processing
 - Conversation personality management
+
+PROMPT ENGINE INTEGRATION:
+This agent receives prompts from the backend prompt-engine system (be/src/services/prompt-engine).
+The backend generates sophisticated, personalized prompts including:
+- System prompts with Future You personality, tone, guardrails, and tools
+- First messages personalized based on user context and behavioral patterns
+- Onboarding intelligence integration
+- Behavioral pattern analysis
+
+The agent extracts prompts from room metadata and uses them instead of generating its own.
+If backend prompts are not available, it falls back to assistant.py generated prompts.
 """
 
 import os
@@ -75,12 +87,27 @@ async def entrypoint(ctx: JobContext):
     # 1. EXTRACT METADATA
     # ============================================================================
 
-    room_metadata = ctx.room.metadata or {}
-    user_id = room_metadata.get("user_id", "unknown")
-    call_uuid = room_metadata.get("call_uuid", "unknown")
+    # Parse room metadata (can be string or dict)
+    room_metadata_raw = ctx.room.metadata or {}
+    if isinstance(room_metadata_raw, str):
+        try:
+            room_metadata = json.loads(room_metadata_raw)
+        except json.JSONDecodeError:
+            logger.warning("Failed to parse room metadata as JSON, using empty dict")
+            room_metadata = {}
+    else:
+        room_metadata = room_metadata_raw
+
+    user_id = room_metadata.get("user_id") or room_metadata.get("userId", "unknown")
+    call_uuid = room_metadata.get("call_uuid") or room_metadata.get("callUUID", "unknown")
     mood = room_metadata.get("mood", "supportive")
-    cartesia_voice_id = room_metadata.get("cartesia_voice_id", "default")
-    supermemory_user_id = room_metadata.get("supermemory_user_id", user_id)
+    cartesia_voice_id = room_metadata.get("cartesia_voice_id") or room_metadata.get("cartesiaVoiceId", "default")
+    supermemory_user_id = room_metadata.get("supermemory_user_id") or room_metadata.get("supermemoryUserId", user_id)
+    
+    # Extract backend-generated prompts (from prompt-engine)
+    prompts_data = room_metadata.get("prompts") or {}
+    backend_system_prompt = prompts_data.get("systemPrompt") or prompts_data.get("system_prompt")
+    backend_first_message = prompts_data.get("firstMessage") or prompts_data.get("first_message")
 
     logger.info(
         f"📊 Call metadata:"
@@ -88,10 +115,11 @@ async def entrypoint(ctx: JobContext):
         f"\n   UUID: {call_uuid}"
         f"\n   Mood: {mood}"
         f"\n   Voice: {cartesia_voice_id}"
+        f"\n   Backend prompts: {'✅ Available' if backend_system_prompt else '❌ Missing - using fallback'}"
     )
 
     # ============================================================================
-    # 2. INITIALIZE CONVERSATION MANAGER
+    # 2. INITIALIZE CONVERSATION MANAGER (for fallback/context)
     # ============================================================================
 
     conversation = ConversationManager(
@@ -100,7 +128,7 @@ async def entrypoint(ctx: JobContext):
         memory_manager=memory_manager,
     )
 
-    # Load user context from Supermemory
+    # Load user context from Supermemory (for post-call processing)
     logger.info("📚 Loading user context from Supermemory...")
     await conversation.initialize()
     logger.info("✅ User context loaded")
@@ -133,11 +161,19 @@ async def entrypoint(ctx: JobContext):
     logger.info("✅ AI models initialized")
 
     # ============================================================================
-    # 4. GET SYSTEM PROMPT WITH USER CONTEXT
+    # 4. GET SYSTEM PROMPT (Backend-generated or fallback)
     # ============================================================================
 
-    system_prompt = conversation.get_system_prompt()
-    logger.info(f"📝 System prompt loaded ({len(system_prompt)} chars)")
+    # Use backend-generated prompt from prompt-engine if available
+    # Otherwise fall back to assistant.py generated prompt
+    if backend_system_prompt:
+        system_prompt = backend_system_prompt
+        logger.info(f"📝 Using backend-generated system prompt ({len(system_prompt)} chars)")
+        logger.info("   Source: prompt-engine (Future You accountability system)")
+    else:
+        system_prompt = conversation.get_system_prompt()
+        logger.info(f"📝 Using fallback system prompt ({len(system_prompt)} chars)")
+        logger.warning("   ⚠️ Backend prompts not found - using basic assistant prompt")
 
     # ============================================================================
     # 5. CREATE VOICE PIPELINE AGENT
@@ -145,18 +181,27 @@ async def entrypoint(ctx: JobContext):
 
     logger.info("🎙️ Creating voice pipeline agent...")
 
+    # Build initial chat context with system prompt
+    initial_messages = [
+        llm.ChatMessage(
+            role="system",
+            content=system_prompt,
+        )
+    ]
+
+    # Store first message for later use (will be spoken after agent starts)
+    first_message_to_speak = backend_first_message
+
+    if first_message_to_speak:
+        logger.info(f"📢 First message ready: {first_message_to_speak[:50]}...")
+
     agent = VoicePipelineAgent(
         vad=vad,
         stt=stt,
         llm=gpt_model,
         tts=tts,
         chat_ctx=llm.ChatContext(
-            messages=[
-                llm.ChatMessage(
-                    role="system",
-                    content=system_prompt,
-                )
-            ]
+            messages=initial_messages
         ),
     )
 
@@ -217,6 +262,24 @@ async def entrypoint(ctx: JobContext):
     try:
         await agent.start(ctx.room, ctx.participant)
         logger.info("✅ Agent started successfully")
+        
+        # If backend provided first message, speak it immediately
+        # This uses the backend-generated opening from prompt-engine
+        if first_message_to_speak:
+            logger.info("📢 Speaking backend-generated first message...")
+            try:
+                # Use the agent's say method to speak the first message
+                # This ensures the backend-generated opening is used exactly as intended
+                await agent.say(first_message_to_speak, allow_interruptions=True)
+                logger.info("✅ First message spoken")
+            except AttributeError:
+                # Fallback: add to context and trigger generation
+                logger.warning("agent.say() not available, using context approach")
+                agent.chat_ctx.append(
+                    llm.ChatMessage(role="assistant", content=first_message_to_speak)
+                )
+            except Exception as e:
+                logger.warning(f"Could not speak first message: {e}, will use natural flow")
 
     except Exception as e:
         logger.error(f"❌ Agent start failed: {e}")

@@ -1,7 +1,7 @@
 /**
- * BigBruh Call Mode Configurations
+ * Future You Call Mode Configurations
  * 
- * Single daily reckoning call configuration using BigBruh voice.
+ * Single daily reckoning call configuration using Future You voice.
  * All other call types removed.
  */
 
@@ -13,9 +13,9 @@ import { OpenerConfig } from "./prompt-templates";
 // Simplified to 3 core tones (bloat elimination)
 export const DAILY_RECKONING_CONFIG: OpenerConfig = {
   toneVariations: {
-    "Confrontational": `{name}. BigBruh here. Binary question. Did you keep your promise?`,
-    "ColdMirror": `{name}. BigBruh calling. Truth time. Did you do it?`,
-    "Encouraging": `Yo {name}. BigBruh. Did you do it? YES or NO.`
+    "Confrontational": `{name}. Future You calling. Binary question. Did you keep your promise?`,
+    "ColdMirror": `{name}. Future You here. Truth time. Did you do it?`,
+    "Encouraging": `Yo {name}. Future You here. Did you do it? YES or NO.`
   }
 };
 
