@@ -3,9 +3,6 @@
 // Handlers
 export * from './handlers/identity';
 
-// Services
-export * from './services/unified-identity-extractor';
-
 // Utils
 export * from './utils/identity-status-sync';
 

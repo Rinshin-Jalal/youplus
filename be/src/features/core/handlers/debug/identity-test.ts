@@ -1,15 +1,6 @@
-/* ═══════════════════════════════════════════════════════════════════════════════
- * 🧪 IDENTITY EXTRACTOR TESTING ENDPOINT
- *
- * Better way to test identity extraction without going through full onboarding.
- * Creates mock onboarding data and tests of AI analysis system.
- * ═══════════════════════════════════════════════════════════════════════════════ */
-
 import { Context } from "hono";
 import { Env } from "@/index";
-// REMOVED: brutal-reality feature removed in bloat elimination
-// import { analyzeOnboardingWithAI } from "@/features/brutal-reality/services/ai-psychological-analyzer";
-import { extractAndSaveIdentityIntelligent } from "@/features/identity/services/unified-identity-extractor";
+import { extractAndSaveV3Identity } from "@/features/identity/services/v3-identity-mapper";
 import { createSupabaseClient } from "@/features/core/utils/database";
 
 /**
@@ -48,13 +39,14 @@ export async function postTestIdentityExtraction(c: Context) {
 
     console.log(`✅ Mock onboarding data saved for user ${userId}`);
 
-    // REMOVED: AI analysis from brutal-reality feature
-    // console.log(`🧠 Testing AI analysis...`);
-    // const aiResult = await analyzeOnboardingWithAI(mockResponses, env);
-
-    // 💾 Test identity extraction and saving
-    console.log(`💾 Testing identity extraction and saving...`);
-    const extractionResult = await extractAndSaveIdentityIntelligent(userId, env);
+    // 💾 Test V3 identity extraction and saving
+    console.log(`💾 Testing V3 identity extraction and saving...`);
+    const extractionResult = await extractAndSaveV3Identity(
+      userId,
+      "TestUser",
+      mockResponses,
+      env
+    );
 
     return c.json({
       success: true,

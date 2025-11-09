@@ -205,16 +205,6 @@ export class UsersQueryBuilder extends TypedQueryBuilder<"users"> {
     }
     return this.updateById(userId, updateData);
   }
-
-  /**
-   * Update user's voice clone ID
-   * @deprecated Super MVP: voice_clone_id removed (no voice cloning in MVP)
-   */
-  updateVoiceCloneId(userId: string, voiceCloneId: string | null) {
-    // Super MVP: voice_clone_id field removed from schema
-    console.warn('updateVoiceCloneId is deprecated - voice cloning removed in Super MVP');
-    return Promise.resolve({ data: null, error: null });
-  }
 }
 
 // Promises table query builder
