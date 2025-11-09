@@ -324,36 +324,6 @@ export const updateIdentityStatus = async (c: Context) => {
 };
 
 /**
- * Update identity final oath
- *
- * This endpoint allows users to record their final, binding oath
- * that represents their ultimate commitment to their identity transformation.
- * The final oath serves as the most powerful psychological anchor.
- *
- * Final Oath Psychology:
- * - Represents the ultimate commitment
- * - Creates maximum psychological pressure
- * - Serves as the final line of accountability
- * - Cannot be broken without severe psychological cost
- *
- * @param c Hono context with final oath in request body
- * @returns JSON response confirming oath recording
- */
-export const updateFinalOath = async (c: Context) => {
-  // DEPRECATED: final_oath column removed in Super MVP
-  // Psychological data now stored in onboarding_context JSONB
-  return c.json(
-    {
-      error: "Endpoint deprecated in Super MVP",
-      message:
-        "Final oath field removed. Use PUT /identity/:userId with onboardingContext to update psychological data.",
-      migration: "Super MVP Schema - final_oath column removed",
-    },
-    410 // 410 Gone
-  );
-};
-
-/**
  * Get identity performance statistics (Super MVP)
  *
  * Provides performance analytics using Super MVP's simplified schema.

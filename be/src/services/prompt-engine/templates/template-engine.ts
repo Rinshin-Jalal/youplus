@@ -357,53 +357,6 @@ ${this.getToolDescription(toolSet)}
   }
 }
 
-// === LEGACY COMPATIBILITY WRAPPER ===
-
-/**
- * Legacy function wrapper for backward compatibility
- * Maps old function calls to new simplified enhancement system
- */
-export function generateOptimizedCallMode(
-  callType: string,
-  userContext: UserContext,
-  tone: TransmissionMood
-): CallModeResult {
-  // Map legacy call types to new system
-  const typeMapping: Record<string, keyof typeof CALL_CONFIGURATIONS> = {
-    daily_reckoning: "daily_reckoning",
-  };
-
-  const mappedType = typeMapping[callType];
-  if (!mappedType) {
-    throw new Error(
-      `Unknown call type: ${callType}. Available types: ${Object.keys(
-        typeMapping
-      ).join(", ")}`
-    );
-  }
-
-  return OptimizedTemplateEngine.generateCall(mappedType, userContext, tone);
-}
-
-/**
- * Simplified enhancement wrapper - direct Identity table access
- * No adapters, no complex templates - just pure Identity data enhancement
- */
-export function enhancePromptWithIdentityData(
-  basePrompt: string,
-  identity: Partial<import("@/types/database").Identity>
-): string {
-  return enhancePromptWithOnboardingData(basePrompt, identity);
-}
-
-export function enhanceMessageWithIdentityData(
-  baseMessage: string,
-  identity: Partial<import("@/types/database").Identity>,
-  callType: string
-): string {
-  return enhanceFirstMessageWithOnboardingData(baseMessage, identity, callType);
-}
-
 // === PERFORMANCE MONITORING ===
 
 export class TemplatePerformanceMonitor {

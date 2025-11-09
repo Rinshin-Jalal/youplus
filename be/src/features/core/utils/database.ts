@@ -2,9 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import {
   CallRecording,
   CallType,
-  ContentType,
   Database,
-  MemoryEmbedding,
   PromiseStatus,
   User,
   UserContext,
@@ -431,19 +429,6 @@ export async function saveCallRecording(
   return data;
 }
 
-// REMOVED: Memory embeddings feature (bloat elimination)
-export async function saveMemoryEmbedding(
-  env: Env,
-  userId: string,
-  sourceId: string,
-  contentType: ContentType,
-  textContent: string,
-  embedding: number[]
-): Promise<void> {
-  // No-op: memory embeddings removed in bloat elimination
-  console.log("saveMemoryEmbedding called but feature disabled");
-}
-
 export async function updateUserStreak(
   env: Env,
   userId: string,
@@ -534,15 +519,6 @@ export async function upsertPushToken(
     console.error(`Failed to upsert push token for user ${userId}:`, error);
     throw new Error(`Failed to save push token: ${error.message}`);
   }
-}
-
-// Deprecate: for backward compatibility
-export async function updateUserPushToken(
-  env: Env,
-  userId: string,
-  token: string
-): Promise<void> {
-  return upsertPushToken(env, userId, { token, type: "fcm" });
 }
 
 export async function checkCallExists(

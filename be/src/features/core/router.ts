@@ -4,7 +4,6 @@ import { getHealth, getStats, getDebugSchedules } from "./handlers/health";
 import { getCallEligibility, getScheduleSettings, updateScheduleSettings, updateSubscriptionStatus, updateRevenueCatCustomerId } from "./handlers/settings";
 import { postUserPushToken } from "./handlers/token-init-push";
 import { testR2Upload, testR2Connection } from "./handlers/test-r2";
-import { getPromptEngineDemo, getQuickDemo } from "./handlers/prompt-engine-demo";
 import { postTestIdentityExtraction, deleteTestIdentityData } from "./handlers/debug/identity-test";
 import identityRouter from "../identity/router";
 
@@ -26,9 +25,7 @@ router.put("/api/settings/revenuecat-customer-id", requireAuth, updateRevenueCat
 router.put("/api/device/push-token", requireAuth, postUserPushToken);
 router.post("/api/device/push-token", requireAuth, postUserPushToken);
 
-// Demo/Test endpoints
-router.get("/prompt-demo/:userId/:callType", requireActiveSubscription, getPromptEngineDemo);
-router.get("/prompt-demo-quick/:userId", requireActiveSubscription, getQuickDemo);
+// Test endpoints
 router.get("/test-r2-upload", testR2Upload);
 router.get("/test-r2-connection", testR2Connection);
 

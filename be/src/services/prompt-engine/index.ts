@@ -35,7 +35,6 @@
 // NEW: High-performance template system with 40% token reduction
 export {
   OptimizedTemplateEngine,
-  generateOptimizedCallMode,
   TemplatePerformanceMonitor,
 } from "./templates/template-engine";
 
@@ -84,45 +83,3 @@ export type {
   CallModeResult,
   PromptContext,
 } from "./types";
-
-// === LEGACY EXPORTS FOR BACKWARD COMPATIBILITY ===
-// These maintain compatibility with existing imports while new code
-// should use the updated function names above
-export { getPromptForCall as generateCallPrompt } from "./modes/call-mode-registry";
-export { generateOnboardingIntelligence as generateOnboardingData } from "./core/onboarding-intel";
-export { generateBehavioralIntelligence as generateBehavioralData } from "./core/behavioral-intel";
-
-/**
- * Quick Usage Examples:
- *
- * // NEW: Optimized call generation with 40% fewer tokens
- * const result = OptimizedTemplateEngine.generateCall("morning", userContext, "Confrontational");
- *
- * // NEW: Custom call with overrides
- * const customResult = OptimizedTemplateEngine.generateCustomCall("morning", userContext, "Ruthless", {
- *   additionalGoals: ["Address specific excuse pattern from yesterday"],
- *   toolSetOverride: "consequence_delivery"
- * });
- *
- * // NEW: Performance monitoring
- * TemplatePerformanceMonitor.logMetrics();
- * const report = TemplatePerformanceMonitor.getOptimizationReport();
- *
- * // Legacy: Basic call generation (still supported)
- * const legacyResult = await getPromptForCall("morning", userContext, toneAnalysis, env);
- *
- * // Check available call modes for a user
- * const modes = getAvailableCallModes();
- *
- * // Generate onboarding intelligence for personalization
- * const intelligence = generateOnboardingIntelligence(user);
- *
- * // Generate behavioral intelligence for pattern analysis
- * const behavioralData = generateBehavioralIntelligence(user);
- *
- * // Create consequences for accountability
- * const consequence = generateConsequence(user, "missed_call");
- *
- * // Legacy compatibility wrapper
- * const optimizedLegacy = generateOptimizedCallMode("morning", userContext, "Firm");
- */
