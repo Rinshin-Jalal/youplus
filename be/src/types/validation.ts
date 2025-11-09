@@ -220,7 +220,6 @@ export const GetUserContextResponseSchema = BaseResponseSchema.extend({
     todayPromises: z.array(PromiseSchema),
     yesterdayPromises: z.array(PromiseSchema),
     recentStreakPattern: z.array(PromiseSchema),
-    recentMemories: z.array(z.any()),
     identity: z.any().nullable(),
     identityStatus: z.any().nullable(),
     stats: z.object({

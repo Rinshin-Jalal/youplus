@@ -177,7 +177,6 @@ export async function getUserContext(
       user: user as any,
       todayPromises: todayPromises || [],
       yesterdayPromises: yesterdayPromises || [],
-      recentMemories: [], // replaced with insights below
       recentStreakPattern: recentPattern || [],
       identity: identity ?? null,
       identityStatus: identityStatus ?? null,
@@ -221,7 +220,6 @@ function buildFallbackUserContext(userId: string): UserContext {
     todayPromises: [],
     yesterdayPromises: [],
     recentStreakPattern: [],
-    recentMemories: [],
     identity: null,
     identityStatus: {
       id: "stub",

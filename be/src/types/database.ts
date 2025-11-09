@@ -229,18 +229,6 @@ export interface CallRecording {
 }
 
 // Memory embedding feature removed in bloat elimination
-// Stub types for backward compatibility
-export type ContentType = "excuse" | "craving" | "demon" | "echo" | "pattern" | "breakthrough";
-export interface MemoryEmbedding {
-  id: string;
-  user_id: string;
-  source_id: string;
-  content_type: ContentType;
-  text_content: string;
-  embedding: number[];
-  created_at: string;
-  metadata: Record<string, any>;
-}
 /** @deprecated Removed in Super MVP - memory embeddings dropped (bloat elimination) */
 export interface MemoryInsights {
   countsByType: Record<string, number>;
@@ -258,7 +246,6 @@ export interface UserContext {
   todayPromises: UserPromise[];
   yesterdayPromises: UserPromise[];
   recentStreakPattern: UserPromise[];
-  recentMemories: MemoryEmbedding[]; // Deprecated: kept empty for backward compatibility
   memoryInsights: MemoryInsights;
   identity: Identity | null;
   identityStatus: IdentityStatus | null;
