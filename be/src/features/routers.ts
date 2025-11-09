@@ -6,6 +6,7 @@ import triggerRouter from "./trigger/router";
 import voipRouter from "./voip/router";
 import callRouter from "./call/router";
 import coreRouter from "./core/router";
+import viralRouter from "./viral/router";
 
 // Create a combined router that includes all feature routers
 const combinedRouter = new Hono();
@@ -17,6 +18,7 @@ combinedRouter.route("/webhook", webhookRouter);
 combinedRouter.route("/trigger", triggerRouter);
 combinedRouter.route("/voip", voipRouter);
 combinedRouter.route("/call", callRouter);
+combinedRouter.route("/api/viral", viralRouter);
 
 // Core router mounted at root to handle /api/*, /debug/*, etc.
 combinedRouter.route("/", coreRouter);
