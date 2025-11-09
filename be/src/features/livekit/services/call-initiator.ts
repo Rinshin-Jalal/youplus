@@ -306,28 +306,6 @@ function buildAgentDispatchUrl(
 }
 
 /**
- * Store call session metadata to database
- * Used for tracking and auditing
- */
-export async function storeCallSession(
-  env: Env,
-  userId: string,
-  callUUID: string,
-  roomName: string,
-  metadata: Record<string, unknown>
-): Promise<boolean> {
-  try {
-    // TODO: Insert into livekit_sessions table
-    // This is database storage for session tracking
-    console.log(`📝 Storing session for call ${callUUID} in room ${roomName}`);
-    return true;
-  } catch (error) {
-    console.error("Error storing call session:", error);
-    return false;
-  }
-}
-
-/**
  * Validate LiveKit Cloud credentials
  */
 export async function validateLiveKitCredentials(env: Env): Promise<boolean> {

@@ -96,15 +96,9 @@ export class LiveKitWebhookProcessor {
         return;
       }
 
-      // Store call session end
-      await this.storeCallEnd(env, {
-        userId,
-        callUUID,
-        roomName: event.name,
-        roomSid: event.sid,
-        durationSec: event.duration,
-        endedAt: new Date().toISOString(),
-      });
+      // Call ended - process completion
+      // Note: Database storage removed (placeholder implementations)
+      console.log(`✅ Call ended: ${callUUID} (duration: ${event.duration}s)`);
 
       // Trigger post-call processing
       // In production: Notify backend to process transcripts, extract promises, etc.
@@ -127,13 +121,9 @@ export class LiveKitWebhookProcessor {
       console.log(`   Size: ${event.size} bytes`);
       console.log(`   Location: ${event.location}`);
 
-      // Download and store recording
-      await this.storeRecordingUrl(env, {
-        roomSid: event.roomSid,
-        filename: event.filename,
-        location: event.location,
-        durationSec: event.duration,
-      });
+      // Recording completed
+      // Note: Database storage removed (placeholder implementations)
+      console.log(`✅ Recording completed: ${event.filename} (${event.size} bytes)`);
 
       console.log(`✅ Recording stored`);
     } catch (error) {
@@ -178,50 +168,6 @@ export class LiveKitWebhookProcessor {
       // Could trigger cleanup or session end if needed
     } catch (error) {
       console.error("Error handling participant_left event:", error);
-    }
-  }
-
-  /**
-   * Store call session end in database
-   */
-  private async storeCallEnd(
-    env: Env,
-    data: {
-      userId: string;
-      callUUID: string;
-      roomName: string;
-      roomSid: string;
-      durationSec: number;
-      endedAt: string;
-    }
-  ): Promise<void> {
-    try {
-      // TODO: Update livekit_sessions table with end time
-      // This is where we mark the call as complete and ready for processing
-      console.log(`💾 Stored call end: ${data.callUUID}`);
-    } catch (error) {
-      console.error("Error storing call end:", error);
-    }
-  }
-
-  /**
-   * Store recording URL in database
-   */
-  private async storeRecordingUrl(
-    env: Env,
-    data: {
-      roomSid: string;
-      filename: string;
-      location: string;
-      durationSec: number;
-    }
-  ): Promise<void> {
-    try {
-      // TODO: Store in database for later access
-      // Include download URL if publicly accessible
-      console.log(`💾 Stored recording: ${data.filename}`);
-    } catch (error) {
-      console.error("Error storing recording URL:", error);
     }
   }
 }

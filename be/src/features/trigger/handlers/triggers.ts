@@ -7,27 +7,6 @@ import { Env } from "@/index";
 import { createScheduler } from "@/features/trigger/services/scheduler-engine";
 import { processAllRetries } from "@/features/trigger/services/retry-processor";
 
-// Manual trigger endpoint for testing
-export const triggerMorningCallsAdmin = async (c: Context) => {
-  const env = c.env as Env;
-  // TODO: Implement triggerBatchCallGeneration
-  const result = {
-    success: true,
-    message: "Batch call generation not yet implemented",
-  };
-  return c.json(result);
-};
-
-export const triggerEveningCallsAdmin = async (c: Context) => {
-  const env = c.env as Env;
-  // TODO: Implement triggerBatchCallGeneration
-  const result = {
-    success: true,
-    message: "Batch call generation not yet implemented",
-  };
-  return c.json(result);
-};
-
 /**
  * Trigger a VoIP call for a specific user immediately
  * POST /trigger/user/:userId/:callType

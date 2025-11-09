@@ -1,8 +1,6 @@
 import { Hono } from 'hono';
 import { requireAuth } from '@/middleware/auth';
 import {
-  triggerMorningCallsAdmin,
-  triggerEveningCallsAdmin,
   triggerUserCallAdmin,
   triggerVoipPushAdmin,
   processScheduledCallsAdmin,
@@ -20,12 +18,6 @@ const router = new Hono();
 // Protected by requireAuth middleware - token required
 // Protected by debugProtection middleware in index.ts
 // ===================================================================
-
-// @admin-only - Trigger morning calls for all users (placeholder)
-router.post('/morning', requireAuth, triggerMorningCallsAdmin);
-
-// @admin-only - Trigger evening calls for all users (placeholder)
-router.post('/evening', requireAuth, triggerEveningCallsAdmin);
 
 // @admin-only - Trigger a call for a specific user (testing/manual intervention)
 router.post('/user/:userId/:callType', requireAuth, triggerUserCallAdmin);

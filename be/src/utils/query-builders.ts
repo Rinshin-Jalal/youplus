@@ -321,17 +321,3 @@ export function createQueryBuilders(client: SupabaseClient<Database>) {
     table: <T extends TableName>(table: T) => createTypedQueryBuilder(client, table),
   };
 }
-
-/**
- * Type-safe transaction helper
- */
-export async function transaction<T>(
-  client: SupabaseClient<Database>,
-  callback: (queryBuilders: ReturnType<typeof createQueryBuilders>) => Promise<T>
-): Promise<T> {
-  // Note: Supabase doesn't have built-in transaction support like traditional databases
-  // This is a placeholder for future transaction implementation
-  // For now, we'll just execute the callback with the query builders
-  const queryBuilders = createQueryBuilders(client);
-  return callback(queryBuilders);
-}
