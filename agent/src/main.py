@@ -112,29 +112,55 @@ async def entrypoint(ctx: JobContext):
     logger.info(
         f"📊 Call metadata:"
         f"\n   User: {user_id}"
+        f"\n   Supermemory User ID: {supermemory_user_id}"
         f"\n   UUID: {call_uuid}"
         f"\n   Mood: {mood}"
         f"\n   Voice: {cartesia_voice_id}"
         f"\n   Backend prompts: {'✅ Available' if backend_system_prompt else '❌ Missing - using fallback'}"
+        f"\n   Supermemory: {'✅ Configured' if memory_manager else '❌ Not configured'}"
     )
 
     # ============================================================================
-    # 2. INITIALIZE CONVERSATION MANAGER (for fallback/context)
+    # 2. LOAD SUPERMEMORY CONTEXT (CRITICAL FOR PERSONALIZATION)
+    # ============================================================================
+
+    supermemory_context = {}
+    if memory_manager:
+        logger.info(f"📚 Loading Supermemory context for user: {supermemory_user_id}")
+        try:
+            supermemory_context = await memory_manager.get_context_for_call(
+                user_id=supermemory_user_id,
+                mood=mood,
+                max_memories=10,  # Get more memories for better context
+            )
+            logger.info(
+                f"✅ Supermemory context loaded: "
+                f"{len(supermemory_context.get('promises', []))} promises, "
+                f"{len(supermemory_context.get('goals', []))} goals, "
+                f"{len(supermemory_context.get('progress', []))} progress updates"
+            )
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to load Supermemory context: {e}")
+            supermemory_context = {}
+    else:
+        logger.warning("⚠️ Supermemory not configured - memory features disabled")
+
+    # ============================================================================
+    # 3. INITIALIZE CONVERSATION MANAGER (for fallback/context)
     # ============================================================================
 
     conversation = ConversationManager(
-        user_id=user_id,
+        user_id=supermemory_user_id,  # Use Supermemory user ID
         mood=mood,
         memory_manager=memory_manager,
     )
-
-    # Load user context from Supermemory (for post-call processing)
-    logger.info("📚 Loading user context from Supermemory...")
-    await conversation.initialize()
-    logger.info("✅ User context loaded")
+    
+    # Set the loaded context directly
+    conversation.user_context = supermemory_context
+    logger.info("✅ Conversation manager initialized with Supermemory context")
 
     # ============================================================================
-    # 3. INITIALIZE MODELS (STT, LLM, TTS)
+    # 4. INITIALIZE AI MODELS (STT, LLM, TTS)
     # ============================================================================
 
     logger.info("🤖 Initializing AI models...")
@@ -161,7 +187,7 @@ async def entrypoint(ctx: JobContext):
     logger.info("✅ AI models initialized")
 
     # ============================================================================
-    # 4. GET SYSTEM PROMPT (Backend-generated or fallback)
+    # 5. GET SYSTEM PROMPT (Backend-generated + Supermemory enhancement)
     # ============================================================================
 
     # Use backend-generated prompt from prompt-engine if available
@@ -170,13 +196,39 @@ async def entrypoint(ctx: JobContext):
         system_prompt = backend_system_prompt
         logger.info(f"📝 Using backend-generated system prompt ({len(system_prompt)} chars)")
         logger.info("   Source: prompt-engine (Future You accountability system)")
+        
+        # ENHANCE with Supermemory context if available
+        if supermemory_context and (supermemory_context.get('promises') or supermemory_context.get('goals')):
+            supermemory_section = "\n\n## 🧠 SUPERMEMORY CONTEXT (Recent Memories)\n\n"
+            
+            if supermemory_context.get('promises'):
+                supermemory_section += "**Recent Promises Made:**\n"
+                for promise in supermemory_context['promises'][:5]:
+                    supermemory_section += f"- {promise}\n"
+                supermemory_section += "\n"
+            
+            if supermemory_context.get('goals'):
+                supermemory_section += "**Current Goals:**\n"
+                for goal in supermemory_context['goals'][:5]:
+                    supermemory_section += f"- {goal}\n"
+                supermemory_section += "\n"
+            
+            if supermemory_context.get('progress'):
+                supermemory_section += "**Recent Progress:**\n"
+                for progress in supermemory_context['progress'][:3]:
+                    supermemory_section += f"- {progress}\n"
+                supermemory_section += "\n"
+            
+            supermemory_section += "*Use this context to reference past conversations and track progress.*\n"
+            system_prompt += supermemory_section
+            logger.info("   ✅ Enhanced with Supermemory context")
     else:
         system_prompt = conversation.get_system_prompt()
         logger.info(f"📝 Using fallback system prompt ({len(system_prompt)} chars)")
         logger.warning("   ⚠️ Backend prompts not found - using basic assistant prompt")
 
     # ============================================================================
-    # 5. CREATE VOICE PIPELINE AGENT
+    # 6. CREATE VOICE PIPELINE AGENT
     # ============================================================================
 
     logger.info("🎙️ Creating voice pipeline agent...")
@@ -206,7 +258,7 @@ async def entrypoint(ctx: JobContext):
     )
 
     # ============================================================================
-    # 6. REGISTER DEVICE TOOLS
+    # 7. REGISTER DEVICE TOOLS
     # ============================================================================
 
     logger.info("🔧 Registering device tools...")
@@ -236,7 +288,7 @@ async def entrypoint(ctx: JobContext):
     logger.info("✅ Device tools registered")
 
     # ============================================================================
-    # 7. SETUP TRANSCRIPTION TRACKING
+    # 8. SETUP TRANSCRIPTION TRACKING
     # ============================================================================
 
     # Track conversation for post-call processing
@@ -253,7 +305,7 @@ async def entrypoint(ctx: JobContext):
         transcript_lines.append(f"User: {message}")
 
     # ============================================================================
-    # 8. START AGENT
+    # 9. START AGENT
     # ============================================================================
 
     logger.info("🚀 Starting voice pipeline agent...")
@@ -287,7 +339,7 @@ async def entrypoint(ctx: JobContext):
 
     finally:
         # ========================================================================
-        # 9. POST-CALL PROCESSING
+        # 10. POST-CALL PROCESSING (Store to Supermemory)
         # ========================================================================
 
         call_end_time = datetime.utcnow()
@@ -302,8 +354,9 @@ async def entrypoint(ctx: JobContext):
         if post_call_processor is None:
             post_call_processor = PostCallProcessor(memory_manager)
 
+        # Use Supermemory user ID for storing memories
         insights = await post_call_processor.process_call_transcript(
-            user_id=user_id,
+            user_id=supermemory_user_id,  # Use Supermemory user ID for consistency
             call_uuid=call_uuid,
             transcript=transcript,
             mood=mood,
@@ -322,7 +375,7 @@ async def entrypoint(ctx: JobContext):
         }
 
         await post_call_processor.store_call_metadata(
-            user_id=user_id,
+            user_id=supermemory_user_id,  # Use Supermemory user ID
             call_uuid=call_uuid,
             metadata=call_metadata,
         )

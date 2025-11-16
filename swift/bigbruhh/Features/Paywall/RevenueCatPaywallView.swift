@@ -69,31 +69,101 @@ struct RevenueCatPaywallView: View {
 
     private func handlePurchaseCompleted(_ customerInfo: CustomerInfo) {
         print("💰 Purchase completed!")
-        trackEvent("paywall_purchase_successful")
+        
+        // Extract product information from active entitlements
+        let productId = customerInfo.entitlements.active.first?.value.productIdentifier ?? "unknown"
+        
+        // Get price from the purchased package (we need to get this from the offering)
+        // For now, we'll extract from customerInfo active entitlements
+        var revenue: Double = 0.0
+        var currency: String = "USD"
+        var subscriptionPeriod: String = "unknown"
+        
+        if let activeEntitlement = customerInfo.entitlements.active.first?.value {
+            // Try to get price from the product identifier
+            // Note: RevenueCat doesn't expose price directly, so we'll need to track it separately
+            // For now, we'll use a placeholder and recommend getting price from StoreKit
+            revenue = 0.0 // Will be set when we have access to Package.storeProduct.price
+            currency = "USD"
+            subscriptionPeriod = activeEntitlement.productIdentifier
+        }
+        
+        // Track purchase event
+        AnalyticsService.shared.track(event: "paywall_purchase_successful", properties: [
+            "source": source,
+            "plan_type": "normal",
+            "product_id": productId,
+            "user_name": onboardingData.userName ?? "N/A"
+        ])
+        
+        // Track revenue if we have it (will be updated when we have Package info)
+        if revenue > 0 {
+            AnalyticsService.shared.trackRevenue(
+                amount: revenue,
+                productId: productId,
+                currency: currency,
+                properties: [
+                    "source": source,
+                    "plan_type": "normal",
+                    "subscription_period": subscriptionPeriod
+                ]
+            )
+        }
+        
         triggerHaptic(intensity: 1.0)
 
         // Update local subscription state
         Task {
             await revenueCat.fetchCustomerInfo()
+            
+            // Sync subscription status to backend immediately after purchase
+            await revenueCat.syncSubscriptionStatusToBackend(customerInfo: customerInfo)
         }
 
         // Store purchase info
         UserDefaultsManager.set("normal", forKey: "plan_type")
         UserDefaultsManager.set(source, forKey: "purchase_source")
+        
+        // Set user properties
+        AnalyticsService.shared.setUserProperties([
+            "plan_type": "normal",
+            "purchase_source": source,
+            "subscription_active": true
+        ])
 
         onPurchaseComplete()
     }
 
     private func handlePurchaseCancelled() {
         print("💔 Purchase cancelled")
-        trackEvent("paywall_purchase_cancelled")
+        AnalyticsService.shared.track(event: "paywall_purchase_cancelled", properties: [
+            "source": source,
+            "user_name": onboardingData.userName ?? "N/A"
+        ])
         triggerHaptic(intensity: 0.5)
     }
 
     private func handleRestoreCompleted(_ customerInfo: CustomerInfo) {
         print("✅ Restore completed")
-        trackEvent("paywall_restore_successful")
+        
+        // Extract product information from active entitlements
+        let productId = customerInfo.entitlements.active.first?.value.productIdentifier ?? "unknown"
+        
+        AnalyticsService.shared.track(event: "paywall_restore_successful", properties: [
+            "source": source,
+            "product_id": productId,
+            "user_name": onboardingData.userName ?? "N/A"
+        ])
+        
         triggerHaptic(intensity: 1.0)
+
+        // Update local subscription state
+        Task {
+            await revenueCat.fetchCustomerInfo()
+            
+            // Sync subscription status to backend after restore
+            await revenueCat.syncSubscriptionStatusToBackend(customerInfo: customerInfo)
+        }
 
         if revenueCat.hasActiveSubscription {
             onPurchaseComplete()
@@ -102,12 +172,19 @@ struct RevenueCatPaywallView: View {
 
     private func handleRestoreFailure(_ error: Error) {
         print("❌ Restore failed: \(error)")
-        trackEvent("paywall_restore_failed")
+        AnalyticsService.shared.track(event: "paywall_restore_failed", properties: [
+            "source": source,
+            "error": error.localizedDescription,
+            "user_name": onboardingData.userName ?? "N/A"
+        ])
     }
 
     private func handleDismiss() {
         print("👋 Paywall dismissed")
-        trackEvent("paywall_declined")
+        AnalyticsService.shared.track(event: "paywall_declined", properties: [
+            "source": source,
+            "user_name": onboardingData.userName ?? "N/A"
+        ])
         triggerHaptic(intensity: 0.5)
         onDismiss()
     }
@@ -115,13 +192,19 @@ struct RevenueCatPaywallView: View {
     // MARK: - Analytics
 
     private func trackPaywallView() {
-        trackEvent("paywall_viewed")
+        AnalyticsService.shared.track(event: "paywall_viewed", properties: [
+            "source": source,
+            "user_name": onboardingData.userName ?? "N/A"
+        ])
         print("👀 Paywall viewed - Source: \(source)")
     }
 
     private func trackEvent(_ eventName: String) {
-        // TODO: Integrate with PostHog or analytics service
-        print("📊 Event: \(eventName) - Source: \(source) - User: \(onboardingData.userName ?? "N/A")")
+        // Legacy method - now uses AnalyticsService
+        AnalyticsService.shared.track(event: eventName, properties: [
+            "source": source,
+            "user_name": onboardingData.userName ?? "N/A"
+        ])
     }
 
     // MARK: - Haptics

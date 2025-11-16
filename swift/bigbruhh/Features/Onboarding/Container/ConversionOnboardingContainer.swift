@@ -25,6 +25,26 @@ struct ConversionOnboardingContainer: View {
                 ))
         }
         .animation(.easeInOut(duration: 0.3), value: state.currentStepIndex)
+        .onAppear {
+            // FORCE FRESH START: Always reset to step 1 (index 0)
+            #if DEBUG
+            let currentStepId = state.currentStep.id
+            print("🔍 ConversionOnboardingContainer onAppear:")
+            print("   currentStepIndex: \(state.currentStepIndex)")
+            print("   currentStep.id: \(currentStepId)")
+            #endif
+            
+            // ALWAYS clear state on appear, even if at index 0
+            // This ensures we truly start fresh every time
+            #if DEBUG
+            print("🧹 FORCING COMPLETE RESET to step 1 regardless of current state")
+            #endif
+            state.clearState()
+            
+            #if DEBUG
+            print("✅ Reset complete - now at step \(state.currentStep.id) (index \(state.currentStepIndex))")
+            #endif
+        }
     }
 
     @ViewBuilder
@@ -37,6 +57,7 @@ struct ConversionOnboardingContainer: View {
 
         case .aiCommentary(let config):
             AICommentaryView(config: config, onContinue: handleContinue)
+                .id(step.id)
 
         case .debate(let messages):
             // Handle dynamic debate messages (e.g., step 19)

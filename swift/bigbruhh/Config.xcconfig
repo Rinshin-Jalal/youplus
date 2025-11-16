@@ -15,8 +15,8 @@ PUBLIC_BACKEND_URL=http:/$()/localhost:8787
 // LiveKit Configuration
 PUBLIC_LIVEKIT_URL=wss://your-project.livekit.cloud
 
-EXPO_POSTHOG_API_KEY=phc_q2nfDe9rtrBMLSlWxOtfFhnMQ1oPJyvg5J1qfB3SF6D
-EXPO_POSTHOG_PROJECT_ID=172949
+// Mixpanel Configuration (Add your actual token from Mixpanel dashboard)
+MIXPANEL_TOKEN=your_mixpanel_token_here
 
 // RevenueCat Configuration (Add your actual keys from RevenueCat dashboard)
 PUBLIC_REVENUECAT_IOS_API_KEY=appl_upPcrmmpQDsAyaXMQhJMhHrABuZ

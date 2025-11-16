@@ -177,7 +177,6 @@ class APIService {
         return try await get("/call/config/\(userId)/\(callType)")
     }
 
-
     // MARK: - Onboarding Endpoints
 
     /// Push completed onboarding data to backend
@@ -251,6 +250,46 @@ class APIService {
     func fetchCountdown(userId: String) async throws -> APIResponse<CountdownData> {
         Config.log("Fetching countdown for user: \(userId)", category: "API")
         return try await get("/api/countdown/\(userId)")
+    }
+
+    // MARK: - Subscription Endpoints
+
+    /// Update subscription status
+    /// PUT /api/settings/subscription-status
+    func updateSubscriptionStatus(
+        isActive: Bool,
+        isEntitled: Bool,
+        revenuecatCustomerId: String?
+    ) async throws -> APIResponse<[String: AnyCodableValue]> {
+        Config.log(
+            "Updating subscription status: active=\(isActive), entitled=\(isEntitled)",
+            category: "API"
+        )
+
+        var body: [String: Any] = [
+            "isActive": isActive,
+            "isEntitled": isEntitled
+        ]
+
+        if let customerId = revenuecatCustomerId {
+            body["revenuecatCustomerId"] = customerId
+        }
+
+        return try await put("/api/settings/subscription-status", body: body)
+    }
+
+    /// Update RevenueCat customer ID
+    /// PUT /api/settings/revenuecat-customer-id
+    func updateRevenueCatCustomerId(
+        originalAppUserId: String
+    ) async throws -> APIResponse<[String: AnyCodableValue]> {
+        Config.log("Updating RevenueCat customer ID: \(originalAppUserId)", category: "API")
+
+        let body: [String: Any] = [
+            "originalAppUserId": originalAppUserId
+        ]
+
+        return try await put("/api/settings/revenuecat-customer-id", body: body)
     }
 
     // MARK: - Health Check

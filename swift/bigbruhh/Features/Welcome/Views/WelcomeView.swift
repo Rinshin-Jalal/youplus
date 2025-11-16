@@ -17,6 +17,9 @@ struct WelcomeView: View {
             Color.brutalBlack
                 .ignoresSafeArea()
 
+            // Scanline overlay - full screen
+            Scanlines()
+
             VStack(spacing: Spacing.xxxl) {
                 Spacer()
 
@@ -56,6 +59,7 @@ struct WelcomeView: View {
                 .padding(.bottom, Spacing.xxl)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private func handleStartTalking() {

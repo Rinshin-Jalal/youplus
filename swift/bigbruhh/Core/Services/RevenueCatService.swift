@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import RevenueCat
+import Auth
 
 class RevenueCatService: NSObject, ObservableObject {
     static let shared = RevenueCatService()
@@ -34,14 +35,14 @@ class RevenueCatService: NSObject, ObservableObject {
 
     private override init() {
         super.init()
-        
+
         // Skip configuration in preview mode
         if Config.isPreview {
             Config.log("⚠️ RevenueCat: Skipping configuration in preview mode", category: "RevenueCat")
             isLoading = false
             return
         }
-        
+
         configure()
     }
 
@@ -52,7 +53,7 @@ class RevenueCatService: NSObject, ObservableObject {
         if Config.isPreview {
             return
         }
-        
+
         #if DEBUG
         Purchases.logLevel = .debug
         #endif
@@ -154,8 +155,8 @@ class RevenueCatService: NSObject, ObservableObject {
             print("✅ Purchase successful: \(package.storeProduct.productIdentifier)")
             return customerInfo
 
-        } catch let error as ErrorCode {
-            if error == .purchaseCancelledError {
+        } catch let error as RevenueCat.ErrorCode {
+            if error == RevenueCat.ErrorCode.purchaseCancelledError {
                 throw RevenueCatError.userCancelled
             }
             print("❌ Purchase failed: \(error.localizedDescription)")
@@ -192,6 +193,9 @@ class RevenueCatService: NSObject, ObservableObject {
                 updateSubscriptionStatus(customerInfo)
             }
             print("✅ User identified: \(userId)")
+
+            // Sync subscription status to backend after identification
+            await syncSubscriptionStatusToBackend(customerInfo: customerInfo)
         } catch {
             print("❌ Failed to identify user: \(error)")
         }
@@ -219,6 +223,66 @@ class RevenueCatService: NSObject, ObservableObject {
     var isSubscribed: Bool {
         return hasActiveSubscription
     }
+
+    // MARK: - Backend Sync
+
+    /// Sync subscription status to backend
+    @MainActor
+    func syncSubscriptionStatusToBackend(customerInfo: CustomerInfo? = nil) async {
+        let info = customerInfo ?? self.customerInfo
+
+        guard let info = info else {
+            print("⚠️ No customer info available to sync")
+            return
+        }
+
+        // Get current user ID
+        guard let userId = SupabaseManager.shared.currentUser?.id.uuidString else {
+            print("⚠️ No authenticated user - skipping subscription sync")
+            return
+        }
+
+        // Determine subscription status
+        let activeEntitlements = info.entitlements.active
+        let isEntitled = !activeEntitlements.isEmpty
+        let isActive = isEntitled // Active if entitled
+
+        print("🔄 Syncing subscription status to backend:")
+        print("   User ID: \(userId)")
+        print("   RevenueCat Customer ID: \(info.originalAppUserId)")
+        print("   Is Active: \(isActive)")
+        print("   Is Entitled: \(isEntitled)")
+
+        do {
+            // Sync subscription status
+            let statusResponse = try await APIService.shared.updateSubscriptionStatus(
+                isActive: isActive,
+                isEntitled: isEntitled,
+                revenuecatCustomerId: info.originalAppUserId
+            )
+
+            if statusResponse.success {
+                print("✅ Subscription status synced successfully")
+            } else {
+                print("⚠️ Subscription status sync failed: \(statusResponse.error ?? "Unknown error")")
+            }
+
+            // Also sync customer ID separately (in case status endpoint fails)
+            let customerIdResponse = try await APIService.shared.updateRevenueCatCustomerId(
+                originalAppUserId: info.originalAppUserId
+            )
+
+            if customerIdResponse.success {
+                print("✅ RevenueCat customer ID synced successfully")
+            } else {
+                let errorMsg = customerIdResponse.error ?? "Unknown error"
+                print("⚠️ RevenueCat customer ID sync failed: \(errorMsg)")
+            }
+
+        } catch {
+            print("❌ Failed to sync subscription status to backend: \(error)")
+        }
+    }
 }
 
 // MARK: - Purchases Delegate
@@ -226,8 +290,44 @@ class RevenueCatService: NSObject, ObservableObject {
 extension RevenueCatService: PurchasesDelegate {
     func purchases(_ purchases: Purchases, receivedUpdated customerInfo: CustomerInfo) {
         Task { @MainActor in
+            let oldExpiration = self.customerInfo?.entitlements.active.first?.value.expirationDate
+            let oldProductId = self.customerInfo?.entitlements.active.first?.value.productIdentifier
+            
             self.customerInfo = customerInfo
             updateSubscriptionStatus(customerInfo)
+            
+            // Check if subscription renewed
+            if let oldExpiration = oldExpiration,
+               let newExpiration = customerInfo.entitlements.active.first?.value.expirationDate,
+               newExpiration > oldExpiration,
+               let productId = customerInfo.entitlements.active.first?.value.productIdentifier {
+                
+                // Subscription renewed - track renewal event
+                // Note: Revenue amount would need to come from StoreKit product price
+                AnalyticsService.shared.track(event: "subscription_renewed", properties: [
+                    "product_id": productId,
+                    "renewal_count": (customerInfo.entitlements.active.first?.value.willRenew == true ? 1 : 0)
+                ])
+                
+                // Increment renewal count
+                AnalyticsService.shared.incrementUserProperty("subscription_renewal_count", by: 1)
+            }
+            
+            // Check if subscription expired
+            if let oldProductId = oldProductId,
+               customerInfo.entitlements.active.isEmpty {
+                // Subscription expired
+                AnalyticsService.shared.track(event: "subscription_expired", properties: [
+                    "product_id": oldProductId
+                ])
+                
+                AnalyticsService.shared.setUserProperties([
+                    "subscription_active": false
+                ])
+            }
+
+            // Sync to backend when subscription status changes
+            await syncSubscriptionStatusToBackend(customerInfo: customerInfo)
         }
     }
 }
@@ -250,3 +350,4 @@ enum RevenueCatError: LocalizedError {
         }
     }
 }
+

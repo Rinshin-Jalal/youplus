@@ -157,6 +157,24 @@ class AuthService: ObservableObject {
         )
 
         await fetchUserProfile(userId: session.user.id.uuidString)
+        
+        // Identify user with RevenueCat after successful login
+        Task {
+            await RevenueCatService.shared.identify(userId: session.user.id.uuidString)
+        }
+        
+        // Identify user with Mixpanel and track sign in
+        AnalyticsService.shared.identify(userId: session.user.id.uuidString)
+        AnalyticsService.shared.track(event: "sign_in_successful", properties: [
+            "user_id": session.user.id.uuidString,
+            "email": session.user.email ?? ""
+        ])
+        
+        // Set user properties
+        AnalyticsService.shared.setUserProperties([
+            "user_id": session.user.id.uuidString,
+            "email": session.user.email ?? ""
+        ])
     }
 
     // MARK: - Sign Out
@@ -173,6 +191,9 @@ class AuthService: ObservableObject {
 
         // Clear all onboarding data
         OnboardingDataManager.shared.clearAllData()
+        
+        // Reset analytics
+        AnalyticsService.shared.reset()
 
         Config.log("Sign out successful", category: "Auth")
     }

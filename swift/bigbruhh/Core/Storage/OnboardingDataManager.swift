@@ -112,6 +112,8 @@ class OnboardingDataManager: ObservableObject {
     /// Clear in-progress onboarding state (call on app init to force fresh start)
     func clearInProgressState() async {
         UserDefaults.standard.removeObject(forKey: Keys.inProgressState)
+        // Also clear ConversionOnboardingState to ensure fresh start
+        UserDefaults.standard.removeObject(forKey: "ConversionOnboardingState")
         #if DEBUG
         print("🧹 In-progress onboarding state cleared - user will start fresh")
         #endif

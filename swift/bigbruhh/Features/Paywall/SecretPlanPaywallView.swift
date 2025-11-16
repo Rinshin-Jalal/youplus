@@ -134,36 +134,64 @@ struct SecretPlanPaywallView: View {
 
     private func trackSecretPaywallView() {
         // Track secret paywall view (matches NRN implementation)
+        AnalyticsService.shared.track(event: "secret_paywall_viewed", properties: [
+            "user_name": userName ?? "BigBruh",
+            "source": source,
+            "paywall_type": "secret_starter",
+            "timestamp": ISO8601DateFormatter().string(from: Date())
+        ])
         print("📊 Secret paywall viewed - userName: \(userName ?? "BigBruh"), source: \(source), paywall_type: secret_starter")
-        // TODO: Integrate with PostHog or analytics service
-        // trackEvent("secret_paywall_viewed", [
-        //     "user_name": userName ?? "BigBruh",
-        //     "source": source,
-        //     "paywall_type": "secret_starter",
-        //     "timestamp": Date().ISO8601Format()
-        // ])
     }
 
     private func handlePurchaseCompleted(_ customerInfo: CustomerInfo) {
         print("💰 Secret plan purchase completed!")
         
-        // Track secret paywall purchase successful (matches NRN implementation)
+        // Extract product information from active entitlements
+        let productId = customerInfo.entitlements.active.first?.value.productIdentifier ?? "starter"
+        let planPrice = 2.99 // Secret plan is $2.99/week
+        
+        // Track secret paywall purchase successful
+        AnalyticsService.shared.track(event: "secret_paywall_purchase_successful", properties: [
+            "user_name": userName ?? "BigBruh",
+            "source": source,
+            "paywall_type": "secret_starter",
+            "plan_identifier": "starter",
+            "plan_price": "$\(planPrice)",
+            "timestamp": ISO8601DateFormatter().string(from: Date())
+        ])
+        
+        // Track revenue
+        AnalyticsService.shared.trackRevenue(
+            amount: planPrice,
+            productId: productId,
+            currency: "USD",
+            properties: [
+                "user_name": userName ?? "BigBruh",
+                "source": source,
+                "paywall_type": "secret_starter",
+                "plan_identifier": "starter"
+            ]
+        )
+        
         print("📊 Secret paywall purchase successful - userName: \(userName ?? "BigBruh"), source: \(source), paywall_type: secret_starter")
-        // TODO: Integrate with PostHog or analytics service
-        // trackEvent("secret_paywall_purchase_successful", [
-        //     "user_name": userName ?? "BigBruh",
-        //     "source": source,
-        //     "paywall_type": "secret_starter",
-        //     "timestamp": Date().ISO8601Format()
-        // ])
         
         // Store plan type and purchase source (matches NRN AsyncStorage.setItem)
         UserDefaultsManager.set("starter", forKey: "plan_type")
         UserDefaultsManager.set(source, forKey: "purchase_source")
         
-        // Update RevenueCat customer info
+        // Set user properties
+        AnalyticsService.shared.setUserProperties([
+            "plan_type": "starter",
+            "purchase_source": source,
+            "subscription_active": true
+        ])
+        
+        // Update RevenueCat customer info and sync to backend
         Task {
             await revenueCat.fetchCustomerInfo()
+            
+            // Sync subscription status to backend immediately after purchase
+            await revenueCat.syncSubscriptionStatusToBackend(customerInfo: customerInfo)
         }
         
         // Call completion handler if provided
@@ -184,29 +212,30 @@ struct SecretPlanPaywallView: View {
     private func handlePurchaseCancelled() {
         print("💔 Secret plan purchase cancelled")
         
-        // Track secret paywall purchase cancelled (matches NRN implementation)
+        // Track secret paywall purchase cancelled
+        AnalyticsService.shared.track(event: "secret_paywall_purchase_cancelled", properties: [
+            "user_name": userName ?? "BigBruh",
+            "source": source,
+            "paywall_type": "secret_starter",
+            "timestamp": ISO8601DateFormatter().string(from: Date())
+        ])
+        
         print("📊 Secret paywall purchase cancelled - userName: \(userName ?? "BigBruh"), source: \(source), paywall_type: secret_starter")
-        // TODO: Integrate with PostHog or analytics service
-        // trackEvent("secret_paywall_purchase_cancelled", [
-        //     "user_name": userName ?? "BigBruh",
-        //     "source": source,
-        //     "paywall_type": "secret_starter",
-        //     "timestamp": Date().ISO8601Format()
-        // ])
     }
 
     private func handlePurchaseError(_ error: Error) {
         print("❌ Secret plan purchase failed: \(error)")
         
-        // Track secret paywall purchase failed (matches NRN implementation)
+        // Track secret paywall purchase failed
+        AnalyticsService.shared.track(event: "secret_paywall_purchase_failed", properties: [
+            "user_name": userName ?? "BigBruh",
+            "source": source,
+            "paywall_type": "secret_starter",
+            "error": error.localizedDescription,
+            "timestamp": ISO8601DateFormatter().string(from: Date())
+        ])
+        
         print("📊 Secret paywall purchase failed - userName: \(userName ?? "BigBruh"), source: \(source), paywall_type: secret_starter")
-        // TODO: Integrate with PostHog or analytics service
-        // trackEvent("secret_paywall_purchase_failed", [
-        //     "user_name": userName ?? "BigBruh",
-        //     "source": source,
-        //     "paywall_type": "secret_starter",
-        //     "timestamp": Date().ISO8601Format()
-        // ])
         
         errorMessage = "Purchase failed. Please try again."
         showError = true
@@ -215,17 +244,17 @@ struct SecretPlanPaywallView: View {
     private func handleDismiss() {
         print("👋 User dismissed secret paywall")
         
-        // Track secret paywall declined (matches NRN implementation)
+        // Track secret paywall declined
+        AnalyticsService.shared.track(event: "secret_paywall_declined", properties: [
+            "user_name": userName ?? "BigBruh",
+            "source": source,
+            "plan_identifier": "starter",
+            "plan_price": "$2.99",
+            "paywall_type": "secret_starter",
+            "timestamp": ISO8601DateFormatter().string(from: Date())
+        ])
+        
         print("📊 Secret paywall declined - userName: \(userName ?? "BigBruh"), source: \(source), paywall_type: secret_starter")
-        // TODO: Integrate with PostHog or analytics service
-        // trackEvent("secret_paywall_declined", [
-        //     "user_name": userName ?? "BigBruh",
-        //     "source": source,
-        //     "plan_identifier": "starter",
-        //     "plan_price": "$2.99",
-        //     "paywall_type": "secret_starter",
-        //     "timestamp": Date().ISO8601Format()
-        // ])
         
         // Call decline handler if provided
         if let onDecline = onDecline {

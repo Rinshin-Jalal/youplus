@@ -33,6 +33,9 @@ struct TwoFuturesInputView: View {
             Color.black
                 .ignoresSafeArea()
 
+            // Scanline overlay - full screen
+            Scanlines()
+
             VStack(spacing: 0) {
                 // Scrollable content area
                 ScrollView {
@@ -115,13 +118,12 @@ struct TwoFuturesInputView: View {
                             .padding(.horizontal, 24)
                             .padding(.bottom, 40)
                             .padding(.top, 16)
-                            .background(Color.black)
                         }
                     }
-                    .background(Color.black)
                 }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             resetInputState()
             setupKeyboardObservers()
@@ -409,20 +411,20 @@ struct TwoFuturesInputView: View {
                     .multilineTextAlignment(.center)
                     .padding(.top, 8)
             }
-            
+
             if !isRecording && !isPaused && recordingDuration == 0 {
                 // RECORD button (initial state)
                 Button(action: startVoiceRecording) {
                     HStack(spacing: 12) {
                         Image(systemName: "mic.fill")
-                            .font(.system(size: 24))
+                            .font(.system(size: 20))
                         Text("RECORD")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 14, weight: .bold))
                             .tracking(1.5)
                     }
                     .foregroundColor(Color.buttonTextColor(for: .brutalRed))
                     .frame(maxWidth: .infinity)
-                    .frame(height: 70)
+                    .padding(.vertical, 14)
                 }
                 .applyVoiceGlassEffect(prominent: true, accentColor: Color.brutalRed)
             } else {
@@ -432,15 +434,15 @@ struct TwoFuturesInputView: View {
                     Button(action: isRecording ? pauseVoiceRecording : resumeVoiceRecording) {
                         HStack(spacing: 8) {
                             Image(systemName: isRecording ? "pause.fill" : "play.fill")
-                                .font(.system(size: 14))
+                                .font(.system(size: 12))
                             Text(isRecording ? "PAUSE" : "RESUME")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(.system(size: 13, weight: .bold))
                                 .tracking(1)
                                 .textCase(.uppercase)
                         }
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 56)
+                        .padding(.vertical, 12)
                     }
                     .applyVoiceGlassEffect(prominent: false, accentColor: Color.brutalRed)
 
@@ -448,16 +450,20 @@ struct TwoFuturesInputView: View {
                     Button(action: { stopVoiceRecording(); handleSubmit() }) {
                         HStack(spacing: 8) {
                             Image(systemName: "checkmark")
-                                .font(.system(size: 14))
-                                .foregroundColor(canSubmitVoice ? Color.buttonTextColor(for: .brutalRed) : nil)
+                                .font(.system(size: 12))
+                                .foregroundColor(
+                                    canSubmitVoice ? Color.buttonTextColor(for: .brutalRed) : nil
+                                )
                             Text(canSubmitVoice ? "SUBMIT" : voiceSubmitText)
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(canSubmitVoice ? Color.buttonTextColor(for: .brutalRed) : nil)
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundColor(
+                                    canSubmitVoice ? Color.buttonTextColor(for: .brutalRed) : nil
+                                )
                                 .tracking(1)
                                 .textCase(.uppercase)
                         }
                         .frame(maxWidth: .infinity)
-                        .frame(height: 56)
+                        .padding(.vertical, 12)
                     }
                     .applyVoiceGlassEffect(prominent: canSubmitVoice, accentColor: Color.brutalRed)
                     .disabled(!canSubmitVoice)
@@ -467,7 +473,6 @@ struct TwoFuturesInputView: View {
         .padding(.horizontal, 24)
         .padding(.bottom, 40)
         .padding(.top, 16)
-        .background(Color.black)
     }
 
     private var isValid: Bool {

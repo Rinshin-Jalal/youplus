@@ -21,7 +21,10 @@ struct PermissionRequestView: View {
         ZStack {
             Color.black
                 .ignoresSafeArea()
-            
+
+            // Scanline overlay - full screen
+            Scanlines()
+
             VStack(spacing: 40) {
                 Spacer()
                 
@@ -56,30 +59,32 @@ struct PermissionRequestView: View {
                 Spacer()
                 
                 // Grant Permission Button
-                Button(action: requestPermission) {
-                    HStack {
-                        Spacer()
+                VStack(spacing: 16) {
+                    Button(action: requestPermission) {
                         if isRequesting {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .frame(maxWidth: .infinity)
+                                .padding()
                         } else {
-                            Text(permissionGranted ? "Granted ✓" : "Allow")
-                                .font(.system(size: 18, weight: .bold))
+                            Text(permissionGranted ? "granted ✓" : "allow")
+                                .font(.system(size: 18, weight: .semibold))
                                 .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
                         }
-                        Spacer()
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 20)
+                    .background(Color.white.opacity(0.15))
+                    .cornerRadius(12)
+                    .disabled(isRequesting || permissionGranted)
+                    .opacity(hasAppeared ? 1.0 : 0.0)
+                    .animation(.easeOut(duration: 0.6).delay(0.6), value: hasAppeared)
                 }
-                .buttonStyle(FallbackGlassButtonStyle())
-                .disabled(isRequesting || permissionGranted)
-                .opacity(hasAppeared ? 1.0 : 0.0)
-                .animation(.easeOut(duration: 0.6).delay(0.6), value: hasAppeared)
                 .padding(.horizontal, 24)
                 .padding(.bottom, 40)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             // Reset state when view appears with new permission type
             resetPermissionState()
@@ -228,25 +233,6 @@ struct PermissionRequestView: View {
                 onComplete(true)
             }
         }
-    }
-}
-
-struct FallbackGlassButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .background(
-                Color.white.opacity(0.1)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.white.opacity(0.05))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                            )
-                    )
-            )
-            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
     }
 }
 

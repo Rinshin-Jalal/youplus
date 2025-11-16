@@ -29,7 +29,10 @@ class MemoryManager:
         max_memories: int = 5,
     ) -> Dict[str, Any]:
         """
-        Retrieve relevant memories for current call
+        Retrieve relevant memories for current call using Supermemory API
+        
+        Uses semantic + keyword search for sub-300ms recall as per Supermemory docs:
+        https://supermemory.ai
 
         Args:
             user_id: Unique user identifier
@@ -40,23 +43,36 @@ class MemoryManager:
             Dictionary with retrieved memories and context
         """
         try:
-            # Query Supermemory for user's memories
+            # Query Supermemory API for user's memories
+            # Using semantic search for better recall quality
+            params = {
+                "user_id": user_id,
+                "limit": max_memories,
+            }
+            
+            # Add tag filtering if mood is specified
+            if mood:
+                params["tags"] = [mood, "call", "recent"]
+            
             response = requests.get(
                 f"{self.base_url}/v1/memories",
                 headers=self.headers,
-                params={
-                    "user_id": user_id,
-                    "limit": max_memories,
-                    "tags": [mood, "recent"],
-                },
+                params=params,
                 timeout=5,
             )
 
             if response.status_code == 200:
-                memories = response.json().get("memories", [])
+                result = response.json()
+                # Handle both array and object response formats
+                if isinstance(result, list):
+                    memories = result
+                else:
+                    memories = result.get("memories", []) or result.get("data", [])
+                
                 logger.info(
-                    f"Retrieved {len(memories)} memories for user {user_id}"
+                    f"✅ Supermemory: Retrieved {len(memories)} memories for user {user_id}"
                 )
+                
                 return {
                     "promises": self._extract_promises(memories),
                     "goals": self._extract_goals(memories),
@@ -64,8 +80,9 @@ class MemoryManager:
                     "raw_memories": memories,
                 }
             else:
+                error_text = response.text if hasattr(response, 'text') else 'Unknown error'
                 logger.warning(
-                    f"Failed to retrieve memories: {response.status_code}"
+                    f"⚠️ Supermemory API returned {response.status_code}: {error_text}"
                 )
                 return {
                     "promises": [],
@@ -75,7 +92,7 @@ class MemoryManager:
                 }
 
         except requests.RequestException as e:
-            logger.error(f"Error retrieving memories: {e}")
+            logger.error(f"❌ Supermemory API error: {e}")
             return {
                 "promises": [],
                 "goals": [],
@@ -91,6 +108,10 @@ class MemoryManager:
     ) -> bool:
         """
         Store call insights and extracted data to Supermemory
+        
+        Uses Supermemory's memory evolution API to store memories that can
+        update, extend, and derive over time as per docs:
+        https://supermemory.ai
 
         Args:
             user_id: Unique user identifier
@@ -101,17 +122,37 @@ class MemoryManager:
             True if successful, False otherwise
         """
         try:
+            # Build comprehensive memory payload
+            content = memory_data.get("content", "")
+            insights = memory_data.get("insights", {})
+            
+            # Enhance content with insights if available
+            if insights:
+                insights_text = []
+                if insights.get("promises_made"):
+                    insights_text.append(f"Promises: {', '.join(insights['promises_made'][:3])}")
+                if insights.get("goals_mentioned"):
+                    insights_text.append(f"Goals: {', '.join(insights['goals_mentioned'][:3])}")
+                if insights.get("progress_noted"):
+                    insights_text.append(f"Progress: {', '.join(insights['progress_noted'][:3])}")
+                
+                if insights_text:
+                    content += f"\n\nKey Insights: {' | '.join(insights_text)}"
+            
             payload = {
                 "user_id": user_id,
-                "content": memory_data.get("content", ""),
+                "content": content,
                 "tags": [
                     "call",
                     memory_data.get("mood", "supportive"),
                     "processed",
+                    "accountability",
                 ],
                 "metadata": {
                     "call_uuid": call_uuid,
                     "timestamp": memory_data.get("timestamp"),
+                    "sentiment": insights.get("sentiment", "neutral"),
+                    "duration_seconds": memory_data.get("duration_seconds"),
                 },
             }
 
@@ -122,15 +163,16 @@ class MemoryManager:
                 timeout=5,
             )
 
-            if response.status_code == 201:
-                logger.info(f"Saved call memory for user {user_id}")
+            if response.status_code in [200, 201]:
+                logger.info(f"✅ Supermemory: Saved call memory for user {user_id} (call: {call_uuid})")
                 return True
             else:
-                logger.warning(f"Failed to save memory: {response.status_code}")
+                error_text = response.text if hasattr(response, 'text') else 'Unknown error'
+                logger.warning(f"⚠️ Supermemory API returned {response.status_code}: {error_text}")
                 return False
 
         except requests.RequestException as e:
-            logger.error(f"Error saving memory: {e}")
+            logger.error(f"❌ Supermemory API error saving memory: {e}")
             return False
 
     @staticmethod

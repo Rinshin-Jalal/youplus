@@ -112,6 +112,9 @@ struct FaceView: View {
             Color.brutalBlack
                 .ignoresSafeArea()
 
+            // Scanline overlay - full screen
+            Scanlines()
+
             // Red flash overlay
             if showRedFlash {
                 Color.red.opacity(0.3)
@@ -151,6 +154,7 @@ struct FaceView: View {
                 await loadUserStatus(forceRefresh: true)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             updateCurrentDate()
             Task {

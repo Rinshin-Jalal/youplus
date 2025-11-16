@@ -109,6 +109,13 @@ final class CallStateStore: ObservableObject {
             state.agentId = agentId
             state.voiceId = dictionary["voiceId"] as? String
         }
+        
+        // Track call started
+        AnalyticsService.shared.track(event: "call_started", properties: [
+            "call_type": state.callType ?? "unknown",
+            "call_id": uuid.uuidString,
+            "provider": state.provider.rawValue
+        ])
     }
 
     func bindCallKitManager(_ manager: CallKitManager) {
@@ -150,6 +157,25 @@ final class CallStateStore: ObservableObject {
 
     func markEnded(reason: String?) {
         state.phase = .ended(reason: reason)
+        
+        // Track call completed or declined
+        if let startedAt = state.startedAt {
+            let duration = Date().timeIntervalSince(startedAt)
+            AnalyticsService.shared.track(event: "call_completed", properties: [
+                "call_type": state.callType ?? "unknown",
+                "call_id": state.uuid?.uuidString ?? "unknown",
+                "call_duration": duration,
+                "provider": state.provider.rawValue,
+                "reason": reason ?? "completed"
+            ])
+        } else {
+            // Call was declined before starting
+            AnalyticsService.shared.track(event: "call_declined", properties: [
+                "call_type": state.callType ?? "unknown",
+                "call_id": state.uuid?.uuidString ?? "unknown",
+                "provider": state.provider.rawValue
+            ])
+        }
     }
     
     // MARK: - Internal State Management

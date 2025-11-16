@@ -98,12 +98,23 @@ struct RootView: View {
                     print("⏱️ Time spent: \(Int(response.totalTimeSpent / 60)) minutes")
                     print("🎭 Chosen path: \(response.chosenPath)")
 
+                    // Track onboarding completion
+                    AnalyticsService.shared.track(event: "onboarding_completed", properties: [
+                        "goal": response.goal,
+                        "chosen_path": response.chosenPath,
+                        "total_time_spent": response.totalTimeSpent,
+                        "plan_type": "normal"
+                    ])
+
                     // Save completed onboarding data in navigator
                     navigator.conversionOnboardingResponse = response
 
                     // Navigate to paywall intro (story-aligned framing before transaction)
                     navigator.currentScreen = .paywallIntro
                 })
+                .onAppear {
+                    AnalyticsService.shared.track(event: "onboarding_started")
+                }
 
             // case .almostThere:
             //     AlmostThereSimpleView()
@@ -165,6 +176,12 @@ struct RootView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             // When app comes to foreground, check for active call
             checkForActiveCall()
+            // Track session start
+            AnalyticsService.shared.trackSessionStart()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)) { _ in
+            // Track session end
+            AnalyticsService.shared.trackSessionEnd()
         }
         // Optimize: Debounce onChange handlers to prevent excessive recomputation
         .onChange(of: authService.loading) { oldValue, newValue in
@@ -190,6 +207,10 @@ struct RootView: View {
             // Only log if screen actually changed
             guard oldValue != newValue else { return }
             print("🚨🚨🚨 CURRENT SCREEN CHANGED TO: \(newValue) 🚨🚨🚨")
+            
+            // Track screen view
+            let screenName = String(describing: newValue)
+            AnalyticsService.shared.trackScreen(screenName)
         }
     }
 

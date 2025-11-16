@@ -20,6 +20,11 @@ struct AuthView: View {
 
     var body: some View {
         ZStack {
+            Color.brutalBlack
+                .ignoresSafeArea()
+
+            // Scanline overlay - full screen
+            Scanlines()
 
             if authService.loading {
                 loadingView
@@ -27,6 +32,7 @@ struct AuthView: View {
                 mainContent
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             startAnimations()
         }
@@ -138,6 +144,9 @@ struct AuthView: View {
 
             HapticManager.medium()
             signingIn = true
+            
+            // Track sign in started
+            AnalyticsService.shared.track(event: "sign_in_started")
 
             Task {
                 do {
@@ -160,12 +169,16 @@ struct AuthView: View {
                 } catch {
                     HapticManager.triggerNotification(.error)
                     Config.log("Apple sign in failed: \(error)", category: "Auth")
+                    AnalyticsService.shared.track(event: "sign_in_failed", properties: [
+                        "error": error.localizedDescription
+                    ])
                     signingIn = false
                 }
             }
 
         case .failure(let error):
             Config.log("Apple sign in cancelled or failed: \(error)", category: "Auth")
+            AnalyticsService.shared.track(event: "sign_in_cancelled")
             signingIn = false
         }
     }

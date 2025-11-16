@@ -21,6 +21,9 @@ struct ControlView: View {
             Color.brutalBlack
                 .ignoresSafeArea()
 
+            // Scanline overlay - full screen
+            Scanlines()
+
             ScrollView {
                 VStack(spacing: 0) {
                     // Header
@@ -50,6 +53,7 @@ struct ControlView: View {
                 timePickerModal
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     // MARK: - Hero Settings Card

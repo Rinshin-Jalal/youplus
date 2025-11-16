@@ -18,22 +18,14 @@
 		0E39AD4A2E8D47EA00AF1300 /* ElevenLabs in Frameworks */ = {isa = PBXBuildFile; productRef = 0E39AD492E8D47EA00AF1300 /* ElevenLabs */; };
 		0E39AD4D2E8D480200AF1300 /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0E39AD4C2E8D480200AF1300 /* LiveKit */; };
 		0E6DD06C2E8E86EF0043695B /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 0E6DD06B2E8E86EF0043695B /* Supabase */; };
-		0E93B7852E92715200C6D7C5 /* glitch.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0E93B7842E92715200C6D7C5 /* glitch.mp3 */; };
-		0E93B7892E92716C00C6D7C5 /* sub_bass.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0E93B7862E92716C00C6D7C5 /* sub_bass.mp3 */; };
-		0E93B78A2E92716C00C6D7C5 /* ticking-clock.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0E93B7882E92716C00C6D7C5 /* ticking-clock.mp3 */; };
-		0E93B78B2E92716C00C6D7C5 /* success.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0E93B7872E92716C00C6D7C5 /* success.mp3 */; };
-		0E93B78D2E92717900C6D7C5 /* glitch-long.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0E93B78C2E92717900C6D7C5 /* glitch-long.mp3 */; };
+		0E6FC68D2EC355F1002BD56F /* Mixpanel in Frameworks */ = {isa = PBXBuildFile; productRef = 0E6FC68C2EC355F1002BD56F /* Mixpanel */; };
+		0E6FC6902EC893F2002BD56F /* SuperwallKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0E6FC68F2EC893F2002BD56F /* SuperwallKit */; };
 		0EBBA9682E92951B00C741F7 /* Products.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 0EBBA9672E92951B00C741F7 /* Products.storekit */; };
 		0EDC60BB2E9E3C890002C735 /* StoreKitTestCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = 0EDC60BA2E9E3C890002C735 /* StoreKitTestCertificate.cer */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0E39AD232E8D44FF00AF1300 /* bigbruhh.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bigbruhh.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		0E93B7842E92715200C6D7C5 /* glitch.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = glitch.mp3; sourceTree = "<group>"; };
-		0E93B7862E92716C00C6D7C5 /* sub_bass.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = sub_bass.mp3; sourceTree = "<group>"; };
-		0E93B7872E92716C00C6D7C5 /* success.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = success.mp3; sourceTree = "<group>"; };
-		0E93B7882E92716C00C6D7C5 /* ticking-clock.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "ticking-clock.mp3"; sourceTree = "<group>"; };
-		0E93B78C2E92717900C6D7C5 /* glitch-long.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "glitch-long.mp3"; sourceTree = "<group>"; };
 		0EBBA9672E92951B00C741F7 /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		0EDC60BA2E9E3C890002C735 /* StoreKitTestCertificate.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = StoreKitTestCertificate.cer; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -70,7 +62,9 @@
 				0E39AD452E8D47CA00AF1300 /* Realtime in Frameworks */,
 				0E39AD372E8D479B00AF1300 /* ReceiptParser in Frameworks */,
 				0E39AD3B2E8D479B00AF1300 /* RevenueCatUI in Frameworks */,
+				0E6FC68D2EC355F1002BD56F /* Mixpanel in Frameworks */,
 				0E39AD472E8D47CA00AF1300 /* Storage in Frameworks */,
+				0E6FC6902EC893F2002BD56F /* SuperwallKit in Frameworks */,
 				0E39AD4A2E8D47EA00AF1300 /* ElevenLabs in Frameworks */,
 				0E6DD06C2E8E86EF0043695B /* Supabase in Frameworks */,
 				0E39AD4D2E8D480200AF1300 /* LiveKit in Frameworks */,
@@ -86,7 +80,6 @@
 			children = (
 				0EDC60BA2E9E3C890002C735 /* StoreKitTestCertificate.cer */,
 				0EBBA9672E92951B00C741F7 /* Products.storekit */,
-				0E93B77E2E9241C100C6D7C5 /* Resources */,
 				0E39AD252E8D44FF00AF1300 /* bigbruhh */,
 				0E6DD06A2E8E86EF0043695B /* Frameworks */,
 				0E39AD242E8D44FF00AF1300 /* Products */,
@@ -106,26 +99,6 @@
 			children = (
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		0E93B77E2E9241C100C6D7C5 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				0E93B77F2E9241CC00C6D7C5 /* Audio */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
-		0E93B77F2E9241CC00C6D7C5 /* Audio */ = {
-			isa = PBXGroup;
-			children = (
-				0E93B7842E92715200C6D7C5 /* glitch.mp3 */,
-				0E93B7862E92716C00C6D7C5 /* sub_bass.mp3 */,
-				0E93B7872E92716C00C6D7C5 /* success.mp3 */,
-				0E93B7882E92716C00C6D7C5 /* ticking-clock.mp3 */,
-				0E93B78C2E92717900C6D7C5 /* glitch-long.mp3 */,
-			);
-			path = Audio;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -159,6 +132,8 @@
 				0E39AD492E8D47EA00AF1300 /* ElevenLabs */,
 				0E39AD4C2E8D480200AF1300 /* LiveKit */,
 				0E6DD06B2E8E86EF0043695B /* Supabase */,
+				0E6FC68C2EC355F1002BD56F /* Mixpanel */,
+				0E6FC68F2EC893F2002BD56F /* SuperwallKit */,
 			);
 			productName = bigbruhh;
 			productReference = 0E39AD232E8D44FF00AF1300 /* bigbruhh.app */;
@@ -193,6 +168,8 @@
 				0E39AD352E8D479B00AF1300 /* XCRemoteSwiftPackageReference "purchases-ios" */,
 				0E39AD482E8D47EA00AF1300 /* XCRemoteSwiftPackageReference "elevenlabs-swift-sdk" */,
 				0E39AD4B2E8D480200AF1300 /* XCRemoteSwiftPackageReference "client-sdk-swift" */,
+				0E6FC68B2EC355F1002BD56F /* XCRemoteSwiftPackageReference "mixpanel-swift" */,
+				0E6FC68E2EC893F2002BD56F /* XCRemoteSwiftPackageReference "Superwall-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0E39AD242E8D44FF00AF1300 /* Products */;
@@ -210,12 +187,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0EBBA9682E92951B00C741F7 /* Products.storekit in Resources */,
-				0E93B7852E92715200C6D7C5 /* glitch.mp3 in Resources */,
-				0E93B7892E92716C00C6D7C5 /* sub_bass.mp3 in Resources */,
 				0EDC60BB2E9E3C890002C735 /* StoreKitTestCertificate.cer in Resources */,
-				0E93B78A2E92716C00C6D7C5 /* ticking-clock.mp3 in Resources */,
-				0E93B78D2E92717900C6D7C5 /* glitch-long.mp3 in Resources */,
-				0E93B78B2E92716C00C6D7C5 /* success.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -489,6 +461,22 @@
 				minimumVersion = 2.7.2;
 			};
 		};
+		0E6FC68B2EC355F1002BD56F /* XCRemoteSwiftPackageReference "mixpanel-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mixpanel/mixpanel-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		0E6FC68E2EC893F2002BD56F /* XCRemoteSwiftPackageReference "Superwall-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/superwall/Superwall-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.10.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -546,6 +534,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0E39AD342E8D474D00AF1300 /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;
+		};
+		0E6FC68C2EC355F1002BD56F /* Mixpanel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0E6FC68B2EC355F1002BD56F /* XCRemoteSwiftPackageReference "mixpanel-swift" */;
+			productName = Mixpanel;
+		};
+		0E6FC68F2EC893F2002BD56F /* SuperwallKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0E6FC68E2EC893F2002BD56F /* XCRemoteSwiftPackageReference "Superwall-iOS" */;
+			productName = SuperwallKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

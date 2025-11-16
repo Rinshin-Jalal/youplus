@@ -29,13 +29,56 @@ struct ExplanatoryConfig {
     let accentColor: Color        // Icon/text accent
 }
 
+// MARK: - Chat Message
+
+struct ChatMessage: Identifiable {
+    let id = UUID()
+    let text: String
+    let delay: Double             // Seconds before showing this message
+    let emphasize: Bool          // Optional styling emphasis
+    
+    init(text: String, delay: Double = 0.0, emphasize: Bool = false) {
+        self.text = text
+        self.delay = delay
+        self.emphasize = emphasize
+    }
+}
+
 // MARK: - AI Commentary
 
 struct AICommentaryConfig {
-    let message: String           // What the AI says
+    let message: String           // Single message (for backward compatibility)
     let persona: AIPersona        // Voice/tone
     let showAvatar: Bool          // Show AI avatar/icon
     let emphasize: Bool           // Highlight this message
+    let messages: [ChatMessage]?  // Multiple chat messages (for new chat-style steps)
+    
+    init(
+        message: String,
+        persona: AIPersona,
+        showAvatar: Bool = true,
+        emphasize: Bool = false,
+        messages: [ChatMessage]? = nil
+    ) {
+        self.message = message
+        self.persona = persona
+        self.showAvatar = showAvatar
+        self.emphasize = emphasize
+        self.messages = messages
+    }
+    
+    // Convenience initializer for chat-style messages
+    init(
+        messages: [ChatMessage],
+        persona: AIPersona,
+        showAvatar: Bool = false
+    ) {
+        self.message = messages.first?.text ?? ""
+        self.persona = persona
+        self.showAvatar = showAvatar
+        self.emphasize = false
+        self.messages = messages
+    }
 }
 
 enum AIPersona {

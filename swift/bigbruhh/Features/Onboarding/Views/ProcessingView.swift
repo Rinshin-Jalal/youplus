@@ -48,13 +48,17 @@ struct ProcessingView: View {
         ZStack {
             Color.black
                 .ignoresSafeArea()
-            
+
+            // Scanline overlay - full screen
+            Scanlines()
+
             if let error = error {
                 errorView(error)
             } else {
                 processingView
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             processUser()
         }
@@ -227,6 +231,9 @@ struct ProcessingView: View {
     }
     
     private func processUser() {
+        // Track onboarding data push started
+        AnalyticsService.shared.track(event: "onboarding_data_push_started")
+        
         Task {
             do {
                 // Check if we have onboarding data
@@ -234,6 +241,9 @@ struct ProcessingView: View {
                     await MainActor.run {
                         self.error = "No onboarding data found. Please complete onboarding first."
                     }
+                    AnalyticsService.shared.track(event: "onboarding_data_push_failed", properties: [
+                        "error": "No onboarding data found"
+                    ])
                     return
                 }
 
@@ -300,6 +310,14 @@ struct ProcessingView: View {
                     isComplete = true
                     print("✅ Processing completed successfully")
                     
+                    // Track successful completion
+                    AnalyticsService.shared.track(event: "onboarding_data_push_successful")
+                    
+                    // Set onboarding completed user property
+                    AnalyticsService.shared.setUserProperties([
+                        "onboarding_completed": true
+                    ])
+                    
                     // Navigate to home (prevent multiple redirects)
                     if !hasRedirected {
                         hasRedirected = true
@@ -311,6 +329,11 @@ struct ProcessingView: View {
                 
             } catch {
                 await MainActor.run {
+                    // Track failure
+                    AnalyticsService.shared.track(event: "onboarding_data_push_failed", properties: [
+                        "error": error.localizedDescription
+                    ])
+                    
                     // Handle specific conversion onboarding errors
                     if let conversionError = error as? ConversionOnboardingError {
                         switch conversionError {

@@ -31,6 +31,14 @@ struct bigbruhhApp: App {
         Config.log("RevenueCat Key: \(String(Config.revenueCatAPIKey.prefix(20)))...", category: "Config")
         #endif
 
+        // Clear in-progress onboarding state synchronously to ensure fresh start
+        // This must happen before any views are created to prevent race conditions
+        UserDefaults.standard.removeObject(forKey: "onboarding_v3_state")
+        UserDefaults.standard.removeObject(forKey: "ConversionOnboardingState")
+        #if DEBUG
+        print("🧹 In-progress onboarding state cleared synchronously - user will start fresh")
+        #endif
+
         // PERFORMANCE: Defer non-critical initialization to background to avoid blocking app launch
         // This follows Apple's guidance to accelerate app launch by deferring work not needed immediately
         Task.detached(priority: .utility) {
@@ -43,6 +51,15 @@ struct bigbruhhApp: App {
             await MainActor.run {
                 // RevenueCat configuration happens lazily when needed
                 // This prevents blocking the main thread during app launch
+            }
+        }
+
+        // Initialize Analytics (non-blocking)
+        Task.detached(priority: .utility) {
+            await MainActor.run {
+                // AnalyticsService initializes lazily, but ensure it's created
+                _ = AnalyticsService.shared
+                AnalyticsService.shared.trackSessionStart()
             }
         }
 

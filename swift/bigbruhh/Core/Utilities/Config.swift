@@ -54,13 +54,9 @@ enum Config {
         Bundle.main.object(forInfoDictionaryKey: "PUBLIC_LIVEKIT_URL") as? String
     }()
 
-    // MARK: - PostHog Configuration (Optional)
-    static let posthogAPIKey: String? = {
-        Bundle.main.object(forInfoDictionaryKey: "EXPO_POSTHOG_API_KEY") as? String
-    }()
-
-    static let posthogProjectID: String? = {
-        Bundle.main.object(forInfoDictionaryKey: "EXPO_POSTHOG_PROJECT_ID") as? String
+    // MARK: - Mixpanel Configuration (Optional)
+    static let mixpanelToken: String? = {
+        Bundle.main.object(forInfoDictionaryKey: "MIXPANEL_TOKEN") as? String
     }()
 
     // MARK: - App Configuration
