@@ -135,14 +135,30 @@ export const CallConfigResponseSchema = BaseResponseSchema.extend({
 
 // Onboarding schemas
 export const OnboardingResponseSchema = z.object({
-  type: z.enum(["text", "voice", "choice", "dual_sliders", "timezone_selection", "long_press_activate", "time_window_picker", "time_picker"]),
+  type: z.enum([
+    "text",
+    "voice",
+    "choice",
+    "multi_select",      // NEW: Multiple choice selection
+    "slider",            // NEW: Slider input (1-10 scale)
+    "rating_stars",      // NEW: 1-5 star rating
+    "dual_sliders",
+    "timezone_selection",
+    "long_press_activate",
+    "time_window_picker",
+    "time_picker",
+    "date_picker",
+    "number_stepper"
+  ]),
   value: z.union([z.string(), z.number(), z.boolean(), z.object({}), z.array(z.any())]),
   timestamp: z.string(),
   duration: z.number().optional(),
   voiceUri: z.string().optional(),
   db_field: z.array(z.string()).optional(),
   selected_option: z.string().optional(),
+  selected_options: z.array(z.string()).optional(),  // NEW: For multi_select
   sliders: z.array(z.number()).optional(),
+  rating: z.number().min(1).max(5).optional(),       // NEW: For rating_stars
 });
 
 export const OnboardingStateSchema = z.object({

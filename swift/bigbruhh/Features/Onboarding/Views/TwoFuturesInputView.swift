@@ -14,8 +14,10 @@ struct TwoFuturesInputView: View {
 
     @State private var answer: String = ""
     @State private var selectedChoice: String?
+    @State private var selectedChoices: Set<String> = []  // For multiSelect
     @State private var selectedTime: Date = Date()
     @State private var selectedNumber: Int = 0
+    @State private var rating: Int = 0  // For ratingStars
 
     // Voice recording state
     @State private var audioRecorder = AudioRecorderManager()
@@ -78,8 +80,10 @@ struct TwoFuturesInputView: View {
                     VStack(spacing: 16) {
                         inputView
 
-                        // Continue button for non-text/voice inputs (but not choice)
+                        // Continue button for non-text/voice inputs (but not choice or ratingStars which auto-submit)
                         if case .choice = config.inputType {
+                            EmptyView()
+                        } else if case .ratingStars = config.inputType {
                             EmptyView()
                         } else {
                             VStack(spacing: 12) {
@@ -143,6 +147,12 @@ struct TwoFuturesInputView: View {
             voiceInputView()
         case .choice(let options):
             choiceInputView(options: options)
+        case .multiSelect(let options):
+            multiSelectInputView(options: options)
+        case .slider(let range):
+            sliderInputView(range: range)
+        case .ratingStars:
+            ratingStarsInputView()
         case .timePicker:
             timePickerView()
         case .datePicker:
@@ -269,6 +279,256 @@ struct TwoFuturesInputView: View {
             }
         }
         .padding(.horizontal, 24)
+    }
+
+    private func multiSelectInputView(options: [String]) -> some View {
+        VStack(spacing: 16) {
+            ForEach(options, id: \.self) { option in
+                Group {
+                    if #available(iOS 26, *) {
+                        Button(action: {
+                            if selectedChoices.contains(option) {
+                                selectedChoices.remove(option)
+                            } else {
+                                selectedChoices.insert(option)
+                            }
+                        }) {
+                            HStack {
+                                Text(option)
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.white)
+                                    .multilineTextAlignment(.leading)
+                                Spacer()
+                                if selectedChoices.contains(option) {
+                                    Image(systemName: "checkmark.square.fill")
+                                        .font(.system(size: 24))
+                                        .foregroundColor(Color(hex: "#4ECDC4"))
+                                } else {
+                                    Image(systemName: "square")
+                                        .font(.system(size: 24))
+                                        .foregroundColor(.white.opacity(0.4))
+                                }
+                            }
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 16)
+                            .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.glass)
+                    } else {
+                        Button(action: {
+                            if selectedChoices.contains(option) {
+                                selectedChoices.remove(option)
+                            } else {
+                                selectedChoices.insert(option)
+                            }
+                        }) {
+                            HStack {
+                                Text(option)
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.white)
+                                    .multilineTextAlignment(.leading)
+                                Spacer()
+                                if selectedChoices.contains(option) {
+                                    Image(systemName: "checkmark.square.fill")
+                                        .font(.system(size: 24))
+                                        .foregroundColor(Color(hex: "#4ECDC4"))
+                                } else {
+                                    Image(systemName: "square")
+                                        .font(.system(size: 24))
+                                        .foregroundColor(.white.opacity(0.4))
+                                }
+                            }
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 16)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                LinearGradient(
+                                    colors: selectedChoices.contains(option) ?
+                                    [Color(hex: "#4ECDC4").opacity(0.3), Color(hex: "#3ab8b0").opacity(0.2)] :
+                                    [Color.white.opacity(0.15), Color.white.opacity(0.05)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 25)
+                                    .stroke(
+                                        selectedChoices.contains(option) ?
+                                        Color(hex: "#4ECDC4").opacity(0.5) :
+                                        Color.white.opacity(0.1),
+                                        lineWidth: 1
+                                    )
+                            )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 24)
+    }
+
+    private func sliderInputView(range: ClosedRange<Int>) -> some View {
+        Group {
+            if #available(iOS 26, *) {
+                VStack(spacing: 24) {
+                    // Large display of current value
+                    Text("\(selectedNumber)")
+                        .font(.system(size: 64, weight: .bold))
+                        .foregroundColor(Color(hex: "#4ECDC4"))
+
+                    // Slider
+                    VStack(spacing: 12) {
+                        Slider(
+                            value: Binding(
+                                get: { Double(selectedNumber) },
+                                set: { selectedNumber = Int($0) }
+                            ),
+                            in: Double(range.lowerBound)...Double(range.upperBound),
+                            step: 1
+                        )
+                        .tint(Color(hex: "#4ECDC4"))
+
+                        // Min/Max labels
+                        HStack {
+                            Text("\(range.lowerBound)")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            Spacer()
+                            Text("\(range.upperBound)")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                }
+                .padding()
+                .glassEffect(in: .rect(cornerRadius: 30))
+                .padding(.horizontal, 24)
+                .onAppear {
+                    if selectedNumber < range.lowerBound || selectedNumber > range.upperBound {
+                        selectedNumber = (range.lowerBound + range.upperBound) / 2
+                    }
+                }
+            } else {
+                VStack(spacing: 24) {
+                    // Large display of current value
+                    Text("\(selectedNumber)")
+                        .font(.system(size: 64, weight: .bold))
+                        .foregroundColor(Color(hex: "#4ECDC4"))
+
+                    // Slider
+                    VStack(spacing: 12) {
+                        Slider(
+                            value: Binding(
+                                get: { Double(selectedNumber) },
+                                set: { selectedNumber = Int($0) }
+                            ),
+                            in: Double(range.lowerBound)...Double(range.upperBound),
+                            step: 1
+                        )
+                        .tint(Color(hex: "#4ECDC4"))
+
+                        // Min/Max labels
+                        HStack {
+                            Text("\(range.lowerBound)")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            Spacer()
+                            Text("\(range.upperBound)")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                }
+                .padding()
+                .background(Color.white.opacity(0.1))
+                .cornerRadius(30)
+                .padding(.horizontal, 24)
+                .onAppear {
+                    if selectedNumber < range.lowerBound || selectedNumber > range.upperBound {
+                        selectedNumber = (range.lowerBound + range.upperBound) / 2
+                    }
+                }
+            }
+        }
+    }
+
+    private func ratingStarsInputView() -> some View {
+        Group {
+            if #available(iOS 26, *) {
+                VStack(spacing: 24) {
+                    // Stars row
+                    HStack(spacing: 20) {
+                        ForEach(1...5, id: \.self) { star in
+                            Button(action: {
+                                rating = star
+                                // Auto-submit after short delay
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                    handleSubmit()
+                                }
+                            }) {
+                                Image(systemName: star <= rating ? "star.fill" : "star")
+                                    .font(.system(size: 48))
+                                    .foregroundColor(star <= rating ? Color(hex: "#FFD700") : Color.white.opacity(0.3))
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    }
+
+                    // Rating label
+                    if rating > 0 {
+                        Text(ratingLabel(for: rating))
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundColor(Color(hex: "#4ECDC4"))
+                    }
+                }
+                .padding()
+                .glassEffect(in: .rect(cornerRadius: 30))
+                .padding(.horizontal, 24)
+            } else {
+                VStack(spacing: 24) {
+                    // Stars row
+                    HStack(spacing: 20) {
+                        ForEach(1...5, id: \.self) { star in
+                            Button(action: {
+                                rating = star
+                                // Auto-submit after short delay
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                    handleSubmit()
+                                }
+                            }) {
+                                Image(systemName: star <= rating ? "star.fill" : "star")
+                                    .font(.system(size: 48))
+                                    .foregroundColor(star <= rating ? Color(hex: "#FFD700") : Color.white.opacity(0.3))
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    }
+
+                    // Rating label
+                    if rating > 0 {
+                        Text(ratingLabel(for: rating))
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundColor(Color(hex: "#4ECDC4"))
+                    }
+                }
+                .padding()
+                .background(Color.white.opacity(0.1))
+                .cornerRadius(30)
+                .padding(.horizontal, 24)
+            }
+        }
+    }
+
+    private func ratingLabel(for rating: Int) -> String {
+        switch rating {
+        case 1: return "Not great"
+        case 2: return "Could be better"
+        case 3: return "Good"
+        case 4: return "Really good"
+        case 5: return "Amazing!"
+        default: return ""
+        }
     }
 
     private func timePickerView() -> some View {
@@ -483,6 +743,12 @@ struct TwoFuturesInputView: View {
             return voiceRecordingURL != nil
         case .choice:
             return selectedChoice != nil
+        case .multiSelect:
+            return !selectedChoices.isEmpty
+        case .slider:
+            return true
+        case .ratingStars:
+            return rating > 0
         case .timePicker:
             return true
         case .datePicker:
@@ -502,6 +768,13 @@ struct TwoFuturesInputView: View {
             result = voiceRecordingURL?.absoluteString ?? ""
         case .choice:
             result = selectedChoice ?? ""
+        case .multiSelect:
+            // Join selected choices with comma
+            result = selectedChoices.sorted().joined(separator: ", ")
+        case .slider:
+            result = "\(selectedNumber)"
+        case .ratingStars:
+            result = "\(rating)"
         case .timePicker:
             result = ISO8601DateFormatter().string(from: selectedTime)
         case .datePicker:
@@ -619,8 +892,10 @@ struct TwoFuturesInputView: View {
         // Reset all input states when view appears with new configuration
         answer = ""
         selectedChoice = nil
+        selectedChoices = []
         selectedTime = Date()
         selectedNumber = 0
+        rating = 0
 
         // Stop any ongoing recording
         if isRecording {

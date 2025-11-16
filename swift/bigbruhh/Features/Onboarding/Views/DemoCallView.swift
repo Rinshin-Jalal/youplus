@@ -2,7 +2,9 @@
 //  DemoCallView.swift
 //  bigbruhh
 //
-//  Demo CallKit experience for onboarding
+//  Demo call experience for onboarding
+//  Step 25: Live demo call using cloned voice + user's data
+//  TODO: Integrate with LiveKit for real call experience
 //
 
 import SwiftUI
@@ -12,7 +14,7 @@ struct DemoCallView: View {
     let onComplete: () -> Void
 
     @State private var callTriggered = false
-    @State private var countdownSeconds = 5
+    @State private var countdownSeconds = 90  // 60-90 second demo call
 
     var body: some View {
         ZStack {
@@ -30,38 +32,75 @@ struct DemoCallView: View {
                     .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: callTriggered)
 
                 VStack(spacing: 16) {
-                    Text("Incoming Call")
+                    Text(callTriggered ? "Future You" : "Incoming Call")
                         .font(.system(size: 28, weight: .bold))
                         .foregroundColor(.white)
 
-                    Text("Your Accountability Call")
+                    Text(callTriggered ? "Your Daily Accountability Call" : "Preparing your call...")
                         .font(.system(size: 18))
                         .foregroundColor(.white.opacity(0.8))
                 }
 
-                // Countdown
+                // Demo call simulation
                 if callTriggered {
-                    Text("Call ends in \(countdownSeconds)s")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.5))
-                        .padding(.top, 20)
+                    VStack(spacing: 12) {
+                        Text("DEMO CALL IN PROGRESS")
+                            .font(.system(size: 12, weight: .bold))
+                            .tracking(2)
+                            .foregroundColor(Color(hex: "#4ECDC4"))
+                            .padding(.top, 20)
+
+                        Text("\(countdownSeconds)s remaining")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.5))
+
+                        Text("This is a preview of your daily calls")
+                            .font(.caption2)
+                            .foregroundColor(.white.opacity(0.4))
+                            .padding(.top, 4)
+                    }
                 }
 
                 Spacer()
 
                 // Explanation
-                VStack(spacing: 12) {
-                    Text("This is what you'll see every day")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.center)
+                if !callTriggered {
+                    VStack(spacing: 12) {
+                        Text("Get ready for your first call")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
 
-                    Text("Same time. No excuses.")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.6))
+                        Text("This is what happens every single day")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                    .padding(.horizontal, 32)
+                    .padding(.bottom, 60)
+                } else {
+                    // Live call simulation
+                    VStack(spacing: 16) {
+                        Text("\"So, you're ready to finally do this?\"")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .italic()
+
+                        Text("\"No more excuses. I'll be here every day.\"")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .italic()
+                            .padding(.top, 8)
+
+                        Text("Using YOUR voice. YOUR data.")
+                            .font(.caption)
+                            .foregroundColor(Color(hex: "#4ECDC4"))
+                            .padding(.top, 12)
+                    }
+                    .padding(.horizontal, 32)
+                    .padding(.bottom, 60)
                 }
-                .padding(.horizontal, 32)
-                .padding(.bottom, 60)
             }
         }
         .onAppear {
@@ -70,22 +109,28 @@ struct DemoCallView: View {
     }
 
     private func triggerDemoCall() {
-        // Trigger the call UI
-        callTriggered = true
+        // Small delay before triggering call
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            withAnimation {
+                callTriggered = true
+            }
 
-        // Optional: Actually trigger CallKit incoming call
-        // This would require CallKit integration in the app
-        // For demo purposes, we'll just show the UI and auto-dismiss
+            // TODO: Integrate with LiveKit for real call experience
+            // - Pass cloned voice ID from step 24 loading
+            // - Pass onboarding data to AI agent
+            // - Use LiveKit for real-time call
+            // - 60-90 second duration with actual conversation
 
-        // Start countdown
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-            countdownSeconds -= 1
+            // For now: Simulate call countdown
+            Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+                countdownSeconds -= 1
 
-            if countdownSeconds <= 0 {
-                timer.invalidate()
-                // Auto-dismiss and continue
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    onComplete()
+                if countdownSeconds <= 0 {
+                    timer.invalidate()
+                    // Auto-dismiss and continue
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        onComplete()
+                    }
                 }
             }
         }

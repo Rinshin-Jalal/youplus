@@ -78,6 +78,10 @@ struct ConversionOnboardingContainer: View {
                 handlePermission(type, granted: granted)
             })
             .id("\(step.id)_\(type.rawValue)")
+
+        case .loading(let config):
+            CreatingFutureYouView(config: config, onComplete: handleContinue)
+                .id(step.id)
         }
     }
 

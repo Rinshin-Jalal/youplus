@@ -92,30 +92,46 @@ export interface Identity {
 /**
  * Onboarding Context JSONB Structure
  *
- * Contains all the psychological details gathered during 42-step onboarding.
+ * Contains all the psychological details gathered during 38-step conversion onboarding.
  * Used by AI to personalize calls but not directly queried by app logic.
  */
 export interface OnboardingContext {
   // Identity & Aspiration
   goal: string; // "Get fit and lose 20 pounds by June 2025"
   goal_deadline?: string; // ISO date
-  motivation_level: number; // 1-10
+  motivation_level: number; // 1-10 (slider)
 
   // Pattern Recognition
-  attempt_history: string; // "Failed 3 times. Last: gave up after 2 weeks."
+  attempt_count?: number; // How many times tried before
+  attempt_history?: string; // "Failed 3 times. Last: gave up after 2 weeks."
   favorite_excuse?: string; // "Too busy with work"
-  who_disappointed?: string; // "My kids and myself"
+  who_disappointed?: string; // "Myself", "Family", "Partner", etc. (choice)
+  biggest_obstacle?: string; // "No time", "Fear of failure", etc. (choice)
+  how_did_quit?: string; // "Gradually stopped", "Life got busy", etc. (choice)
   quit_time?: string; // ISO date of last quit
-  quit_pattern?: string; // "Usually quits 2 weeks in"
+  quit_pattern?: string; // "First week", "After 2-3 weeks", etc. (choice)
+
+  // Demographics (NEW)
+  age?: number; // 13-100
+  gender?: string; // "Male", "Female", "Non-binary", "Prefer not to say"
+  location?: string; // Optional city/country
+  acquisition_source?: string; // "App Store", "Friend", "Social Media", etc.
 
   // The Cost
-  future_if_no_change: string; // "Overweight, unhappy, watching life pass by"
+  success_vision?: string; // What success looks like
+  future_if_no_change: string; // "Same place, no progress", etc. (choice)
+  what_spent?: string; // Multi-select: "Time (months/years)", "Money ($100+)", etc.
+  biggest_fear?: string; // "Failing again", "Succeeding and the pressure", etc. (choice)
+
+  // Demo Call Rating (NEW)
+  demo_call_rating?: number; // 1-5 stars
+  voice_clone_id?: string; // Store cloned voice ID from step 24
 
   // Commitment Setup
   witness?: string; // "My spouse"
 
   // Decision
-  will_do_this: boolean; // true/false
+  will_do_this?: boolean; // true/false
 
   // Permissions
   permissions: {
