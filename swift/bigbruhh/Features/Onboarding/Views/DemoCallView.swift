@@ -3,18 +3,24 @@
 //  bigbruhh
 //
 //  Demo call experience for onboarding
-//  Step 25: Live demo call using cloned voice + user's data
-//  TODO: Integrate with LiveKit for real call experience
+//  Step 25: Plays personalized demo call using cloned voice from Cartesia
 //
 
 import SwiftUI
 import CallKit
+import AVFoundation
 
 struct DemoCallView: View {
     let onComplete: () -> Void
 
+    @EnvironmentObject var state: ConversionOnboardingState
+
     @State private var callTriggered = false
-    @State private var countdownSeconds = 90  // 60-90 second demo call
+    @State private var audioPlayer: AVAudioPlayer?
+    @State private var playbackProgress: Double = 0.0
+    @State private var isPlaying: Bool = false
+    @State private var displayedText: String = ""
+    @State private var playbackTimer: Timer?
 
     var body: some View {
         ZStack {
@@ -41,20 +47,33 @@ struct DemoCallView: View {
                         .foregroundColor(.white.opacity(0.8))
                 }
 
-                // Demo call simulation
-                if callTriggered {
+                // Call status
+                if callTriggered && isPlaying {
                     VStack(spacing: 12) {
-                        Text("DEMO CALL IN PROGRESS")
+                        Text("CALL IN PROGRESS")
                             .font(.system(size: 12, weight: .bold))
                             .tracking(2)
                             .foregroundColor(Color(hex: "#4ECDC4"))
                             .padding(.top, 20)
 
-                        Text("\(countdownSeconds)s remaining")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.5))
+                        // Progress bar
+                        GeometryReader { geometry in
+                            ZStack(alignment: .leading) {
+                                Rectangle()
+                                    .fill(Color.white.opacity(0.1))
+                                    .frame(height: 4)
+                                    .cornerRadius(2)
 
-                        Text("This is a preview of your daily calls")
+                                Rectangle()
+                                    .fill(Color(hex: "#4ECDC4"))
+                                    .frame(width: geometry.size.width * playbackProgress, height: 4)
+                                    .cornerRadius(2)
+                            }
+                        }
+                        .frame(height: 4)
+                        .padding(.horizontal, 40)
+
+                        Text("Using YOUR voice • YOUR data")
                             .font(.caption2)
                             .foregroundColor(.white.opacity(0.4))
                             .padding(.top, 4)
@@ -78,26 +97,19 @@ struct DemoCallView: View {
                     .padding(.horizontal, 32)
                     .padding(.bottom, 60)
                 } else {
-                    // Live call simulation
+                    // Transcript display with typewriter effect
                     VStack(spacing: 16) {
-                        Text("\"So, you're ready to finally do this?\"")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.center)
-                            .italic()
-
-                        Text("\"No more excuses. I'll be here every day.\"")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.center)
-                            .italic()
-                            .padding(.top, 8)
-
-                        Text("Using YOUR voice. YOUR data.")
-                            .font(.caption)
-                            .foregroundColor(Color(hex: "#4ECDC4"))
-                            .padding(.top, 12)
+                        if !displayedText.isEmpty {
+                            Text("\"\(displayedText)\"")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.white)
+                                .multilineTextAlignment(.center)
+                                .italic()
+                                .lineLimit(nil)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
                     }
+                    .frame(height: 120)
                     .padding(.horizontal, 32)
                     .padding(.bottom, 60)
                 }
@@ -115,24 +127,89 @@ struct DemoCallView: View {
                 callTriggered = true
             }
 
-            // TODO: Integrate with LiveKit for real call experience
-            // - Pass cloned voice ID from step 24 loading
-            // - Pass onboarding data to AI agent
-            // - Use LiveKit for real-time call
-            // - 60-90 second duration with actual conversation
-
-            // For now: Simulate call countdown
-            Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-                countdownSeconds -= 1
-
-                if countdownSeconds <= 0 {
-                    timer.invalidate()
-                    // Auto-dismiss and continue
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        onComplete()
-                    }
-                }
+            // Check if we have demo audio
+            guard let audioURL = state.demoCallAudioURL,
+                  let transcript = state.demoCallTranscript else {
+                Config.log("⚠️ No demo audio available, showing fallback", category: "DemoCall")
+                showFallbackDemo()
+                return
             }
+
+            // Play the demo audio
+            playDemoAudio(url: audioURL, transcript: transcript)
+        }
+    }
+
+    private func playDemoAudio(url: URL, transcript: String) {
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.play()
+            isPlaying = true
+
+            Config.log("▶️ Playing demo audio", category: "DemoCall")
+
+            // Start typewriter effect for transcript
+            startTypewriterEffect(text: transcript)
+
+            // Update progress
+            startProgressTracking()
+
+        } catch {
+            Config.log("❌ Failed to play audio: \(error)", category: "DemoCall")
+            showFallbackDemo()
+        }
+    }
+
+    private func startTypewriterEffect(text: String) {
+        displayedText = ""
+        let characters = Array(text)
+        var currentIndex = 0
+
+        Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { timer in
+            guard currentIndex < characters.count else {
+                timer.invalidate()
+                return
+            }
+
+            displayedText.append(characters[currentIndex])
+            currentIndex += 1
+        }
+    }
+
+    private func startProgressTracking() {
+        guard let player = audioPlayer else { return }
+
+        playbackTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+            guard let audioPlayer = self.audioPlayer, audioPlayer.isPlaying else {
+                timer.invalidate()
+                self.handleAudioComplete()
+                return
+            }
+
+            playbackProgress = audioPlayer.currentTime / audioPlayer.duration
+        }
+    }
+
+    private func handleAudioComplete() {
+        isPlaying = false
+        playbackTimer?.invalidate()
+
+        Config.log("✅ Demo audio playback complete", category: "DemoCall")
+
+        // Continue after a brief pause
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            onComplete()
+        }
+    }
+
+    private func showFallbackDemo() {
+        // Fallback: Show static message if audio isn't available
+        displayedText = "Hey, it's me - you from the future. I know about \(state.getResponse(forStepId: 5) ?? "your goal"). Starting tomorrow, I'll be calling you every single day. No escape. No excuses. Let's do this."
+
+        // Auto-complete after showing message
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+            onComplete()
         }
     }
 }

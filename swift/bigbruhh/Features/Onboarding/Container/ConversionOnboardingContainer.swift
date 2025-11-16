@@ -72,6 +72,7 @@ struct ConversionOnboardingContainer: View {
 
         case .demoCall:
             DemoCallView(onComplete: handleContinue)
+                .environmentObject(state)
 
         case .permissionRequest(let type):
             PermissionRequestView(permissionType: type, onComplete: { granted in
@@ -81,6 +82,7 @@ struct ConversionOnboardingContainer: View {
 
         case .loading(let config):
             CreatingFutureYouView(config: config, onComplete: handleContinue)
+                .environmentObject(state)
                 .id(step.id)
         }
     }

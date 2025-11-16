@@ -12,9 +12,13 @@ struct CreatingFutureYouView: View {
     let config: LoadingConfig
     let onComplete: () -> Void
 
+    @EnvironmentObject var state: ConversionOnboardingState
+
     @State private var currentMessageIndex: Int = 0
     @State private var progress: Double = 0.0
     @State private var isComplete: Bool = false
+    @State private var isCloning: Bool = false
+    @State private var errorMessage: String?
 
     var body: some View {
         ZStack {
@@ -91,6 +95,14 @@ struct CreatingFutureYouView: View {
                             .transition(.opacity)
                             .id(currentMessageIndex) // Force view update
                     }
+
+                    // Error message
+                    if let error = errorMessage {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(.red)
+                            .padding(.top, 8)
+                    }
                 }
                 .padding(.horizontal, 48)
 
@@ -106,6 +118,11 @@ struct CreatingFutureYouView: View {
         let messageCount = config.statusMessages.count
         let intervalDuration = config.duration / Double(messageCount)
 
+        // Start voice cloning in background
+        Task {
+            await cloneVoiceAndGenerateDemo()
+        }
+
         // Animate progress and cycle through messages
         Timer.scheduledTimer(withTimeInterval: intervalDuration, repeats: true) { timer in
             withAnimation {
@@ -116,15 +133,84 @@ struct CreatingFutureYouView: View {
                     progress = 1.0
                     timer.invalidate()
 
-                    // Trigger voice clone API here (if needed)
-                    // TODO: Integrate voice clone API call with recordings from steps 8 & 20
+                    // Wait for voice cloning to complete
+                    waitForCloningCompletion()
+                }
+            }
+        }
+    }
 
-                    // Complete after a short delay
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        isComplete = true
-                        config.onComplete?()
-                        onComplete()
-                    }
+    private func cloneVoiceAndGenerateDemo() async {
+        isCloning = true
+
+        do {
+            // Get voice recordings from steps 8 and 20
+            guard let voice1 = state.getVoiceRecording(forKey: "step_8"),
+                  let voice2 = state.getVoiceRecording(forKey: "step_20") else {
+                errorMessage = "No voice recordings found"
+                isCloning = false
+                return
+            }
+
+            // Get user's name and goal
+            let userName = state.getResponse(forStepId: 4) ?? "User"
+            let goal = state.getResponse(forStepId: 5) ?? "your goal"
+            let motivationLevel = Int(state.getResponse(forStepId: 7) ?? "5") ?? 5
+
+            Config.log("🎤 Cloning voice with recordings from steps 8 & 20", category: "VoiceClone")
+
+            // Clone voice using Cartesia
+            let voiceCloneID = try await VoiceCloneService.shared.cloneVoice(
+                from: [voice1, voice2],
+                userName: userName
+            )
+
+            // Store voice clone ID
+            await MainActor.run {
+                state.voiceCloneID = voiceCloneID
+            }
+
+            Config.log("✅ Voice cloned: \(voiceCloneID)", category: "VoiceClone")
+
+            // Generate demo call audio
+            Config.log("🎬 Generating demo call", category: "DemoCall")
+
+            let demoAudio = try await DemoCallService.shared.generateDemoCall(
+                voiceCloneID: voiceCloneID,
+                userName: userName,
+                goal: goal,
+                motivationLevel: motivationLevel
+            )
+
+            // Store demo audio
+            await MainActor.run {
+                state.demoCallAudioURL = demoAudio.audioURL
+                state.demoCallTranscript = demoAudio.transcript
+            }
+
+            Config.log("✅ Demo call generated", category: "DemoCall")
+
+        } catch {
+            Config.log("❌ Voice cloning/demo generation failed: \(error)", category: "VoiceClone")
+            await MainActor.run {
+                errorMessage = "Failed to create voice clone"
+            }
+        }
+
+        isCloning = false
+    }
+
+    private func waitForCloningCompletion() {
+        // Check if cloning is complete every 0.5 seconds
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
+            if !isCloning || errorMessage != nil {
+                timer.invalidate()
+
+                // Complete after a short delay
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    isComplete = true
+                    config.onComplete?()
+                    onComplete()
                 }
             }
         }
