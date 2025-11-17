@@ -36,6 +36,9 @@ enum InputType {
     case text(placeholder: String?)
     case voice(minDuration: Int?, maxDuration: Int?)
     case choice(options: [String])
+    case multiSelect(options: [String])  // Multiple choice selection
+    case slider(range: ClosedRange<Int>) // Slider input (replaces numberStepper for motivation, etc.)
+    case ratingStars                      // 1-5 star rating
     case timePicker
     case datePicker
     case numberStepper(range: ClosedRange<Int>)

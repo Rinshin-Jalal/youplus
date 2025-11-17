@@ -16,6 +16,7 @@ enum ConversionStepType {
     case debate(messages: [DebateMessage])
     case input(config: InputConfig)
     case demoCall
+    case loading(config: LoadingConfig)
     case permissionRequest(type: PermissionType)
 }
 
@@ -27,6 +28,22 @@ struct ExplanatoryConfig {
     let subtitle: String?         // Optional secondary text
     let backgroundColor: Color    // Background color
     let accentColor: Color        // Icon/text accent
+}
+
+// MARK: - Loading Step
+
+struct LoadingConfig {
+    let title: String                    // Main loading message
+    let statusMessages: [String]         // Progress status messages
+    let duration: TimeInterval           // Total duration (~10-15 seconds)
+    let onComplete: (() -> Void)?        // Callback when loading completes
+
+    init(title: String, statusMessages: [String], duration: TimeInterval = 12.0, onComplete: (() -> Void)? = nil) {
+        self.title = title
+        self.statusMessages = statusMessages
+        self.duration = duration
+        self.onComplete = onComplete
+    }
 }
 
 // MARK: - Chat Message
@@ -169,6 +186,11 @@ struct ConversionOnboardingStep {
 
     var isPermissionRequest: Bool {
         if case .permissionRequest = type { return true }
+        return false
+    }
+
+    var isLoading: Bool {
+        if case .loading = type { return true }
         return false
     }
 }

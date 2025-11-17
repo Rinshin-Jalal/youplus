@@ -16,6 +16,11 @@ class ConversionOnboardingState: ObservableObject {
     @Published var isComplete: Bool = false
     @Published var sessionStartTime: Date = Date()
 
+    // Voice cloning and demo call
+    @Published var voiceCloneID: String?
+    @Published var demoCallAudioURL: URL?
+    @Published var demoCallTranscript: String?
+
     private let userDefaultsKey = "ConversionOnboardingState"
 
     init() {

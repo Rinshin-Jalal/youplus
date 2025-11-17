@@ -2,19 +2,19 @@
 //  ConversionStepDefinitions.swift
 //  bigbruhh
 //
-//  36-step conversion-focused onboarding flow
-//  Focus: Value proposition, Future You character data, Feature showcases
+//  38-step conversion-optimized onboarding flow
+//  Focus: Reduce typing, increase engagement, add demographics, personalized demo call
 //
 
 import Foundation
 import SwiftUI
 
-// MARK: - 36-Step Conversion Flow
+// MARK: - 38-Step Conversion Flow
 
 let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
 
     // ==========================================
-    // PHASE 1: THE HOOK (Steps 1-3)
+    // PHASE 1: THE HOOK (Steps 1-3) ✅ Keep as-is
     // ==========================================
 
     ConversionOnboardingStep(
@@ -25,7 +25,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
                 ChatMessage(text: "it's me. you. from later.", delay: 1.0),
                 ChatMessage(text: "remember that thing you started last month?", delay: 1.2),
                 ChatMessage(text: "yeah. that one.", delay: 0.8),
-                ChatMessage(text: "stsrted strong. lasted a week. then... nothing.", delay: 1.0)
+                ChatMessage(text: "started strong. lasted a week. then... nothing.", delay: 1.0)
             ],
             persona: .futureYou,
             showAvatar: false
@@ -63,7 +63,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     // ==========================================
-    // PHASE 2: GOAL COLLECTION (Steps 4-8)
+    // PHASE 2: CORE IDENTITY + VOICE #1 (Steps 4-8)
     // ==========================================
 
     ConversionOnboardingStep(
@@ -79,9 +79,9 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ConversionOnboardingStep(
         id: 5,
         type: .input(config: InputConfig(
-            question: "What's the goal you keep failing to achieve?",
-            inputType: .text(placeholder: "e.g., Build my startup, Get fit, Learn to code, Start my business"),
-            helperText: "Not a habit. A specific goal or achievement you've started and quit multiple times.",
+            question: "What's the ONE thing you NEED to accomplish to feel whole again?",
+            inputType: .text(placeholder: "e.g., Build my startup, Get fit, Learn to code"),
+            helperText: "Not a habit. The specific goal that's been eating at you.",
             skipAllowed: false
         ))
     ),
@@ -89,9 +89,9 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ConversionOnboardingStep(
         id: 6,
         type: .input(config: InputConfig(
-            question: "When do you want to achieve this by?",
+            question: "When do you NEED this by?",
             inputType: .datePicker,
-            helperText: "Pick a real deadline. If it's ongoing, pick when you want to see results.",
+            helperText: "Pick a real deadline. When do you need to see results?",
             skipAllowed: false
         ))
     ),
@@ -99,9 +99,9 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ConversionOnboardingStep(
         id: 7,
         type: .input(config: InputConfig(
-            question: "How badly do you want this?",
-            inputType: .numberStepper(range: 1...10),
-            helperText: "1 = not really, 10 = I'll die if I don't get this",
+            question: "How badly do you CRAVE this change?",
+            inputType: .slider(range: 1...10),
+            helperText: "Slide to show your hunger. 1 = meh, 10 = I'll die without this",
             skipAllowed: false
         ))
     ),
@@ -109,23 +109,30 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ConversionOnboardingStep(
         id: 8,
         type: .input(config: InputConfig(
-            question: "Why can't you let this go?",
-            inputType: .voice(minDuration: 10, maxDuration: 30),
-            helperText: "10 seconds. What's the real reason this keeps coming back? What happens if you never do it?",
+            question: "Tell me why you NEED this. What's the cost of staying stuck?",
+            inputType: .voice(minDuration: 15, maxDuration: 30),
+            helperText: "15 seconds. Speak from your gut. Let me hear the hunger.",
             skipAllowed: false
         ))
     ),
 
     // ==========================================
-    // PHASE 3: PATTERN RECOGNITION (Steps 9-13)
+    // PHASE 3: PATTERN RECOGNITION (Steps 9-14) - REDUCE TYPING
     // ==========================================
 
     ConversionOnboardingStep(
         id: 9,
         type: .input(config: InputConfig(
             question: "Who have you disappointed by quitting?",
-            inputType: .text(placeholder: "Name someone"),
-            helperText: "This gets personal. Who's counting on you? Who did you let down?",
+            inputType: .choice(options: [
+                "Myself",
+                "Family",
+                "Partner",
+                "Friends",
+                "No one yet",
+                "Everyone"
+            ]),
+            helperText: "This gets personal. Who's counting on you?",
             skipAllowed: false
         ))
     ),
@@ -133,8 +140,15 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ConversionOnboardingStep(
         id: 10,
         type: .input(config: InputConfig(
-            question: "What's the biggest obstacle stopping you?",
-            inputType: .text(placeholder: "What's really in your way?"),
+            question: "What's been stopping you from becoming who you're meant to be?",
+            inputType: .choice(options: [
+                "No time",
+                "No energy",
+                "Fear of failure",
+                "Procrastination",
+                "Lack of support",
+                "Don't know how"
+            ]),
             helperText: "Be honest. What's the real barrier?",
             skipAllowed: false
         ))
@@ -153,9 +167,15 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ConversionOnboardingStep(
         id: 12,
         type: .input(config: InputConfig(
-            question: "How did you quit?",
-            inputType: .text(placeholder: "What was the excuse? What was the moment you gave up?"),
-            helperText: "Be specific. What actually happened?",
+            question: "How did you quit last time?",
+            inputType: .choice(options: [
+                "Gradually stopped",
+                "Life got busy",
+                "Lost motivation",
+                "Got discouraged",
+                "Never really started"
+            ]),
+            helperText: "What actually happened? Be specific.",
             skipAllowed: false
         ))
     ),
@@ -178,23 +198,29 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ConversionOnboardingStep(
         id: 14,
         type: .input(config: InputConfig(
-            question: "When exactly do you quit?",
-            inputType: .text(placeholder: "Tuesday night? Sunday morning? After 3 days?"),
-            helperText: "What's the pattern? Day of week? Time of day? How many days in?",
+            question: "When do you usually quit?",
+            inputType: .choice(options: [
+                "First week",
+                "After 2-3 weeks",
+                "Around 1 month",
+                "After 2-3 months",
+                "Never make it past day 1"
+            ]),
+            helperText: "What's the pattern? When does it fall apart?",
             skipAllowed: false
         ))
     ),
 
     // ==========================================
-    // PHASE 4: THE COST (Steps 15-18)
+    // PHASE 4: DEMOGRAPHICS (Steps 15-18) - NEW
     // ==========================================
 
     ConversionOnboardingStep(
         id: 15,
         type: .input(config: InputConfig(
-            question: "What would success look like?",
-            inputType: .text(placeholder: "Describe your ideal outcome"),
-            helperText: "If you actually did this, what would change?",
+            question: "How old are you?",
+            inputType: .numberStepper(range: 13...100),
+            helperText: "Just so I know who I'm talking to",
             skipAllowed: false
         ))
     ),
@@ -202,62 +228,80 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ConversionOnboardingStep(
         id: 16,
         type: .input(config: InputConfig(
-            question: "What dies if you quit again?",
-            inputType: .voice(minDuration: 10, maxDuration: 30),
-            helperText: "10 seconds. What exactly are you losing? Your future? Self-respect? Someone's trust?",
-            skipAllowed: false
+            question: "What's your gender?",
+            inputType: .choice(options: [
+                "Male",
+                "Female",
+                "Non-binary",
+                "Prefer not to say"
+            ]),
+            helperText: "Optional but helps me understand you better",
+            skipAllowed: true
         ))
     ),
 
     ConversionOnboardingStep(
         id: 17,
         type: .input(config: InputConfig(
-            question: "Where will you be in 6 months if you quit again?",
-            inputType: .text(placeholder: "Same place? Worse? What's the reality?"),
-            helperText: "Be brutally honest. Same goal, same failure, same excuses.",
-            skipAllowed: false
+            question: "Where are you from?",
+            inputType: .text(placeholder: "City, Country (optional)"),
+            helperText: "Just curious. You can skip this.",
+            skipAllowed: true
         ))
     ),
 
     ConversionOnboardingStep(
         id: 18,
         type: .input(config: InputConfig(
-            question: "What have you already spent trying to achieve this?",
-            inputType: .text(placeholder: "Time? Money? Opportunities?"),
-            helperText: "What's the cost of all your failed attempts?",
+            question: "How did you hear about us?",
+            inputType: .choice(options: [
+                "App Store",
+                "Friend",
+                "Social Media",
+                "Search",
+                "Ad",
+                "Other"
+            ]),
+            helperText: "Helps us reach more people like you",
             skipAllowed: false
         ))
     ),
 
     // ==========================================
-    // PHASE 5: FEATURE DEMO & VALUE (Steps 19-25)
+    // PHASE 5: THE COST + VOICE #2 (Steps 19-23)
     // ==========================================
 
     ConversionOnboardingStep(
         id: 19,
-        type: .aiCommentary(config: AICommentaryConfig(
-            messages: [
-                ChatMessage(text: "starting tomorrow, i call you", delay: 0.5),
-                ChatMessage(text: "every day", delay: 0.8),
-                ChatMessage(text: "same time", delay: 0.8),
-                ChatMessage(text: "this is what it looks like", delay: 0.8, emphasize: true)
-            ],
-            persona: .futureYou,
-            showAvatar: false
+        type: .input(config: InputConfig(
+            question: "Paint the picture: What does your life look like when you FINALLY have this?",
+            inputType: .text(placeholder: "Describe your ideal outcome"),
+            helperText: "If you actually did this, what would change?",
+            skipAllowed: false
         ))
     ),
 
     ConversionOnboardingStep(
         id: 20,
-        type: .demoCall
+        type: .input(config: InputConfig(
+            question: "What dies inside you if you quit again? Say it out loud.",
+            inputType: .voice(minDuration: 15, maxDuration: 30),
+            helperText: "15 seconds. Let Future You hear it. What exactly are you losing?",
+            skipAllowed: false
+        ))
     ),
 
     ConversionOnboardingStep(
         id: 21,
         type: .input(config: InputConfig(
-            question: "Why will this time be different?",
-            inputType: .text(placeholder: "What's changed? What's different now?"),
-            helperText: "Be honest. What makes this attempt different from the others?",
+            question: "Where will you be in 6 months if you quit again?",
+            inputType: .choice(options: [
+                "Same place, no progress",
+                "Even worse off",
+                "Full of regret",
+                "Given up completely"
+            ]),
+            helperText: "Be brutally honest. Same goal, same failure, same excuses.",
             skipAllowed: false
         ))
     ),
@@ -265,9 +309,15 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ConversionOnboardingStep(
         id: 22,
         type: .input(config: InputConfig(
-            question: "What's your biggest fear about this goal?",
-            inputType: .text(placeholder: "What scares you most?"),
-            helperText: "What are you really afraid of? Failure? Success? Judgment?",
+            question: "What have you already spent trying to achieve this?",
+            inputType: .multiSelect(options: [
+                "Time (months/years)",
+                "Money ($100+)",
+                "Opportunities",
+                "Relationships",
+                "Self-respect"
+            ]),
+            helperText: "Select all that apply. What's the cost of all your failed attempts?",
             skipAllowed: false
         ))
     ),
@@ -275,79 +325,111 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ConversionOnboardingStep(
         id: 23,
         type: .input(config: InputConfig(
-            question: "How much is this goal worth to you?",
-            inputType: .text(placeholder: "In dollars, time, or what you'd give up"),
-            helperText: "What would you pay? What would you sacrifice?",
-            skipAllowed: false
-        ))
-    ),
-
-    ConversionOnboardingStep(
-        id: 24,
-        type: .input(config: InputConfig(
-            question: "What's the worst that happens if you fail again?",
-            inputType: .text(placeholder: "Be specific. What's the real cost?"),
-            helperText: "What exactly happens? What do you lose?",
-            skipAllowed: false
-        ))
-    ),
-
-    ConversionOnboardingStep(
-        id: 25,
-        type: .input(config: InputConfig(
-            question: "What's your backup plan if you want to quit?",
-            inputType: .text(placeholder: "What will you do when it gets hard?"),
-            helperText: "What's your escape route? What's your excuse ready?",
+            question: "What's your biggest fear about this goal?",
+            inputType: .choice(options: [
+                "Failing again",
+                "Succeeding and the pressure",
+                "Judgment from others",
+                "Wasting more time",
+                "Finding out I can't do it"
+            ]),
+            helperText: "What are you really afraid of?",
             skipAllowed: false
         ))
     ),
 
     // ==========================================
-    // PHASE 6: PERMISSIONS & COMMITMENT SETUP (Steps 26-33)
+    // PHASE 6: CREATING FUTURE YOU (Step 24) - NEW
+    // ==========================================
+
+    ConversionOnboardingStep(
+        id: 24,
+        type: .loading(config: LoadingConfig(
+            title: "Creating Your Future You",
+            statusMessages: [
+                "Analyzing your voice...",
+                "Building your accountability partner...",
+                "Preparing your first call...",
+                "Almost ready..."
+            ],
+            duration: 12.0
+        ))
+    ),
+
+    // ==========================================
+    // PHASE 7: DEMO CALL EXPERIENCE (Step 25)
+    // ==========================================
+
+    ConversionOnboardingStep(
+        id: 25,
+        type: .demoCall
+    ),
+
+    // ==========================================
+    // PHASE 8: SOCIAL PROOF (Steps 26-27) - NEW
     // ==========================================
 
     ConversionOnboardingStep(
         id: 26,
-        type: .permissionRequest(type: .notifications)
-    ),
-
-    ConversionOnboardingStep(
-        id: 27,
-        type: .permissionRequest(type: .calls)
-    ),
-
-    ConversionOnboardingStep(
-        id: 28,
         type: .input(config: InputConfig(
-            question: "What's your biggest motivation right now?",
-            inputType: .text(placeholder: "What's driving you today?"),
-            helperText: "Why are you here? What's pushing you forward?",
+            question: "How was that experience?",
+            inputType: .ratingStars,
+            helperText: "Rate your demo call from 1-5 stars",
             skipAllowed: false
         ))
     ),
 
     ConversionOnboardingStep(
+        id: 27,
+        type: .aiCommentary(config: AICommentaryConfig(
+            messages: [
+                ChatMessage(text: "glad you liked it", delay: 0.5),
+                ChatMessage(text: "imagine that every single day", delay: 0.8),
+                ChatMessage(text: "no escape", delay: 0.6),
+                ChatMessage(text: "no excuses", delay: 0.6),
+                ChatMessage(text: "just you and your commitment", delay: 0.8)
+            ],
+            persona: .futureYou,
+            showAvatar: false
+        ))
+    ),
+
+    // ==========================================
+    // PHASE 9: FINAL COMMITMENT + VOICE #3 (Steps 28-34)
+    // ==========================================
+
+    ConversionOnboardingStep(
+        id: 28,
+        type: .permissionRequest(type: .notifications)
+    ),
+
+    ConversionOnboardingStep(
         id: 29,
+        type: .permissionRequest(type: .calls)
+    ),
+
+    ConversionOnboardingStep(
+        id: 30,
         type: .input(config: InputConfig(
             question: "What will you do every single day?",
-            inputType: .text(placeholder: "Be specific: 30 min coding, 1 hour gym, 5 sales calls"),
+            inputType: .text(placeholder: "Be specific: 30 min gym, 1 hour coding, 5 sales calls"),
             helperText: "The exact action. No vague goals. What measurable thing?",
             skipAllowed: false
         ))
     ),
 
     ConversionOnboardingStep(
-        id: 30,
+        id: 31,
         type: .input(config: InputConfig(
             question: "What time should I call you?",
             inputType: .timePicker,
-            helperText: "Pick your best energy time",
+            helperText: "Pick your best energy time. This is when I'll hold you accountable.",
             skipAllowed: false
         ))
     ),
 
     ConversionOnboardingStep(
-        id: 31,
+        id: 32,
         type: .input(config: InputConfig(
             question: "How many days can you miss before you're done?",
             inputType: .numberStepper(range: 1...5),
@@ -357,13 +439,13 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 32,
+        id: 33,
         type: .aiCommentary(config: AICommentaryConfig(
             messages: [
                 ChatMessage(text: "last voice commitment", delay: 0.5),
                 ChatMessage(text: "you're not talking to me", delay: 0.8),
                 ChatMessage(text: "talk to the version of you who'll want to quit in 3 days", delay: 1.2),
-                ChatMessage(text: "what does THAT person need to hear from THIS person", delay: 1.0),
+                ChatMessage(text: "what does THAT person need to hear from THIS person?", delay: 1.0),
                 ChatMessage(text: "the one who still believes?", delay: 0.8)
             ],
             persona: .futureYou,
@@ -372,28 +454,18 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 33,
-        type: .input(config: InputConfig(
-            question: "What happens if you fail this time?",
-            inputType: .voice(minDuration: 15, maxDuration: 30),
-            helperText: "15 seconds. Talk to the version of you who will want to quit. What's the cost?",
-            skipAllowed: false
-        ))
-    ),
-
-    // ==========================================
-    // PHASE 7: FINAL COMMITMENT (Steps 34-35)
-    // ==========================================
-
-    ConversionOnboardingStep(
         id: 34,
         type: .input(config: InputConfig(
-            question: "What will you tell yourself when you want to quit?",
-            inputType: .text(placeholder: "What's your reminder? Your reason?"),
-            helperText: "What do you need to hear? What will keep you going?",
+            question: "This is it. Tell Future You why THIS time is different. Why you NEED this to work.",
+            inputType: .voice(minDuration: 20, maxDuration: 30),
+            helperText: "20 seconds. Make it real. This is your final oath.",
             skipAllowed: false
         ))
     ),
+
+    // ==========================================
+    // PHASE 10: PAYWALL (Steps 35-36)
+    // ==========================================
 
     ConversionOnboardingStep(
         id: 35,
@@ -406,7 +478,6 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
                 ChatMessage(text: "every day", delay: 0.6),
                 ChatMessage(text: "no escape", delay: 0.6),
                 ChatMessage(text: "now invest in yourself", delay: 0.8, emphasize: true),
-                ChatMessage(text: "because you've already invested this much", delay: 0.8),
                 ChatMessage(text: "don't let it be for nothing", delay: 0.8)
             ],
             persona: .futureYou,
