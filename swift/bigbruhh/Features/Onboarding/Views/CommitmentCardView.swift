@@ -7,13 +7,17 @@
 //
 
 import SwiftUI
+import AVKit
 
 struct CommitmentCardView: View {
     let onContinue: () -> Void
 
     @EnvironmentObject var state: ConversionOnboardingState
     @State private var showShareSheet = false
-    @State private var renderedImage: UIImage?
+    @State private var itemsToShare: [Any] = []
+
+    // 3D Interactivity State
+    @State private var dragOffset: CGSize = .zero
 
     // MARK: - Computed Properties
 
@@ -25,183 +29,196 @@ struct CommitmentCardView: View {
         state.getResponse(forStepId: 5) ?? "CHANGE MY LIFE"
     }
 
-    private var commitmentDate: String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
-        return formatter.string(from: Date())
+    private var dailyCommitment: String {
+        // "I have created my future Me, It will call me everyday and keep on track..."
+        // We can make this dynamic based on user inputs if needed, but for now using the requested template.
+        return "I HAVE CREATED MY FUTURE ME. IT WILL CALL ME EVERYDAY AND KEEP ME ON TRACK."
     }
 
     // MARK: - Body
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            Color.black
+                .ignoresSafeArea()
 
-            // Background scanlines
+            // Scanline overlay - subtle monitor effect
             Scanlines()
-                .opacity(0.3)
-                .allowsHitTesting(false)
+            // Vignette overlay - focus attention
+            Vignette(intensity: 0.5)
 
             VStack(spacing: 24) {
                 Spacer()
 
-                // The Card
+                // The Card (Interactive)
                 cardView
+                    .rotation3DEffect(
+                        .degrees(Double(dragOffset.width / 20)),
+                        axis: (x: 0, y: -1, z: 0)
+                    )
+                    .rotation3DEffect(
+                        .degrees(Double(dragOffset.height / 20)),
+                        axis: (x: 1, y: 0, z: 0)
+                    )
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                dragOffset = value.translation
+                            }
+                            .onEnded { _ in
+                                withAnimation(.spring(response: 0.5, dampingFraction: 0.6)) {
+                                    dragOffset = .zero
+                                }
+                            }
+                    )
                     .padding(.horizontal, 24)
-                    // Add shadow/glow
-                    .shadow(color: Color.brutalRed.opacity(0.3), radius: 20, x: 0, y: 0)
 
                 Spacer()
 
                 // Action Buttons
                 VStack(spacing: 16) {
                     Button(action: shareCard) {
-                        HStack {
+                        HStack(spacing: 12) {
                             Image(systemName: "square.and.arrow.up")
+                                .font(.system(size: 20))
                             Text("SHARE COMMITMENT")
+                                .font(.system(size: 14, weight: .bold))
+                                .tracking(1.5)
                         }
-                        .font(.headline)
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(Color.white)
-                        .cornerRadius(0) // Brutalist - sharp corners
-                        .overlay(
-                            Rectangle()
-                                .stroke(Color.white, lineWidth: 1)
-                        )
+                        .padding(.vertical, 14)
                     }
+                    .applyVoiceGlassEffect(prominent: false, accentColor: .white)
 
                     Button(action: onContinue) {
-                        Text("CONTINUE")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .tracking(2)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 56)
-                            .background(Color.brutalRed)
+                        HStack(spacing: 12) {
+                            Text("CONTINUE")
+                                .font(.system(size: 14, weight: .bold))
+                                .tracking(1.5)
+                            Image(systemName: "arrow.right")
+                                .font(.system(size: 16, weight: .bold))
+                        }
+                        .foregroundColor(Color.buttonTextColor(for: .brutalRed))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
                     }
+                    .applyVoiceGlassEffect(prominent: true, accentColor: .brutalRed)
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 40)
             }
         }
         .sheet(isPresented: $showShareSheet) {
-            if let image = renderedImage {
-                ShareSheet(activityItems: [image])
-            }
+            ShareSheet(activityItems: itemsToShare)
         }
     }
 
     // MARK: - The Card View
 
     private var cardView: some View {
-        VStack(spacing: 0) {
-            // Header
+        VStack(alignment: .leading, spacing: 0) {
+            // Top Row: Logo
             HStack {
-                Image(systemName: "waveform.path.ecg")
-                    .font(.system(size: 24))
-                    .foregroundColor(.brutalRed)
+                Text("You+")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(.black.opacity(0.9))
 
                 Spacer()
-
-                Text("OFFICIAL COMMITMENT")
-                    .font(.system(size: 12, weight: .bold, design: .monospaced))
-                    .foregroundColor(.white.opacity(0.6))
-                    .tracking(1)
-            }
-            .padding(.bottom, 32)
-
-            // Main Text
-            Text("I COMMITTED TO\nMY FUTURE SELF")
-                .font(.system(size: 32, weight: .black, design: .default)) // Heavy impact
-                .foregroundColor(.white)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .lineSpacing(4)
-                .padding(.bottom, 32)
-
-            // Details
-            VStack(alignment: .leading, spacing: 16) {
-                detailRow(label: "AGENT", value: userName.uppercased())
-                Divider().background(Color.white.opacity(0.2))
-                detailRow(label: "MISSION", value: userGoal.uppercased())
-                Divider().background(Color.white.opacity(0.2))
-                detailRow(label: "DATE", value: commitmentDate.uppercased())
             }
             .padding(.bottom, 40)
 
-            // Footer
-            HStack(alignment: .bottom) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("NO EXCUSES.")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.brutalRed)
-                    Text("NO ESCAPE.")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.brutalRed)
-                }
+            // Main Content (Dynamic Commitment)
+            Text("I COMMITTED TO")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.black.opacity(0.5))
+                .tracking(2)
+                .padding(.bottom, 12)
 
+            Text(dailyCommitment)
+                .font(.system(size: 24, weight: .heavy)) // Slightly smaller for longer text
+                .foregroundColor(.black)
+                .lineLimit(nil) // Allow full text
+                .minimumScaleFactor(0.6)
+                .lineSpacing(4)
+                .padding(.bottom, 20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            // Video Player (if available)
+            if let videoURL = state.generatedCommitmentVideoURL {
+                VideoPlayer(player: AVPlayer(url: videoURL))
+                    .frame(height: 180)
+                    .cornerRadius(16)
+                    .padding(.bottom, 20)
+            } else {
+                // Placeholder or just spacing if no video
                 Spacer()
+                    .frame(height: 20)
+            }
 
-                // "Stamp" or Brand
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("BIG BRUH")
-                        .font(.system(size: 20, weight: .black))
-                        .foregroundColor(.white)
-                        .italic()
+            // Bottom Row: Mission
+            VStack(alignment: .leading, spacing: 8) {
+                Text("MISSION:")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(.black.opacity(0.4))
+                    .tracking(1)
 
-                    Text("VERIFIED")
-                        .font(.system(size: 10, weight: .bold))
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(Color.white)
-                        .foregroundColor(.black)
-                }
+                Text(userGoal.uppercased())
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.black)
+                    .lineLimit(2)
             }
         }
         .padding(32)
+        .frame(width: 400, height: 320) // Square aspect ratio
         .background(
             ZStack {
-                Color.black
+                Color(hex: "#ffffff") // Zinc-900
 
-                // Subtle texture/noise could go here
+                // Internal Scanlines (Subtle)
                 Scanlines()
-                    .opacity(0.2)
+                    .opacity(0.15)
 
-                // Border
-                RoundedRectangle(cornerRadius: 0)
-                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                // Gloss/Highlight Effect (for 3D feel)
+                LinearGradient(
+                    colors: [.black.opacity(0.1), .clear],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .opacity(0.5)
             }
         )
-        // Make it look like a physical card
-        .background(Color.black) // Ensure opaque for screenshot
+        .cornerRadius(32) // Super rounded corners
+        .overlay(
+            RoundedRectangle(cornerRadius: 32)
+                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+        )
+        // Shadow for depth
+        .shadow(
+            color: Color.black.opacity(0.5),
+            radius: 20,
+            x: 0,
+            y: 10
+        )
     }
 
     // MARK: - Helpers
 
-    private func detailRow(label: String, value: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(label)
-                .font(.system(size: 10, weight: .bold))
-                .foregroundColor(.white.opacity(0.5))
-                .tracking(1)
-
-            Text(value)
-                .font(.system(size: 16, weight: .bold, design: .monospaced))
-                .foregroundColor(.white)
-                .lineLimit(2)
-        }
-    }
-
     @MainActor
     private func shareCard() {
-        let renderer = ImageRenderer(content: cardView.frame(width: 350, height: 500))
-        renderer.scale = UIScreen.main.scale
+        // If we have a generated video, share that!
+        if let videoURL = state.generatedCommitmentVideoURL {
+            itemsToShare = [videoURL]
+            showShareSheet = true
+            return
+        }
+
+        // Fallback: Render Image
+        let renderer = ImageRenderer(content: cardView)
+        renderer.scale = 3.0
 
         if let image = renderer.uiImage {
-            renderedImage = image
+            itemsToShare = [image]
             showShareSheet = true
         }
     }

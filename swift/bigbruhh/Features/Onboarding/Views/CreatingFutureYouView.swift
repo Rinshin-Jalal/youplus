@@ -27,15 +27,28 @@ struct CreatingFutureYouView: View {
 
     var body: some View {
         ZStack {
-    
 
-            // Scanlines - prominent and explicit
+          Color.black
+                .ignoresSafeArea()
+
+            // Scanline overlay - subtle monitor effect
             Scanlines()
-                .opacity(0.4)
-                .allowsHitTesting(false)
+
+            // Vignette overlay - focus attention
+            Vignette(intensity: 0.5)
 
             VStack {
                 Spacer()
+                
+                Text(config.title.uppercased())
+                    .font(.system(size: 18, weight: .black))
+                    .tracking(4)
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.leading)
+                    .padding(.top, 40)
+                        
+                Spacer()
+
  // Core Glow
                 Circle()
                     .fill(
@@ -52,15 +65,7 @@ struct CreatingFutureYouView: View {
                     .frame(width: 300, height: 300)
                     .scaleEffect(pulse)
                     .animation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true), value: pulse)
-                    
-                    Spacer()
-
-                    Text(config.title.uppercased())
-                        .font(.system(size: 18, weight: .black))
-                        .tracking(4)
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.leading)
-                        .padding(.bottom, 20)
+                  
                
 
                 Spacer()

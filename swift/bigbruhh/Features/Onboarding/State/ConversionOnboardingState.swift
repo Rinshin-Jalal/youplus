@@ -21,6 +21,9 @@ class ConversionOnboardingState: ObservableObject {
     @Published var demoCallAudioURL: URL?
     @Published var demoCallTranscript: String?
 
+    // Generated Content
+    @Published var generatedCommitmentVideoURL: URL?
+
     private let userDefaultsKey = "ConversionOnboardingState"
 
     init() {
