@@ -8,12 +8,7 @@
 
 import Foundation
 import AVFoundation
-
-struct DemoCallAudio {
-    let audioURL: URL
-    let transcript: String
-    let duration: TimeInterval
-}
+import os
 
 enum DemoCallError: Error {
     case noVoiceCloneID
@@ -34,6 +29,8 @@ enum DemoCallError: Error {
         }
     }
 }
+
+private let demoCallLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.yourapp.bundle", category: "DemoCall")
 
 class DemoCallService {
     static let shared = DemoCallService()
@@ -61,7 +58,7 @@ class DemoCallService {
         goal: String,
         motivationLevel: Int
     ) async throws -> DemoCallAudio {
-        Config.log("🎬 Generating demo call for \(userName)", category: "DemoCall")
+        demoCallLogger.log("🎬 Generating demo call for \(userName, privacy: .public)")
 
         // Step 1: Generate personalized message using OpenAI
         let message = try await generatePersonalizedMessage(
@@ -70,7 +67,7 @@ class DemoCallService {
             motivationLevel: motivationLevel
         )
 
-        Config.log("✅ Generated message: \(message)", category: "DemoCall")
+        demoCallLogger.log("✅ Generated message: \(message, privacy: .public)")
 
         // Step 2: Convert message to speech using Cartesia TTS
         let audioURL = try await generateSpeech(
@@ -78,7 +75,7 @@ class DemoCallService {
             voiceID: voiceCloneID
         )
 
-        Config.log("✅ Generated TTS audio", category: "DemoCall")
+        demoCallLogger.log("✅ Generated TTS audio")
 
         // Get audio duration
         let asset = AVURLAsset(url: audioURL)
@@ -220,3 +217,4 @@ class DemoCallService {
         }
     }
 }
+

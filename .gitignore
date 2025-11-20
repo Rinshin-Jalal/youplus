@@ -561,3 +561,23 @@ secrets/
 ## cf env
 .dev.vars
 
+# Xcode user-specific files
+## User settings
+xcuserdata/
+*.xcuserdatad/
+
+## User state
+*.xcuserstate
+
+## Xcode Patch
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+*.xcodeproj/project.xcworkspace/*
+!*.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+!*.xcodeproj/project.xcworkspace/xcshareddata/
+
+## Xcode workspace
+*.xcworkspace/xcuserdata/
+
