@@ -227,6 +227,7 @@ struct TwoFuturesInputView: View {
                     
                         }
                         .buttonStyle(.glass)
+                        .bouncyPress()
                     } else {
                         Button(action: {
                             selectedChoice = option
@@ -274,6 +275,7 @@ struct TwoFuturesInputView: View {
                             )
                         }
                         .buttonStyle(PlainButtonStyle())
+                        .bouncyPress()
                     }
                 }
             }
@@ -314,6 +316,7 @@ struct TwoFuturesInputView: View {
                             .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.glass)
+                        .bouncyPress()
                     } else {
                         Button(action: {
                             if selectedChoices.contains(option) {
@@ -361,6 +364,7 @@ struct TwoFuturesInputView: View {
                             )
                         }
                         .buttonStyle(PlainButtonStyle())
+                        .bouncyPress()
                     }
                 }
             }
@@ -472,6 +476,7 @@ struct TwoFuturesInputView: View {
                                     .foregroundColor(star <= rating ? Color(hex: "#FFD700") : Color.white.opacity(0.3))
                             }
                             .buttonStyle(PlainButtonStyle())
+                            .bouncyPress()
                         }
                     }
 
@@ -502,6 +507,7 @@ struct TwoFuturesInputView: View {
                                     .foregroundColor(star <= rating ? Color(hex: "#FFD700") : Color.white.opacity(0.3))
                             }
                             .buttonStyle(PlainButtonStyle())
+                            .bouncyPress()
                         }
                     }
 

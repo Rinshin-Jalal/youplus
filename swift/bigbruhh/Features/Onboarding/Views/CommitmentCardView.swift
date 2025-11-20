@@ -220,6 +220,7 @@ struct CommitmentCardView: View {
             x: 0,
             y: 10
         )
+        .shineEffect()
     }
 
     // MARK: - Helpers

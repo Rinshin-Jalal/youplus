@@ -12,12 +12,12 @@ extension Color {
     
     // Backgrounds & Panels
     static let lightSageGreen = Color(hex: "#C6D1C0") // Outer background
-    static let offBlack = Color(hex: "#1D1D1D") // Primary panel/card background
+    static let offBlack = Color(hex: "#000000") // Primary panel/card background
     static let veryDarkGray = Color(hex: "#2B2B2B") // Secondary panel/card background
     
     // Accents
     static let paleYellow = Color(hex: "#F9E58C")
-    static let softRed = Color(hex: "#F25C54")
+    static let softRed = Color(hex: "#FF0800")
     static let coolBlue = Color(hex: "#5A7BEF")
     static let brightOrange = Color(hex: "#F7941D")
     static let pastelPink = Color(hex: "#FAD6DC")

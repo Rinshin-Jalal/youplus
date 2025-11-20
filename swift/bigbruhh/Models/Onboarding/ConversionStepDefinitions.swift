@@ -12,75 +12,69 @@ import SwiftUI
 // MARK: - 38-Step Conversion Flow
 
 let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
-
-    // 🚨 TESTING ONLY: Move Loading Screen to First Step
-    // TO REVERT: Delete this entire block (down to the next comment)
-    ConversionOnboardingStep(
-        id: 999,
-        type: .loading(config: LoadingConfig(
-            title: "Creating Future You",
-            statusMessages: [
-                "Analyzing your voice...",
-                "Building your accountability partner...",
-                "Preparing your first call...",
-                "Almost ready..."
-            ],
-            duration: 12.0
-        ))
-    ),
-    ConversionOnboardingStep(
-        id: 9999,
-        type: .commitmentCard
-    ),
     // ==========================================
     // PHASE 1: THE HOOK (Steps 1-3) ✅ Keep as-is
     // ==========================================
-
+//
+//    ConversionOnboardingStep(
+//        id: 1,
+//        type: .aiCommentary(config: AICommentaryConfig(
+//            messages: [
+//                ChatMessage(text: "hey", delay: 0.5),
+//                ChatMessage(text: "it's me. you. from later.", delay: 1.0),
+//                ChatMessage(text: "remember that thing you started last month?", delay: 1.2),
+//                ChatMessage(text: "yeah. that one.", delay: 0.8),
+//                ChatMessage(text: "started strong. lasted a week. then... nothing.", delay: 1.0)
+//            ],
+//            persona: .futureYou,
+//            showAvatar: false
+//        ))
+//    ),
+//
+//    ConversionOnboardingStep(
+//        id: 2,
+//        type: .aiCommentary(config: AICommentaryConfig(
+//            messages: [
+//                ChatMessage(text: "here's what you don't want to hear", delay: 0.5),
+//                ChatMessage(text: "it's not motivation", delay: 0.8),
+//                ChatMessage(text: "it's not discipline", delay: 0.8),
+//                ChatMessage(text: "it's that no one actually holds you accountable", delay: 1.2),
+//                ChatMessage(text: "and you know it", delay: 0.6)
+//            ],
+//            persona: .futureYou,
+//            showAvatar: false
+//        ))
+//    ),
+//
+//    ConversionOnboardingStep(
+//        id: 3,
+//        type: .aiCommentary(config: AICommentaryConfig(
+//            messages: [
+//                ChatMessage(text: "what if someone did?", delay: 0.5),
+//                ChatMessage(text: "every day", delay: 0.8),
+//                ChatMessage(text: "real consequences", delay: 0.8),
+//                ChatMessage(text: "no escape", delay: 0.8),
+//                ChatMessage(text: "that's what this is", delay: 1.0)
+//            ],
+//            persona: .futureYou,
+//            showAvatar: false
+//        ))
+//    ),
+    
     ConversionOnboardingStep(
-        id: 1,
-        type: .aiCommentary(config: AICommentaryConfig(
-            messages: [
-                ChatMessage(text: "hey", delay: 0.5),
-                ChatMessage(text: "it's me. you. from later.", delay: 1.0),
-                ChatMessage(text: "remember that thing you started last month?", delay: 1.2),
-                ChatMessage(text: "yeah. that one.", delay: 0.8),
-                ChatMessage(text: "started strong. lasted a week. then... nothing.", delay: 1.0)
-            ],
-            persona: .futureYou,
-            showAvatar: false
-        ))
+        id: 222,
+        type: .demoCall
     ),
 
     ConversionOnboardingStep(
-        id: 2,
-        type: .aiCommentary(config: AICommentaryConfig(
-            messages: [
-                ChatMessage(text: "here's what you don't want to hear", delay: 0.5),
-                ChatMessage(text: "it's not motivation", delay: 0.8),
-                ChatMessage(text: "it's not discipline", delay: 0.8),
-                ChatMessage(text: "it's that no one actually holds you accountable", delay: 1.2),
-                ChatMessage(text: "and you know it", delay: 0.6)
-            ],
-            persona: .futureYou,
-            showAvatar: false
-        ))
+        id: 2222,
+        type: .permissionRequest(type: .notifications)
     ),
 
     ConversionOnboardingStep(
-        id: 3,
-        type: .aiCommentary(config: AICommentaryConfig(
-            messages: [
-                ChatMessage(text: "what if someone did?", delay: 0.5),
-                ChatMessage(text: "every day", delay: 0.8),
-                ChatMessage(text: "real consequences", delay: 0.8),
-                ChatMessage(text: "no escape", delay: 0.8),
-                ChatMessage(text: "that's what this is", delay: 1.0)
-            ],
-            persona: .futureYou,
-            showAvatar: false
-        ))
+        id: 3223,
+        type: .permissionRequest(type: .calls)
     ),
-
     // ==========================================
     // PHASE 2: CORE IDENTITY + VOICE #1 (Steps 4-8)
     // ==========================================
@@ -135,20 +129,20 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
         ))
     ),
 
-    // NEW: AI Break
-    ConversionOnboardingStep(
-        id: 9,
-        type: .aiCommentary(config: AICommentaryConfig(
-            messages: [
-                ChatMessage(text: "i heard that.", delay: 0.5),
-                ChatMessage(text: "the hunger is there.", delay: 0.8),
-                ChatMessage(text: "but hunger isn't enough.", delay: 0.8),
-                ChatMessage(text: "let's see what's been blocking it.", delay: 1.0)
-            ],
-            persona: .futureYou,
-            showAvatar: false
-        ))
-    ),
+//    // NEW: AI Break
+//    ConversionOnboardingStep(
+//        id: 9,
+//        type: .aiCommentary(config: AICommentaryConfig(
+//            messages: [
+//                ChatMessage(text: "i heard that.", delay: 0.5),
+//                ChatMessage(text: "the hunger is there.", delay: 0.8),
+//                ChatMessage(text: "but hunger isn't enough.", delay: 0.8),
+//                ChatMessage(text: "let's see what's been blocking it.", delay: 1.0)
+//            ],
+//            persona: .futureYou,
+//            showAvatar: false
+//        ))
+//    ),
 
     // ==========================================
     // PHASE 3: PATTERN RECOGNITION (Steps 9-14) - REDUCE TYPING

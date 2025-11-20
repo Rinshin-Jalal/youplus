@@ -1,66 +1,123 @@
 //
 //  Animations.swift
-//  BigBruh
+//  bigbruhh
 //
-//  Animation presets matching React Native animations
+//  Reusable animation modifiers for "fun" interactions
+//
 
 import SwiftUI
-import UIKit
 
-enum AnimationPresets {
-    // MARK: - Durations
-    static let fast: Double = 0.2
-    static let medium: Double = 0.3
-    static let slow: Double = 0.4
-    static let verySlow: Double = 0.6
-    static let ultra: Double = 0.8
-
-    // MARK: - Standard Animations
-    static let fadeIn = Animation.easing(duration: 0.4)
-    static let slideUp = Animation.easing(duration: 0.8)
-    static let bounce = Animation.spring(response: 0.6, dampingFraction: 0.7)
-
-    // MARK: - Button Animations
-    static let buttonGlow = Animation.easing(duration: 2.0).repeatForever(autoreverses: true)
-    static let pulse = Animation.easing(duration: 3.0).repeatForever(autoreverses: true)
-
-    // MARK: - Typing Effect
-    static let typing: Double = 0.02 // 20ms per character
-
-    // MARK: - Call Screen Animations
-    static let shake = Animation.easing(duration: 0.05)
-    static let moodChange = Animation.easing(duration: 0.5)
-    static let shamePopIn = Animation.spring(response: 0.3, dampingFraction: 0.6)
+// MARK: - Animation Presets
+struct AnimationPresets {
+    static let fadeIn = Animation.easeIn(duration: 0.6)
+    static let slideUp = Animation.spring(response: 0.6, dampingFraction: 0.8)
+    static let buttonGlow = Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true)
+    static let pulse = Animation.easeInOut(duration: 1.5).repeatForever(autoreverses: true)
 }
 
-// MARK: - Animation Extensions
-extension Animation {
-    static func easing(duration: Double) -> Animation {
-        .timingCurve(0.4, 0.0, 0.2, 1.0, duration: duration)
+// MARK: - Bouncy Press Modifier
+struct BouncyPressModifier: ViewModifier {
+    let scale: CGFloat
+    
+    func body(content: Content) -> some View {
+        content
+            .buttonStyle(BouncyButtonStyle(scale: scale))
     }
 }
 
-// MARK: - Haptic Feedback Helper
-enum HapticManager {
-    static func trigger(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .light) {
-        let generator = UIImpactFeedbackGenerator(style: style)
-        generator.impactOccurred()
+struct BouncyButtonStyle: ButtonStyle {
+    let scale: CGFloat
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? scale : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
     }
+}
 
-    static func triggerNotification(_ type: UINotificationFeedbackGenerator.FeedbackType) {
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(type)
+// MARK: - Floating Animation Modifier
+struct FloatingModifier: ViewModifier {
+    let distance: CGFloat
+    let duration: Double
+    
+    @State private var isFloating = false
+    
+    func body(content: Content) -> some View {
+        content
+            .offset(y: isFloating ? -distance : distance)
+            .animation(
+                .easeInOut(duration: duration)
+                .repeatForever(autoreverses: true),
+                value: isFloating
+            )
+            .onAppear {
+                isFloating = true
+            }
     }
+}
 
-    static func light() {
-        trigger(.light)
+// MARK: - Pulse Animation Modifier
+struct PulseModifier: ViewModifier {
+    let scale: CGFloat
+    let duration: Double
+    
+    @State private var isPulsing = false
+    
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(isPulsing ? scale : 1.0)
+            .animation(
+                .easeInOut(duration: duration)
+                .repeatForever(autoreverses: true),
+                value: isPulsing
+            )
+            .onAppear {
+                isPulsing = true
+            }
     }
+}
 
-    static func medium() {
-        trigger(.medium)
+// MARK: - Shine/Gradient Animation Modifier
+struct ShineModifier: ViewModifier {
+    @State private var phase: CGFloat = 0
+    
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                GeometryReader { geometry in
+                    LinearGradient(
+                        colors: [.clear, .white.opacity(0.2), .clear],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .frame(width: geometry.size.width * 2)
+                    .offset(x: -geometry.size.width + (phase * geometry.size.width * 2))
+                }
+                .mask(content)
+            )
+            .onAppear {
+                withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
+                    phase = 1
+                }
+            }
     }
+}
 
-    static func heavy() {
-        trigger(.heavy)
+// MARK: - View Extensions
+extension View {
+    func bouncyPress(scale: CGFloat = 0.95) -> some View {
+        self.modifier(BouncyPressModifier(scale: scale))
+    }
+    
+    func floating(distance: CGFloat = 5, duration: Double = 2.0) -> some View {
+        self.modifier(FloatingModifier(distance: distance, duration: duration))
+    }
+    
+    func pulse(scale: CGFloat = 1.05, duration: Double = 1.0) -> some View {
+        self.modifier(PulseModifier(scale: scale, duration: duration))
+    }
+    
+    func shineEffect() -> some View {
+        self.modifier(ShineModifier())
     }
 }

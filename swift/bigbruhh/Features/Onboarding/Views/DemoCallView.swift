@@ -21,109 +21,260 @@ struct DemoCallView: View {
     @State private var isPlaying: Bool = false
     @State private var displayedText: String = ""
     @State private var playbackTimer: Timer?
+    @State private var pulseAnimation: Bool = false
 
     var body: some View {
         ZStack {
             Color.black
                 .ignoresSafeArea()
 
+            // Scanline overlay - full screen
+            Scanlines()
+
             VStack(spacing: 32) {
                 Spacer()
 
-                // Phone icon animation
-                Image(systemName: "phone.fill")
-                    .font(.system(size: 80))
-                    .foregroundColor(Color(hex: "#4ECDC4"))
-                    .scaleEffect(callTriggered ? 1.1 : 1.0)
-                    .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: callTriggered)
+                // Phone icon with pulsing glow animation
+                ZStack {
+                    // Outer glow rings
+                    if callTriggered {
+                        Circle()
+                            .fill(
+                                RadialGradient(
+                                    colors: [
+                                        Color(hex: "#4ECDC4").opacity(0.3),
+                                        Color(hex: "#4ECDC4").opacity(0.0)
+                                    ],
+                                    center: .center,
+                                    startRadius: 40,
+                                    endRadius: 100
+                                )
+                            )
+                            .frame(width: 200, height: 200)
+                            .scaleEffect(pulseAnimation ? 1.2 : 1.0)
+                            .opacity(pulseAnimation ? 0.0 : 1.0)
+                            .animation(.easeOut(duration: 1.5).repeatForever(autoreverses: false), value: pulseAnimation)
+                    }
+
+                    // Phone icon
+                    Image(systemName: "phone.fill")
+                        .font(.system(size: 80))
+                        .foregroundColor(Color(hex: "#4ECDC4"))
+                        .shadow(
+                            color: Color(hex: "#4ECDC4").opacity(0.6),
+                            radius: callTriggered ? 20 : 10,
+                            x: 0,
+                            y: 0
+                        )
+                        .scaleEffect(callTriggered ? 1.0 : 0.95)
+                        .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: callTriggered)
+                }
 
                 VStack(spacing: 16) {
                     Text(callTriggered ? "Future You" : "Incoming Call")
-                        .font(.system(size: 28, weight: .bold))
+                        .font(.headlineMedium)
+                        .fontWeight(.bold)
                         .foregroundColor(.white)
 
                     Text(callTriggered ? "Your Daily Accountability Call" : "Preparing your call...")
-                        .font(.system(size: 18))
+                        .font(.bodyRegular)
                         .foregroundColor(.white.opacity(0.8))
                 }
 
                 // Call status
                 if callTriggered && isPlaying {
-                    VStack(spacing: 12) {
-                        Text("CALL IN PROGRESS")
-                            .font(.system(size: 12, weight: .bold))
-                            .tracking(2)
-                            .foregroundColor(Color(hex: "#4ECDC4"))
-                            .padding(.top, 20)
+                    Group {
+                        if #available(iOS 26, *) {
+                            VStack(spacing: 12) {
+                                Text("CALL IN PROGRESS")
+                                    .font(.captionMedium)
+                                    .fontWeight(.bold)
+                                    .tracking(2)
+                                    .foregroundColor(Color(hex: "#4ECDC4"))
+                                    .padding(.top, 20)
 
-                        // Progress bar
-                        GeometryReader { geometry in
-                            ZStack(alignment: .leading) {
-                                Rectangle()
-                                    .fill(Color.white.opacity(0.1))
-                                    .frame(height: 4)
-                                    .cornerRadius(2)
+                                // Progress bar
+                                GeometryReader { geometry in
+                                    ZStack(alignment: .leading) {
+                                        Rectangle()
+                                            .fill(Color.white.opacity(0.1))
+                                            .frame(height: 4)
+                                            .cornerRadius(2)
 
-                                Rectangle()
-                                    .fill(Color(hex: "#4ECDC4"))
-                                    .frame(width: geometry.size.width * playbackProgress, height: 4)
-                                    .cornerRadius(2)
+                                        Rectangle()
+                                            .fill(Color(hex: "#4ECDC4"))
+                                            .frame(width: geometry.size.width * playbackProgress, height: 4)
+                                            .cornerRadius(2)
+                                    }
+                                }
+                                .frame(height: 4)
+                                .padding(.horizontal, 40)
+
+                                Text("Using YOUR voice • YOUR data")
+                                    .font(.caption2)
+                                    .foregroundColor(.white.opacity(0.4))
+                                    .padding(.top, 4)
                             }
-                        }
-                        .frame(height: 4)
-                        .padding(.horizontal, 40)
+                            .padding(.vertical, 20)
+                            .padding(.horizontal, 24)
+                            .glassEffect(in: .rect(cornerRadius: 20))
+                        } else {
+                            VStack(spacing: 12) {
+                                Text("CALL IN PROGRESS")
+                                    .font(.captionMedium)
+                                    .fontWeight(.bold)
+                                    .tracking(2)
+                                    .foregroundColor(Color(hex: "#4ECDC4"))
+                                    .padding(.top, 20)
 
-                        Text("Using YOUR voice • YOUR data")
-                            .font(.caption2)
-                            .foregroundColor(.white.opacity(0.4))
-                            .padding(.top, 4)
+                                // Progress bar
+                                GeometryReader { geometry in
+                                    ZStack(alignment: .leading) {
+                                        Rectangle()
+                                            .fill(Color.white.opacity(0.1))
+                                            .frame(height: 4)
+                                            .cornerRadius(2)
+
+                                        Rectangle()
+                                            .fill(Color(hex: "#4ECDC4"))
+                                            .frame(width: geometry.size.width * playbackProgress, height: 4)
+                                            .cornerRadius(2)
+                                    }
+                                }
+                                .frame(height: 4)
+                                .padding(.horizontal, 40)
+
+                                Text("Using YOUR voice • YOUR data")
+                                    .font(.caption2)
+                                    .foregroundColor(.white.opacity(0.4))
+                                    .padding(.top, 4)
+                            }
+                            .padding(.vertical, 20)
+                            .padding(.horizontal, 24)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                    .fill(Color.white.opacity(0.05))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                    .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
+                            )
+                        }
                     }
                 }
 
                 Spacer()
 
-                // Explanation
+                // Explanation or transcript
                 if !callTriggered {
-                    VStack(spacing: 12) {
-                        Text("Get ready for your first call")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.center)
+                    Group {
+                        if #available(iOS 26, *) {
+                            VStack(spacing: 12) {
+                                Text("Get ready for your first call")
+                                    .font(.bodyBold)
+                                    .foregroundColor(.white)
+                                    .multilineTextAlignment(.center)
 
-                        Text("This is what happens every single day")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.6))
-                    }
-                    .padding(.horizontal, 32)
-                    .padding(.bottom, 60)
-                } else {
-                    // Transcript display with typewriter effect
-                    VStack(spacing: 16) {
-                        if !displayedText.isEmpty {
-                            Text("\"\(displayedText)\"")
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(.white)
-                                .multilineTextAlignment(.center)
-                                .italic()
-                                .lineLimit(nil)
-                                .fixedSize(horizontal: false, vertical: true)
+                                Text("This is what happens every single day")
+                                    .font(.caption)
+                                    .foregroundColor(.white.opacity(0.6))
+                            }
+                            .padding(.horizontal, 32)
+                            .padding(.vertical, 24)
+                            .glassEffect(in: .rect(cornerRadius: 20))
+                            .padding(.horizontal, 24)
+                            .padding(.bottom, 60)
+                        } else {
+                            VStack(spacing: 12) {
+                                Text("Get ready for your first call")
+                                    .font(.bodyBold)
+                                    .foregroundColor(.white)
+                                    .multilineTextAlignment(.center)
+
+                                Text("This is what happens every single day")
+                                    .font(.caption)
+                                    .foregroundColor(.white.opacity(0.6))
+                            }
+                            .padding(.horizontal, 32)
+                            .padding(.vertical, 24)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                    .fill(Color.white.opacity(0.05))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                    .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
+                            )
+                            .padding(.horizontal, 24)
+                            .padding(.bottom, 60)
                         }
                     }
-                    .frame(height: 120)
-                    .padding(.horizontal, 32)
-                    .padding(.bottom, 60)
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+                } else {
+                    // Transcript display with typewriter effect
+                    Group {
+                        if #available(iOS 26, *) {
+                            VStack(spacing: 16) {
+                                if !displayedText.isEmpty {
+                                    Text("\"\(displayedText)\"")
+                                        .font(.bodyRegular)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(.white)
+                                        .multilineTextAlignment(.center)
+                                        .italic()
+                                        .lineLimit(nil)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                            }
+                            .frame(minHeight: 120)
+                            .padding(.horizontal, 32)
+                            .padding(.vertical, 24)
+                            .glassEffect(in: .rect(cornerRadius: 20))
+                            .padding(.horizontal, 24)
+                            .padding(.bottom, 60)
+                        } else {
+                            VStack(spacing: 16) {
+                                if !displayedText.isEmpty {
+                                    Text("\"\(displayedText)\"")
+                                        .font(.bodyRegular)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(.white)
+                                        .multilineTextAlignment(.center)
+                                        .italic()
+                                        .lineLimit(nil)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                            }
+                            .frame(minHeight: 120)
+                            .padding(.horizontal, 32)
+                            .padding(.vertical, 24)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                    .fill(Color.white.opacity(0.05))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                    .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
+                            )
+                            .padding(.horizontal, 24)
+                            .padding(.bottom, 60)
+                        }
+                    }
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
                 }
             }
         }
         .onAppear {
             triggerDemoCall()
+            // Start pulse animation
+            pulseAnimation = true
         }
     }
 
     private func triggerDemoCall() {
         // Small delay before triggering call
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            withAnimation {
+            withAnimation(.easeInOut(duration: 0.4)) {
                 callTriggered = true
             }
 

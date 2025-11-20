@@ -28,13 +28,20 @@ struct PermissionRequestView: View {
             VStack(spacing: 40) {
                 Spacer()
 
-                // Icon
-                Image(systemName: permissionType.iconName)
-                    .font(.system(size: 80))
-                    .foregroundColor(Color(hex: "#FFE66D"))
-                    .scaleEffect(hasAppeared ? 1.0 : 0.8)
-                    .opacity(hasAppeared ? 1.0 : 0.0)
-                    .animation(.spring(response: 0.6, dampingFraction: 0.7), value: hasAppeared)
+                // Custom Icon
+                Group {
+                    switch permissionType {
+                    case .notifications:
+                        NotificationBellIcon()
+                    case .calls:
+                        PhoneCallIcon()
+                    case .microphone:
+                        MicrophoneIcon()
+                    }
+                }
+                .scaleEffect(hasAppeared ? 1.0 : 0.8)
+                .opacity(hasAppeared ? 1.0 : 0.0)
+                .animation(.spring(response: 0.6, dampingFraction: 0.7), value: hasAppeared)
 
                 VStack(spacing: 16) {
                     // Title
