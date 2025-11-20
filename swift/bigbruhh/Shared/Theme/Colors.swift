@@ -2,33 +2,75 @@
 //  Colors.swift
 //  BigBruh
 //
-//  Theme colors matching React Native app
+//  Theme colors - Modern Operational Analytics
+//
 
 import SwiftUI
 
 extension Color {
-    // MARK: - Brand Colors (BRUTALIST - harsh, honest, unapologetic)
-    static let brutalBlack = Color(hex: "#000000") // Pure black
-    static let brutalWhite = Color(hex: "#FFFFFF") // Pure white
-    static let brutalRed = Color(hex: "#FF0033") // BRIGHT red - not refined, not subtle
+    // MARK: - Brand Colors (Operational Analytics)
+    
+    // Backgrounds & Panels
+    static let lightSageGreen = Color(hex: "#C6D1C0") // Outer background
+    static let offBlack = Color(hex: "#1D1D1D") // Primary panel/card background
+    static let veryDarkGray = Color(hex: "#2B2B2B") // Secondary panel/card background
+    
+    // Accents
+    static let paleYellow = Color(hex: "#F9E58C")
+    static let softRed = Color(hex: "#F25C54")
+    static let coolBlue = Color(hex: "#5A7BEF")
+    static let brightOrange = Color(hex: "#F7941D")
+    static let pastelPink = Color(hex: "#FAD6DC")
+    
+    // Text Colors
+    static let textWhite = Color(hex: "#FFFFFF")
+    static let textLightGray = Color(hex: "#CCCCCC")
+    static let textBlack = Color(hex: "#000000")
+    
+    // Status Colors
+    static let statusSuccess = Color(hex: "#9FE6A0") // Connected/Success
+    static let statusWarning = Color(hex: "#FFD966") // Warning
+    static let statusError = Color(hex: "#FF6B6B") // Disconnected/Error
 
-    // MARK: - Grade Colors (BRUTALIST - flat, bright, clear meaning)
-    static let gradeA = Color(hex: "#00D474") // Bright green - success
-    static let gradeB = Color(hex: "#FFC107") // Yellow - acceptable
-    static let gradeC = Color(hex: "#FF6B00") // Orange - warning
-    static let gradeD = Color(hex: "#9C27B0") // Purple - poor
-    static let gradeF = Color(hex: "#FF0033") // Red - failure
+    // MARK: - Semantic Colors
+    
+    // Backgrounds
+    static let appBackground = lightSageGreen
+    static let cardBackground = offBlack
+    static let cardBackgroundSecondary = veryDarkGray
+    
+    // Text
+    static let primaryText = textWhite
+    static let secondaryText = textLightGray
+    static let darkText = textBlack
+    
+    // Actions/Interactive
+    static let primaryAction = paleYellow
+    static let secondaryAction = coolBlue
+    static let destructiveAction = softRed
+    
+    // Status
+    static let success = statusSuccess
+    static let warning = statusWarning
+    static let error = statusError
+    
+    // Legacy/Compatibility (Mapping to new theme where possible)
+    static let brutalBlack = offBlack
+    static let brutalWhite = textWhite
+    static let brutalRed = softRed
+    
+    static let gradeA = statusSuccess
+    static let gradeB = statusWarning
+    static let gradeC = brightOrange
+    static let gradeD = coolBlue
+    static let gradeF = softRed
+    
+    static let info = coolBlue
 
-    // MARK: - Semantic Colors (Reuse grade colors - simple, consistent)
-    static let success = gradeA // Bright green
-    static let warning = gradeB // Yellow
-    static let error = brutalRed // Red
-    static let info = Color(hex: "#0091EA") // Bright blue
-
-    // MARK: - UI Element Colors (Minimal - only what's needed)
-    static let inputBackground = Color.white.opacity(0.05)
+    // MARK: - UI Element Colors
+    static let inputBackground = Color.white.opacity(0.1)
     static let inputBorder = Color.white.opacity(0.2)
-    static let surfaceElevated = Color.white.opacity(0.05)
+    static let surfaceElevated = veryDarkGray
     static let divider = Color.white.opacity(0.1)
 
     // MARK: - Utility

@@ -15,6 +15,8 @@ struct CommitmentCardView: View {
     @EnvironmentObject var state: ConversionOnboardingState
     @State private var showShareSheet = false
     @State private var itemsToShare: [Any] = []
+    @State private var isExporting = false
+    @State private var audioPlayer: AVPlayer?
 
     // 3D Interactivity State
     @State private var dragOffset: CGSize = .zero
@@ -112,6 +114,12 @@ struct CommitmentCardView: View {
         .sheet(isPresented: $showShareSheet) {
             ShareSheet(activityItems: itemsToShare)
         }
+        .onAppear {
+            setupAudio()
+        }
+        .onDisappear {
+            audioPlayer?.pause()
+        }
     }
 
     // MARK: - The Card View
@@ -144,14 +152,26 @@ struct CommitmentCardView: View {
                 .padding(.bottom, 20)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            // Video Player (if available)
-            if let videoURL = state.generatedCommitmentVideoURL {
-                VideoPlayer(player: AVPlayer(url: videoURL))
-                    .frame(height: 180)
-                    .cornerRadius(16)
-                    .padding(.bottom, 20)
+            // Audio Indicator (Visual only, since audio plays in BG)
+            if state.generatedCommitmentAudioURL != nil {
+                HStack(spacing: 12) {
+                    Image(systemName: "waveform")
+                        .font(.system(size: 20))
+                        .foregroundColor(.black.opacity(0.6))
+                    
+                    Text("AUDIO PLAYING")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.black.opacity(0.6))
+                        .tracking(1)
+                    
+                    Spacer()
+                }
+                .padding(.vertical, 12)
+                .padding(.horizontal, 16)
+                .background(Color.black.opacity(0.05))
+                .cornerRadius(12)
+                .padding(.bottom, 20)
             } else {
-                // Placeholder or just spacing if no video
                 Spacer()
                     .frame(height: 20)
             }
@@ -203,17 +223,65 @@ struct CommitmentCardView: View {
     }
 
     // MARK: - Helpers
+    
+    private func setupAudio() {
+        if let audioURL = state.generatedCommitmentAudioURL {
+            let player = AVPlayer(url: audioURL)
+            audioPlayer = player
+            player.play()
+            
+            // Loop audio
+            NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: .main) { _ in
+                player.seek(to: .zero)
+                player.play()
+            }
+        }
+    }
 
     @MainActor
     private func shareCard() {
-        // If we have a generated video, share that!
+        // If we already have a generated video, share that
         if let videoURL = state.generatedCommitmentVideoURL {
             itemsToShare = [videoURL]
             showShareSheet = true
             return
         }
+        
+        // If we have audio, try to generate a video
+        if let audioURL = state.generatedCommitmentAudioURL {
+            isExporting = true
+            
+            // 1. Render Image
+            let renderer = ImageRenderer(content: cardView)
+            renderer.scale = 3.0
+            
+            guard let image = renderer.uiImage else {
+                isExporting = false
+                return
+            }
+            
+            // 2. Export Video
+            VideoExporter.shared.exportVideo(from: image, audioURL: audioURL) { result in
+                DispatchQueue.main.async {
+                    isExporting = false
+                    switch result {
+                    case .success(let url):
+                        // Save to state so we don't regenerate
+                        state.generatedCommitmentVideoURL = url
+                        itemsToShare = [url]
+                        showShareSheet = true
+                    case .failure(let error):
+                        print("Video export failed: \(error)")
+                        // Fallback to image sharing
+                        itemsToShare = [image]
+                        showShareSheet = true
+                    }
+                }
+            }
+            return
+        }
 
-        // Fallback: Render Image
+        // Fallback: Render Image only
         let renderer = ImageRenderer(content: cardView)
         renderer.scale = 3.0
 

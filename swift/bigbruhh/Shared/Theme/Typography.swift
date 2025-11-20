@@ -2,18 +2,19 @@
 //  Typography.swift
 //  BigBruh
 //
-//  Typography system matching React Native Inter font styles
+//  Typography system - Modern Operational Analytics
+//
 
 import SwiftUI
 
 extension Font {
     // MARK: - Display (Huge hero text)
-    static let displayLarge = Font.system(size: 64, weight: .black, design: .default)
-    static let displayMedium = Font.system(size: 48, weight: .black, design: .default)
+    static let displayLarge = Font.system(size: 48, weight: .bold, design: .default)
+    static let displayMedium = Font.system(size: 36, weight: .bold, design: .default)
 
     // MARK: - Headlines
-    static let headline = Font.system(size: 32, weight: .bold, design: .default)
-    static let headlineMedium = Font.system(size: 24, weight: .bold, design: .default)
+    static let headline = Font.system(size: 24, weight: .bold, design: .default)
+    static let headlineMedium = Font.system(size: 22, weight: .bold, design: .default)
     static let headlineSmall = Font.system(size: 20, weight: .bold, design: .default)
 
     // MARK: - Titles
@@ -32,15 +33,20 @@ extension Font {
     static let captionMedium = Font.system(size: 12, weight: .medium, design: .default)
     static let captionSmall = Font.system(size: 11, weight: .regular, design: .default)
 
+    // MARK: - Data/Monospace
+    static let dataLarge = Font.system(size: 24, weight: .bold, design: .monospaced)
+    static let dataMedium = Font.system(size: 18, weight: .semibold, design: .monospaced)
+    static let dataSmall = Font.system(size: 14, weight: .medium, design: .monospaced)
+
     // MARK: - Buttons
     static let buttonLarge = Font.system(size: 18, weight: .semibold, design: .default)
     static let buttonMedium = Font.system(size: 16, weight: .semibold, design: .default)
     static let buttonSmall = Font.system(size: 14, weight: .semibold, design: .default)
 
     // MARK: - Specialized (Call Screen, Grades, etc.)
-    static let timerHero = Font.system(size: 64, weight: .black, design: .default)
+    static let timerHero = Font.system(size: 64, weight: .black, design: .monospaced)
     static let gradeDisplay = Font.system(size: 56, weight: .black, design: .default)
-    static let callTimer = Font.system(size: 48, weight: .bold, design: .default)
+    static let callTimer = Font.system(size: 48, weight: .bold, design: .monospaced)
 }
 
 // MARK: - Text Modifiers
@@ -48,7 +54,8 @@ extension Text {
     func brutalStyle() -> some View {
         self
             .textCase(.uppercase)
-            .kerning(1.5)
+            .kerning(1.0)
+            .fontWeight(.bold)
     }
 
     func letterSpacing(_ spacing: CGFloat) -> some View {
@@ -67,12 +74,12 @@ extension Text {
 
     /// Wide letter spacing for labels and small text
     func wideTracking() -> some View {
-        self.kerning(1.0)
+        self.kerning(0.5)
     }
 
     /// Extra wide letter spacing for emphasis
     func extraWideTracking() -> some View {
-        self.kerning(2.0)
+        self.kerning(1.0)
     }
 }
 

@@ -23,6 +23,7 @@ class ConversionOnboardingState: ObservableObject {
 
     // Generated Content
     @Published var generatedCommitmentVideoURL: URL?
+    @Published var generatedCommitmentAudioURL: URL?
 
     private let userDefaultsKey = "ConversionOnboardingState"
 
