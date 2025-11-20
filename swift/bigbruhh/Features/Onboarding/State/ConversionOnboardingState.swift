@@ -142,9 +142,9 @@ class ConversionOnboardingState: ObservableObject {
 
     // MARK: - Dynamic Content
 
-    /// Get debate messages for step 19 based on excuse choice from step 16
+    /// Get debate messages for step 19 based on excuse choice from step 14
     func getDebateMessagesForStep19() -> [DebateMessage] {
-        guard let excuse = responses[16] else {
+        guard let excuse = responses[14] else {
             return getDebateMessagesForExcuse("default")
         }
         return getDebateMessagesForExcuse(excuse)
@@ -236,37 +236,37 @@ class ConversionOnboardingState: ObservableObject {
     }
 
     func compileFinalResponse() -> ConversionOnboardingResponse? {
-        // Extract all required responses by step ID (mapped to 35-step flow)
+        // Extract all required responses by step ID (mapped to 38-step flow)
         guard let goal = responses[5],                          // Step 5: what keeps failing
               let goalDeadlineString = responses[6],            // Step 6: deadline (datePicker)
               let motivationLevelString = responses[7],         // Step 7: how badly (1-10)
               let whyItMattersURL = voiceRecordings["step_8"],  // Step 8: why can't let go (voice)
-              let attemptCountString = responses[11],           // Step 11: how many times tried
-              let lastAttempt = responses[12],                  // Step 12: how did you quit
-              let excuse = responses[13],                       // Step 13: favorite excuse
-              let disappointed = responses[9],                  // Step 9: who disappointed
-              let costOfQuittingURL = voiceRecordings["step_16"], // Step 16: what dies if quit (voice)
-              let futureIfNoChange = responses[17],             // Step 17: where in 6 months
-              let dailyCommitment = responses[29],              // Step 29: daily action
-              let callTimeString = responses[30],               // Step 30: call time (timePicker)
-              let strikeLimitString = responses[31],            // Step 31: days can miss (1-5)
-              let commitmentVoiceURL = voiceRecordings["step_33"] else { // Step 33: what happens if fail (voice)
+              let attemptCountString = responses[12],           // Step 12: how many times tried
+              let lastAttempt = responses[13],                  // Step 13: how did you quit
+              let excuse = responses[14],                       // Step 14: favorite excuse
+              let disappointed = responses[10],                 // Step 10: who disappointed
+              let costOfQuittingURL = voiceRecordings["step_23"], // Step 23: what dies if quit (voice)
+              let futureIfNoChange = responses[24],             // Step 24: where in 6 months
+              let dailyCommitment = responses[34],              // Step 34: daily action
+              let callTimeString = responses[35],               // Step 35: call time (timePicker)
+              let strikeLimitString = responses[36],            // Step 36: days can miss (1-5)
+              let commitmentVoiceURL = voiceRecordings["step_38"] else { // Step 38: what happens if fail (voice)
             #if DEBUG
             print("❌ Failed to compile response - missing required fields:")
             print("   goal (step 5): \(responses[5] != nil)")
             print("   goalDeadline (step 6): \(responses[6] != nil)")
             print("   motivationLevel (step 7): \(responses[7] != nil)")
             print("   whyItMatters (step 8 voice): \(voiceRecordings["step_8"] != nil)")
-            print("   attemptCount (step 11): \(responses[11] != nil)")
-            print("   lastAttempt (step 12): \(responses[12] != nil)")
-            print("   excuse (step 13): \(responses[13] != nil)")
-            print("   disappointed (step 9): \(responses[9] != nil)")
-            print("   costOfQuitting (step 16 voice): \(voiceRecordings["step_16"] != nil)")
-            print("   futureIfNoChange (step 17): \(responses[17] != nil)")
-            print("   dailyCommitment (step 29): \(responses[29] != nil)")
-            print("   callTime (step 30): \(responses[30] != nil)")
-            print("   strikeLimit (step 31): \(responses[31] != nil)")
-            print("   commitmentVoice (step 33 voice): \(voiceRecordings["step_33"] != nil)")
+            print("   attemptCount (step 12): \(responses[12] != nil)")
+            print("   lastAttempt (step 13): \(responses[13] != nil)")
+            print("   excuse (step 14): \(responses[14] != nil)")
+            print("   disappointed (step 10): \(responses[10] != nil)")
+            print("   costOfQuitting (step 23 voice): \(voiceRecordings["step_23"] != nil)")
+            print("   futureIfNoChange (step 24): \(responses[24] != nil)")
+            print("   dailyCommitment (step 34): \(responses[34] != nil)")
+            print("   callTime (step 35): \(responses[35] != nil)")
+            print("   strikeLimit (step 36): \(responses[36] != nil)")
+            print("   commitmentVoice (step 38 voice): \(voiceRecordings["step_38"] != nil)")
             #endif
             return nil
         }
@@ -278,10 +278,10 @@ class ConversionOnboardingState: ObservableObject {
         let callTime = ISO8601DateFormatter().date(from: callTimeString) ?? Date()
         let strikeLimit = Int(strikeLimitString) ?? 3
 
-        // Step 10: biggest obstacle (use as previous attempt outcome)
-        let previousAttempt = responses[10] ?? "Unknown obstacle"
+        // Step 11: biggest obstacle (use as previous attempt outcome)
+        let previousAttempt = responses[11] ?? "Unknown obstacle"
 
-        // Step 14: when exactly do you quit (text) - convert to placeholder date
+        // Step 15: when do you usually quit (text) - convert to placeholder date
         // Since this is descriptive text, we'll use a placeholder date
         let quitTime = Date()
 
@@ -326,13 +326,13 @@ class ConversionOnboardingState: ObservableObject {
         var resolved = text
 
         // Replace common variables
-        if let goal = responses[6] {
+        if let goal = responses[5] {
             resolved = resolved.replacingOccurrences(of: "{{goal}}", with: goal)
         }
-        if let commitment = responses[32] {
+        if let commitment = responses[34] {
             resolved = resolved.replacingOccurrences(of: "{{commitment}}", with: commitment)
         }
-        if let excuse = responses[16] {
+        if let excuse = responses[14] {
             resolved = resolved.replacingOccurrences(of: "{{excuse}}", with: excuse)
         }
 

@@ -108,17 +108,19 @@ struct ExplanatoryStepView: View {
 
 // MARK: - Preview
 
-#Preview {
-    ExplanatoryStepView(
-        config: ExplanatoryConfig(
-            iconName: "calendar.badge.exclamationmark",
-            title: "You've Been Here Before",
-            subtitle: "Started strong. Lasted a week. Then... nothing.",
-            backgroundColor: .black,
-            accentColor: Color(hex: "#FF6B6B")
-        ),
-        onContinue: {
-            print("Continue tapped")
-        }
-    )
+struct ExplanatoryStepView_Previews: PreviewProvider {
+    static var previews: some View {
+        ExplanatoryStepView(
+            config: ExplanatoryConfig(
+                iconName: "calendar.badge.exclamationmark",
+                title: "You've Been Here Before",
+                subtitle: "Started strong. Lasted a week. Then... nothing.",
+                backgroundColor: .black,
+                accentColor: Color(hex: "#FF6B6B")
+            ),
+            onContinue: {
+                print("Continue tapped")
+            }
+        )
+    }
 }

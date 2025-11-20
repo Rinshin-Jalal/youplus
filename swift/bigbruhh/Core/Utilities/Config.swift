@@ -7,6 +7,20 @@
 import Foundation
 
 enum Config {
+    // MARK: - Generic Getter
+    /// Returns a string value from Info.plist populated by Config.xcconfig
+    /// - Parameter key: The Info.plist key to fetch
+    /// - Returns: The string value if present
+    static func get(_ key: String) -> String? {
+        let value = Bundle.main.object(forInfoDictionaryKey: key) as? String
+        #if DEBUG
+        if value == nil {
+            print("[Config] Missing value for key: \(key)")
+        }
+        #endif
+        return value
+    }
+
     // MARK: - Preview Detection
     static var isPreview: Bool {
         return ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PLAYGROUNDS"] == "1"

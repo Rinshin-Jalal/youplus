@@ -220,47 +220,105 @@ struct RevenueCatPaywallView: View {
 // MARK: - Paywall Loading View
 
 struct PaywallLoadingView: View {
-    @State private var rotationAngle: Double = 0
-    @State private var pulseScale: CGFloat = 1.0
+    @State private var animateGradient = false
 
     var body: some View {
-        VStack(spacing: 40) {
-            ZStack {
-                Circle()
-                    .stroke(.white.opacity(0.3), lineWidth: 2)
-                    .frame(width: 120, height: 120)
-                    .rotationEffect(.degrees(rotationAngle))
+        ScrollView {
+            VStack(spacing: 24) {
+                // Header skeleton
+                VStack(spacing: 12) {
+                    SkeletonBox(width: 200, height: 32)
+                    SkeletonBox(width: 280, height: 16)
+                    SkeletonBox(width: 260, height: 16)
+                }
+                .padding(.top, 40)
 
-                Circle()
-                    .stroke(.white.opacity(0.5), lineWidth: 3)
-                    .frame(width: 90, height: 90)
-                    .rotationEffect(.degrees(-rotationAngle * 1.5))
+                // Feature list skeleton
+                VStack(spacing: 16) {
+                    ForEach(0..<4, id: \.self) { _ in
+                        HStack(spacing: 12) {
+                            SkeletonBox(width: 24, height: 24)
+                                .clipShape(Circle())
+                            SkeletonBox(width: 220, height: 16)
+                            Spacer()
+                        }
+                    }
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 20)
 
-                Circle()
-                    .stroke(.white.opacity(0.8), lineWidth: 4)
-                    .frame(width: 60, height: 60)
-                    .rotationEffect(.degrees(rotationAngle * 2))
+                // Subscription plan cards skeleton
+                VStack(spacing: 16) {
+                    ForEach(0..<3, id: \.self) { index in
+                        SkeletonBox(width: nil, height: 100)
+                            .overlay(
+                                VStack(alignment: .leading, spacing: 8) {
+                                    HStack {
+                                        SkeletonBox(width: 100, height: 20)
+                                        Spacer()
+                                        if index == 1 {
+                                            SkeletonBox(width: 80, height: 24)
+                                        }
+                                    }
+                                    SkeletonBox(width: 140, height: 28)
+                                    SkeletonBox(width: 180, height: 14)
+                                }
+                                .padding(16)
+                            )
+                            .cornerRadius(12)
+                    }
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 20)
 
-                Image(systemName: "sparkles")
-                    .font(.system(size: 24, weight: .medium))
-                    .foregroundColor(.white)
-                    .scaleEffect(pulseScale)
+                // CTA Button skeleton
+                SkeletonBox(width: nil, height: 56)
+                    .cornerRadius(12)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 20)
+
+                // Terms and restore links skeleton
+                HStack(spacing: 20) {
+                    SkeletonBox(width: 80, height: 12)
+                    SkeletonBox(width: 60, height: 12)
+                }
+                .padding(.top, 16)
+                .padding(.bottom, 40)
             }
-
-            Text("Loading subscription plans...")
-                .font(.system(size: 18, weight: .medium))
-                .foregroundColor(.white.opacity(0.8))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.black.opacity(0.8))
-        .onAppear {
-            withAnimation(.linear(duration: 3.0).repeatForever(autoreverses: false)) {
-                rotationAngle = 360
+        .background(Color.black)
+    }
+}
+
+// MARK: - Skeleton Box Component
+
+struct SkeletonBox: View {
+    let width: CGFloat?
+    let height: CGFloat
+
+    @State private var animateGradient = false
+
+    var body: some View {
+        Rectangle()
+            .fill(
+                LinearGradient(
+                    colors: [
+                        Color.white.opacity(0.08),
+                        Color.white.opacity(0.12),
+                        Color.white.opacity(0.08)
+                    ],
+                    startPoint: animateGradient ? .leading : .trailing,
+                    endPoint: animateGradient ? .trailing : .leading
+                )
+            )
+            .frame(width: width, height: height)
+            .cornerRadius(8)
+            .onAppear {
+                withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
+                    animateGradient.toggle()
+                }
             }
-            withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
-                pulseScale = 1.2
-            }
-        }
     }
 }
 

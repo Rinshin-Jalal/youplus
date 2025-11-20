@@ -19,97 +19,66 @@ struct CreatingFutureYouView: View {
     @State private var isComplete: Bool = false
     @State private var isCloning: Bool = false
     @State private var errorMessage: String?
+    @State private var pulse: Double = 1.0
+    @State private var scanlineOffset: CGFloat = 0
+
+    // Brutalist Red Accent
+    private let accentColor = Color.brutalRed
 
     var body: some View {
         ZStack {
-            Color.black
-                .ignoresSafeArea()
+    
 
-            // Scanline overlay
+            // Scanlines - prominent and explicit
             Scanlines()
+                .opacity(0.4)
+                .allowsHitTesting(false)
 
-            VStack(spacing: 40) {
+            VStack {
+                Spacer()
+ // Core Glow
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            gradient: Gradient(colors: [
+                                accentColor.opacity(0.8),
+                                accentColor.opacity(0.0)
+                            ]),
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 150
+                        )
+                    )
+                    .frame(width: 300, height: 300)
+                    .scaleEffect(pulse)
+                    .animation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true), value: pulse)
+                    
+                    Spacer()
+
+                    Text(config.title.uppercased())
+                        .font(.system(size: 18, weight: .black))
+                        .tracking(4)
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.leading)
+                        .padding(.bottom, 20)
+               
+
                 Spacer()
 
-                // Main title
-                Text(config.title)
-                    .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-
-                // Animated icon
-                ZStack {
-                    // Outer pulsing ring
-                    Circle()
-                        .stroke(Color(hex: "#4ECDC4").opacity(0.3), lineWidth: 2)
-                        .frame(width: 120, height: 120)
-                        .scaleEffect(progress > 0 ? 1.2 : 1.0)
-                        .opacity(progress > 0 ? 0.0 : 1.0)
-                        .animation(.easeOut(duration: 1.5).repeatForever(autoreverses: false), value: progress)
-
-                    // Main icon
-                    Circle()
-                        .fill(Color(hex: "#4ECDC4").opacity(0.2))
-                        .frame(width: 100, height: 100)
-
-                    Image(systemName: "waveform.circle.fill")
-                        .font(.system(size: 50))
-                        .foregroundColor(Color(hex: "#4ECDC4"))
-                        .rotationEffect(.degrees(progress * 360))
+                // Error message
+                if let error = errorMessage {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundColor(accentColor)
+                        .padding(.bottom, 20)
                 }
-                .padding(.vertical, 20)
-
-                // Progress bar
-                VStack(spacing: 16) {
-                    // Progress bar
-                    GeometryReader { geometry in
-                        ZStack(alignment: .leading) {
-                            // Background
-                            Rectangle()
-                                .fill(Color.white.opacity(0.1))
-                                .frame(height: 8)
-                                .cornerRadius(4)
-
-                            // Fill
-                            Rectangle()
-                                .fill(
-                                    LinearGradient(
-                                        colors: [Color(hex: "#4ECDC4"), Color(hex: "#3ab8b0")],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
-                                .frame(width: geometry.size.width * progress, height: 8)
-                                .cornerRadius(4)
-                                .animation(.linear(duration: 0.3), value: progress)
-                        }
-                    }
-                    .frame(height: 8)
-
-                    // Status message
-                    if currentMessageIndex < config.statusMessages.count {
-                        Text(config.statusMessages[currentMessageIndex])
-                            .font(.system(size: 16))
-                            .foregroundColor(Color(hex: "#4ECDC4"))
-                            .transition(.opacity)
-                            .id(currentMessageIndex) // Force view update
-                    }
-
-                    // Error message
-                    if let error = errorMessage {
-                        Text(error)
-                            .font(.caption)
-                            .foregroundColor(.red)
-                            .padding(.top, 8)
-                    }
-                }
-                .padding(.horizontal, 48)
-
-                Spacer()
             }
         }
         .onAppear {
+            isCloning = true
+            withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
+                pulse = 1.2
+            }
             startLoadingSequence()
         }
     }
@@ -219,20 +188,22 @@ struct CreatingFutureYouView: View {
 
 // MARK: - Preview
 
-#Preview {
-    CreatingFutureYouView(
-        config: LoadingConfig(
-            title: "Creating Your Future You",
-            statusMessages: [
-                "Analyzing your voice...",
-                "Building your accountability partner...",
-                "Preparing your first call...",
-                "Almost ready..."
-            ],
-            duration: 8.0
-        ),
-        onComplete: {
-            print("Loading complete")
-        }
-    )
+struct CreatingFutureYouView_Previews: PreviewProvider {
+    static var previews: some View {
+        CreatingFutureYouView(
+            config: LoadingConfig(
+                title: "Creating Future You",
+                statusMessages: [
+                    "Analyzing your voice...",
+                    "Building your accountability partner...",
+                    "Preparing your first call...",
+                    "Almost ready..."
+                ],
+                duration: 8.0
+            ),
+            onComplete: {
+                print("Loading complete")
+            }
+        )
+    }
 }

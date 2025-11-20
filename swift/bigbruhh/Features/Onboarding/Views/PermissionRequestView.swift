@@ -12,11 +12,11 @@ import AVFoundation
 struct PermissionRequestView: View {
     let permissionType: PermissionType
     let onComplete: (Bool) -> Void
-    
+
     @State private var hasAppeared = false
     @State private var isRequesting = false
     @State private var permissionGranted = false
-    
+
     var body: some View {
         ZStack {
             Color.black
@@ -27,7 +27,7 @@ struct PermissionRequestView: View {
 
             VStack(spacing: 40) {
                 Spacer()
-                
+
                 // Icon
                 Image(systemName: permissionType.iconName)
                     .font(.system(size: 80))
@@ -35,7 +35,7 @@ struct PermissionRequestView: View {
                     .scaleEffect(hasAppeared ? 1.0 : 0.8)
                     .opacity(hasAppeared ? 1.0 : 0.0)
                     .animation(.spring(response: 0.6, dampingFraction: 0.7), value: hasAppeared)
-                
+
                 VStack(spacing: 16) {
                     // Title
                     Text(permissionType.title)
@@ -45,7 +45,7 @@ struct PermissionRequestView: View {
                         .padding(.horizontal, 32)
                         .opacity(hasAppeared ? 1.0 : 0.0)
                         .animation(.easeOut(duration: 0.6).delay(0.2), value: hasAppeared)
-                    
+
                     // Explanation
                     Text(permissionType.explanation)
                         .font(.system(size: 16))
@@ -55,27 +55,29 @@ struct PermissionRequestView: View {
                         .opacity(hasAppeared ? 1.0 : 0.0)
                         .animation(.easeOut(duration: 0.6).delay(0.4), value: hasAppeared)
                 }
-                
+
                 Spacer()
-                
+
                 // Grant Permission Button
                 VStack(spacing: 16) {
                     Button(action: requestPermission) {
-                        if isRequesting {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                        } else {
-                            Text(permissionGranted ? "granted ✓" : "allow")
-                                .font(.system(size: 18, weight: .semibold))
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
+                        HStack(spacing: 12) {
+                            if isRequesting {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            } else {
+                                Image(systemName: permissionGranted ? "checkmark" : "lock.open.fill")
+                                    .font(.system(size: 20))
+                                Text(permissionGranted ? "GRANTED" : "ALLOW ACCESS")
+                                    .font(.system(size: 14, weight: .bold))
+                                    .tracking(1.5)
+                            }
                         }
+                        .foregroundColor(Color.buttonTextColor(for: .brutalRed))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
                     }
-                    .background(Color.white.opacity(0.15))
-                    .cornerRadius(12)
+                    .applyVoiceGlassEffect(prominent: true, accentColor: Color.brutalRed)
                     .disabled(isRequesting || permissionGranted)
                     .opacity(hasAppeared ? 1.0 : 0.0)
                     .animation(.easeOut(duration: 0.6).delay(0.6), value: hasAppeared)

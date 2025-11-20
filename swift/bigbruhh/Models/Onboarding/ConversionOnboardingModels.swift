@@ -18,6 +18,7 @@ enum ConversionStepType {
     case demoCall
     case loading(config: LoadingConfig)
     case permissionRequest(type: PermissionType)
+    case commitmentCard
 }
 
 // MARK: - Explanatory Step

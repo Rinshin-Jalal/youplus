@@ -13,6 +13,25 @@ import SwiftUI
 
 let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
 
+    // 🚨 TESTING ONLY: Move Loading Screen to First Step
+    // TO REVERT: Delete this entire block (down to the next comment)
+    ConversionOnboardingStep(
+        id: 999,
+        type: .loading(config: LoadingConfig(
+            title: "Creating Future You",
+            statusMessages: [
+                "Analyzing your voice...",
+                "Building your accountability partner...",
+                "Preparing your first call...",
+                "Almost ready..."
+            ],
+            duration: 12.0
+        ))
+    ),
+    ConversionOnboardingStep(
+        id: 9999,
+        type: .commitmentCard
+    ),
     // ==========================================
     // PHASE 1: THE HOOK (Steps 1-3) ✅ Keep as-is
     // ==========================================
@@ -116,12 +135,27 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
         ))
     ),
 
+    // NEW: AI Break
+    ConversionOnboardingStep(
+        id: 9,
+        type: .aiCommentary(config: AICommentaryConfig(
+            messages: [
+                ChatMessage(text: "i heard that.", delay: 0.5),
+                ChatMessage(text: "the hunger is there.", delay: 0.8),
+                ChatMessage(text: "but hunger isn't enough.", delay: 0.8),
+                ChatMessage(text: "let's see what's been blocking it.", delay: 1.0)
+            ],
+            persona: .futureYou,
+            showAvatar: false
+        ))
+    ),
+
     // ==========================================
     // PHASE 3: PATTERN RECOGNITION (Steps 9-14) - REDUCE TYPING
     // ==========================================
 
     ConversionOnboardingStep(
-        id: 9,
+        id: 10,
         type: .input(config: InputConfig(
             question: "Who have you disappointed by quitting?",
             inputType: .choice(options: [
@@ -138,7 +172,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 10,
+        id: 11,
         type: .input(config: InputConfig(
             question: "What's been stopping you from becoming who you're meant to be?",
             inputType: .choice(options: [
@@ -155,7 +189,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 11,
+            id: 12,
         type: .input(config: InputConfig(
             question: "How many times have you tried before?",
             inputType: .numberStepper(range: 0...20),
@@ -165,7 +199,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 12,
+        id: 13,
         type: .input(config: InputConfig(
             question: "How did you quit last time?",
             inputType: .choice(options: [
@@ -181,7 +215,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 13,
+        id: 14,
         type: .input(config: InputConfig(
             question: "What's your favorite excuse?",
             inputType: .choice(options: [
@@ -196,7 +230,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 14,
+        id: 15,
         type: .input(config: InputConfig(
             question: "When do you usually quit?",
             inputType: .choice(options: [
@@ -211,12 +245,27 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
         ))
     ),
 
+    // NEW: AI Break
+    ConversionOnboardingStep(
+        id: 16,
+        type: .aiCommentary(config: AICommentaryConfig(
+            messages: [
+                ChatMessage(text: "i see the pattern now.", delay: 0.5),
+                ChatMessage(text: "it's clearer than you think.", delay: 0.8),
+                ChatMessage(text: "and it's not your fault.", delay: 0.8),
+                ChatMessage(text: "but it is your responsibility.", delay: 1.0)
+            ],
+            persona: .futureYou,
+            showAvatar: false
+        ))
+    ),
+
     // ==========================================
     // PHASE 4: DEMOGRAPHICS (Steps 15-18) - NEW
     // ==========================================
 
     ConversionOnboardingStep(
-        id: 15,
+        id: 17,
         type: .input(config: InputConfig(
             question: "How old are you?",
             inputType: .numberStepper(range: 13...100),
@@ -226,7 +275,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 16,
+        id: 18,
         type: .input(config: InputConfig(
             question: "What's your gender?",
             inputType: .choice(options: [
@@ -241,7 +290,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 17,
+        id: 19,
         type: .input(config: InputConfig(
             question: "Where are you from?",
             inputType: .text(placeholder: "City, Country (optional)"),
@@ -251,7 +300,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 18,
+        id: 20,
         type: .input(config: InputConfig(
             question: "How did you hear about us?",
             inputType: .choice(options: [
@@ -267,12 +316,27 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
         ))
     ),
 
+    // NEW: AI Break
+    ConversionOnboardingStep(
+        id: 21,
+        type: .aiCommentary(config: AICommentaryConfig(
+            messages: [
+                ChatMessage(text: "okay.", delay: 0.5),
+                ChatMessage(text: "i have a better picture now.", delay: 0.8),
+                ChatMessage(text: "now let's look at the stakes.", delay: 0.8),
+                ChatMessage(text: "the real cost of staying the same.", delay: 1.0)
+            ],
+            persona: .futureYou,
+            showAvatar: false
+        ))
+    ),
+
     // ==========================================
     // PHASE 5: THE COST + VOICE #2 (Steps 19-23)
     // ==========================================
 
     ConversionOnboardingStep(
-        id: 19,
+        id: 22,
         type: .input(config: InputConfig(
             question: "Paint the picture: What does your life look like when you FINALLY have this?",
             inputType: .text(placeholder: "Describe your ideal outcome"),
@@ -282,7 +346,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 20,
+        id: 23,
         type: .input(config: InputConfig(
             question: "What dies inside you if you quit again? Say it out loud.",
             inputType: .voice(minDuration: 15, maxDuration: 30),
@@ -292,7 +356,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 21,
+        id: 24,
         type: .input(config: InputConfig(
             question: "Where will you be in 6 months if you quit again?",
             inputType: .choice(options: [
@@ -307,7 +371,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 22,
+        id: 25,
         type: .input(config: InputConfig(
             question: "What have you already spent trying to achieve this?",
             inputType: .multiSelect(options: [
@@ -323,7 +387,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 23,
+        id: 26,
         type: .input(config: InputConfig(
             question: "What's your biggest fear about this goal?",
             inputType: .choice(options: [
@@ -338,14 +402,29 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
         ))
     ),
 
+    // NEW: AI Break
+    ConversionOnboardingStep(
+        id: 27,
+        type: .aiCommentary(config: AICommentaryConfig(
+            messages: [
+                ChatMessage(text: "that is a heavy cost.", delay: 0.5),
+                ChatMessage(text: "too heavy to carry alone.", delay: 0.8),
+                ChatMessage(text: "it stops now.", delay: 0.8),
+                ChatMessage(text: "let me show you your future.", delay: 1.0)
+            ],
+            persona: .futureYou,
+            showAvatar: false
+        ))
+    ),
+
     // ==========================================
     // PHASE 6: CREATING FUTURE YOU (Step 24) - NEW
     // ==========================================
 
     ConversionOnboardingStep(
-        id: 24,
+        id: 28,
         type: .loading(config: LoadingConfig(
-            title: "Creating Your Future You",
+            title: "Creating Future You",
             statusMessages: [
                 "Analyzing your voice...",
                 "Building your accountability partner...",
@@ -361,7 +440,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     // ==========================================
 
     ConversionOnboardingStep(
-        id: 25,
+        id: 29,
         type: .demoCall
     ),
 
@@ -370,7 +449,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     // ==========================================
 
     ConversionOnboardingStep(
-        id: 26,
+        id: 30,
         type: .input(config: InputConfig(
             question: "How was that experience?",
             inputType: .ratingStars,
@@ -380,7 +459,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 27,
+        id: 31,
         type: .aiCommentary(config: AICommentaryConfig(
             messages: [
                 ChatMessage(text: "glad you liked it", delay: 0.5),
@@ -399,17 +478,17 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     // ==========================================
 
     ConversionOnboardingStep(
-        id: 28,
+        id: 32,
         type: .permissionRequest(type: .notifications)
     ),
 
     ConversionOnboardingStep(
-        id: 29,
+        id: 33,
         type: .permissionRequest(type: .calls)
     ),
 
     ConversionOnboardingStep(
-        id: 30,
+        id: 34,
         type: .input(config: InputConfig(
             question: "What will you do every single day?",
             inputType: .text(placeholder: "Be specific: 30 min gym, 1 hour coding, 5 sales calls"),
@@ -419,7 +498,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 31,
+        id: 35,
         type: .input(config: InputConfig(
             question: "What time should I call you?",
             inputType: .timePicker,
@@ -429,7 +508,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 32,
+        id: 36,
         type: .input(config: InputConfig(
             question: "How many days can you miss before you're done?",
             inputType: .numberStepper(range: 1...5),
@@ -439,7 +518,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 33,
+        id: 37,
         type: .aiCommentary(config: AICommentaryConfig(
             messages: [
                 ChatMessage(text: "last voice commitment", delay: 0.5),
@@ -454,7 +533,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     ConversionOnboardingStep(
-        id: 34,
+        id: 38,
         type: .input(config: InputConfig(
             question: "This is it. Tell Future You why THIS time is different. Why you NEED this to work.",
             inputType: .voice(minDuration: 20, maxDuration: 30),
@@ -464,11 +543,20 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     ),
 
     // ==========================================
-    // PHASE 10: PAYWALL (Steps 35-36)
+    // PHASE 10: COMMITMENT CARD (Step 39)
     // ==========================================
 
     ConversionOnboardingStep(
-        id: 35,
+        id: 39,
+        type: .commitmentCard
+    ),
+
+    // ==========================================
+    // PHASE 11: PAYWALL (Steps 40)
+    // ==========================================
+
+    ConversionOnboardingStep(
+        id: 40,
         type: .aiCommentary(config: AICommentaryConfig(
             messages: [
                 ChatMessage(text: "i've heard your commitment", delay: 0.5),
@@ -483,7 +571,7 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
             persona: .futureYou,
             showAvatar: false
         ))
-    ),
+    )
 
 ]
 

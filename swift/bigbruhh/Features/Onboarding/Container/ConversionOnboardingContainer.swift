@@ -23,6 +23,18 @@ struct ConversionOnboardingContainer: View {
                     insertion: .move(edge: .trailing).combined(with: .opacity),
                     removal: .move(edge: .leading).combined(with: .opacity)
                 ))
+
+            // Progress Bar Overlay
+            if !state.currentStep.isAICommentary && !state.currentStep.isLoading {
+                VStack {
+                    PhaseProgressBar(
+                        currentStepIndex: state.currentStepIndex,
+                        totalSteps: state.totalSteps
+                    )
+                    Spacer()
+                }
+                .transition(.opacity)
+            }
         }
         .animation(.easeInOut(duration: 0.3), value: state.currentStepIndex)
         .onAppear {
@@ -33,14 +45,14 @@ struct ConversionOnboardingContainer: View {
             print("   currentStepIndex: \(state.currentStepIndex)")
             print("   currentStep.id: \(currentStepId)")
             #endif
-            
+
             // ALWAYS clear state on appear, even if at index 0
             // This ensures we truly start fresh every time
             #if DEBUG
             print("🧹 FORCING COMPLETE RESET to step 1 regardless of current state")
             #endif
             state.clearState()
-            
+
             #if DEBUG
             print("✅ Reset complete - now at step \(state.currentStep.id) (index \(state.currentStepIndex))")
             #endif
@@ -82,6 +94,11 @@ struct ConversionOnboardingContainer: View {
 
         case .loading(let config):
             CreatingFutureYouView(config: config, onComplete: handleContinue)
+                .environmentObject(state)
+                .id(step.id)
+
+        case .commitmentCard:
+            CommitmentCardView(onContinue: handleContinue)
                 .environmentObject(state)
                 .id(step.id)
         }
