@@ -4,7 +4,7 @@ import { Env } from "@/index";
 // Health check endpoint
 export const getHealth = (c: Context) => {
   return c.json({
-    status: "BIG BRUH Active",
+    status: "YOU+ Active",
     timestamp: new Date().toISOString(),
     version: "1.0.0",
   });

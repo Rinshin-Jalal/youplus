@@ -119,10 +119,10 @@ export const postLiveKitWebhook = async (c: Context) => {
 };
 
 /**
- * POST /webhook/livekit/test
+ * GET /webhook/livekit/test
  * Test endpoint to verify webhook configuration
  */
-export const postLiveKitWebhookTest = async (c: Context) => {
+export const getLiveKitWebhookTest = async (c: Context) => {
   const env = c.env as Env;
 
   try {

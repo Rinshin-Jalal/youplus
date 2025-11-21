@@ -3,12 +3,15 @@ import { updateUserVoiceId } from "@/features/core/utils/database";
 import { getAuthenticatedUserId } from "@/middleware/auth";
 import { Env } from "@/index";
 
-// Voice cloning endpoint for ElevenLabs
+import { createVoiceCloneService, VoiceProvider } from "@/features/voice/services/voice-cloning";
+
+// Voice cloning endpoint (Supports ElevenLabs & Cartesia)
 export const postVoiceClone = async (c: Context) => {
   const formData = await c.req.formData();
   const audioFiles = formData.getAll("audio") as File[];
-  const userId = getAuthenticatedUserId(c);
+  const userId = c.get("userId") as string; // Set by requireGuestOrUser
   const voiceName = (formData.get("voiceName") as string) || `voice_${userId}`;
+  const provider = (formData.get("provider") as VoiceProvider) || "cartesia";
 
   if (audioFiles.length === 0) {
     return c.json({ error: "Missing audio files" }, 400);
@@ -17,41 +20,62 @@ export const postVoiceClone = async (c: Context) => {
   const env = c.env as Env;
 
   try {
-    console.log(`🎤 Cloning voice for ${userId} - ${audioFiles.length} files`);
+    console.log(`🎤 Cloning voice for ${userId} using ${provider}`);
 
-    // Build FormData for ElevenLabs with multiple files
-    const elevenForm = new FormData();
-    elevenForm.append("name", voiceName);
-    elevenForm.append("description", `Voice clone for ${userId}`);
+    // 1. Combine audio files if multiple (Cartesia expects single file usually, but we'll handle first one for now or combine)
+    // For MVP, let's take the first file or assume client sends one combined file
+    // If client sends multiple, we should ideally combine them. 
+    // Swift client sends "clip" which is already combined.
+    // Let's assume the client sends a single "voice.m4a" in the "audio" field or "clip" field.
 
-    let totalBytes = 0;
-    for (const file of audioFiles) {
-      const buf = await file.arrayBuffer();
-      totalBytes += buf.byteLength;
-      if (totalBytes > 10 * 1024 * 1024) {
-        return c.json({ error: "Combined audio too large (max 10MB)" }, 400);
-      }
-      elevenForm.append(
-        "files",
-        new Blob([buf], { type: file.type || "audio/mpeg" }),
-        file.name || "sample.mp3"
-      );
+    // Check for "clip" field (Cartesia style) or "audio" (our internal style)
+    const audioFile = (formData.get("clip") as File) || audioFiles[0];
+
+    if (!audioFile) {
+      return c.json({ error: "No audio file found" }, 400);
     }
 
-    const elevenRes = await fetch("https://api.elevenlabs.io/v1/voices/add", {
-      method: "POST",
-      headers: { "xi-api-key": env.ELEVENLABS_API_KEY },
-      body: elevenForm,
+    // Create a temporary URL for the service (or refactor service to accept Blob/Buffer)
+    // The service currently expects a URL. This is a mismatch. 
+    // I should update the service to accept Buffer/Blob or upload to R2 first.
+    // The plan said: "Swift uploads audio to Backend -> Cloning".
+    // Let's upload to R2 first to get a URL, then pass to service.
+
+    const audioBuffer = await audioFile.arrayBuffer();
+    const { uploadAudioToR2 } = await import("@/features/voice/services/r2-upload");
+    const fileName = `${userId}_clone_source_${Date.now()}.m4a`;
+
+    const uploadResult = await uploadAudioToR2(env, audioBuffer, fileName, "audio/m4a");
+
+    if (!uploadResult.success || !uploadResult.cloudUrl) {
+      throw new Error("Failed to upload source audio to R2");
+    }
+
+    // 2. Call VoiceCloneService
+    const voiceService = createVoiceCloneService(env);
+
+    const result = await voiceService.cloneUserVoice({
+      audio_url: uploadResult.cloudUrl,
+      voice_name: voiceName,
+      user_id: userId,
+      provider: provider
     });
 
-    if (!elevenRes.ok) {
-      return c.json({ error: `ElevenLabs failed ${elevenRes.status}` }, 500);
+    if (!result.success) {
+      return c.json({ error: result.error || "Cloning failed" }, 500);
     }
 
-    const { voice_id } = await elevenRes.json();
-    await updateUserVoiceId(env, userId, voice_id);
+    // 3. Update User Record (if not guest)
+    if (!userId.startsWith("guest_")) {
+      await updateUserVoiceId(env, userId, result.voice_id);
+    }
 
-    return c.json({ success: true, voice_id });
+    return c.json({
+      success: true,
+      voice_id: result.voice_id,
+      provider: provider
+    });
+
   } catch (error) {
     console.error("Voice cloning endpoint error:", error);
     return c.json(

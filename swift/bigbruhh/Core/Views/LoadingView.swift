@@ -16,7 +16,7 @@ struct LoadingView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: Spacing.xl) {
-                Text("BIG BRUH")
+                Text("YOU+")
                     .font(.headline)
                     .foregroundColor(.brutalRed)
                     .brutalStyle()

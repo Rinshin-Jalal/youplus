@@ -12,7 +12,7 @@ Complete implementation of onboarding data push functionality, matching the Reac
 2. User sees AlmostThereView
    ↓
 
-3. User clicks "Get Big Bruh" → Paywall appears
+3. User clicks "Get YOU+" → Paywall appears
    ↓
 
 4. User completes payment via RevenueCat
@@ -186,7 +186,7 @@ private func handlePurchaseComplete() {
 ✅ You're All Set!
    Your accountability system is ready. No more excuses.
 
-   [Continue to Big Bruh]
+   [Continue to YOU+]
 ```
 
 ### Error

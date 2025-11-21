@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
- * 📱 BIG BRUH PUSH NOTIFICATION SERVICE - VOIP CALL DELIVERY SYSTEM
+ * 📱 YOU+ PUSH NOTIFICATION SERVICE - VOIP CALL DELIVERY SYSTEM
  *
  * The critical communication bridge that wakes up user devices to receive
  * accountability calls. Handles cross-platform VoIP push notifications with
@@ -152,8 +152,8 @@ async function sendIosVoipPush(
         "content-available": 1, // 🔕 Silent push - triggers background processing
       },
       // 📞 Custom VoIP payload - required by our native VoIP plugin
-      handle: "BIG BRUH Accountability", // 📋 Display name for incoming call UI
-      caller: "BIG BRUH Accountability Check", // 👤 Caller ID shown to user
+      handle: "YOU+ Accountability", // 📋 Display name for incoming call UI
+      caller: "YOU+ Accountability Check", // 👤 Caller ID shown to user
       uuid: payload.callUUID, // 🆔 Unique call identifier (primary)
       callUUID: payload.callUUID, // 🆔 Duplicate for compatibility
       userId: payload.userId, // 👤 Target user identifier
@@ -205,7 +205,7 @@ async function sendExpoVoipPush(
     to: expoPushToken, // 🎯 Target device token
     sound: null, // 🔕 Silent - app handles ringing
     body: "Time to face yourself", // 💭 Notification body text
-    title: "BIG BRUH Accountability Check", // 📋 Notification title
+    title: "YOU+ Accountability Check", // 📋 Notification title
     data: { ...payload, uuid: payload.callUUID, metadata: payload.metadata || {} }, // 📊 Custom data payload
 
     // 🍎 iOS-specific configuration (for non-VoIP iOS tokens)

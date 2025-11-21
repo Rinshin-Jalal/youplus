@@ -23,6 +23,7 @@ class AuthService: ObservableObject {
     @Published var user: User? = nil
     @Published var loading = false  // Start optimistically - loading screen almost never shows
     @Published var isAuthenticated = false
+    @Published var guestToken: String? = nil
 
     private let supabase = SupabaseManager.shared.client
     private var currentNonce: String?
@@ -106,6 +107,33 @@ class AuthService: ObservableObject {
                 user = nil
                 isAuthenticated = false
             }
+        }
+    }
+
+    // MARK: - Guest Authentication
+    func authenticateGuest() async throws {
+        Config.log("Authenticating as guest...", category: "Auth")
+        
+        // If we already have a guest token, don't request another one
+        if let token = guestToken {
+            Config.log("Using existing guest token", category: "Auth")
+            return
+        }
+        
+        do {
+            let response: APIResponse<GuestTokenResponse> = try await APIService.shared.post("/auth/guest", body: [:])
+            
+            if let token = response.data?.token {
+                await MainActor.run {
+                    self.guestToken = token
+                }
+                Config.log("✅ Guest authentication successful", category: "Auth")
+            } else {
+                throw NSError(domain: "AuthService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to get guest token"])
+            }
+        } catch {
+            Config.log("❌ Guest authentication failed: \(error)", category: "Auth")
+            throw error
         }
     }
 

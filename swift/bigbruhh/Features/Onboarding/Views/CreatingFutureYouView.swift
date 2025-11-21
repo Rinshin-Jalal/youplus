@@ -70,12 +70,29 @@ struct CreatingFutureYouView: View {
 
                 Spacer()
 
-                // Error message
+                // Error message and Retry button
                 if let error = errorMessage {
-                    Text(error)
-                        .font(.caption)
-                        .foregroundColor(accentColor)
-                        .padding(.bottom, 20)
+                    VStack(spacing: 16) {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(accentColor)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                        
+                        Button(action: {
+                            retryCloning()
+                        }) {
+                            Text("RETRY")
+                                .font(.system(size: 14, weight: .bold))
+                                .tracking(2)
+                                .foregroundColor(.black)
+                                .padding(.vertical, 12)
+                                .padding(.horizontal, 24)
+                                .background(accentColor)
+                                .cornerRadius(4)
+                        }
+                    }
+                    .padding(.bottom, 40)
                 }
             }
         }
@@ -99,6 +116,12 @@ struct CreatingFutureYouView: View {
 
         // Animate progress and cycle through messages
         Timer.scheduledTimer(withTimeInterval: intervalDuration, repeats: true) { timer in
+            // Stop timer if error occurred
+            if errorMessage != nil {
+                timer.invalidate()
+                return
+            }
+            
             withAnimation {
                 if currentMessageIndex < messageCount - 1 {
                     currentMessageIndex += 1
@@ -113,14 +136,22 @@ struct CreatingFutureYouView: View {
             }
         }
     }
+    
+    private func retryCloning() {
+        errorMessage = nil
+        currentMessageIndex = 0
+        progress = 0.0
+        startLoadingSequence()
+    }
 
     private func cloneVoiceAndGenerateDemo() async {
         isCloning = true
+        errorMessage = nil // Clear any previous errors
 
         do {
-            // Get voice recordings from steps 8 and 20
+            // Get voice recordings from steps 8 and 23 (not 20!)
             guard let voice1 = state.getVoiceRecording(forKey: "step_8"),
-                  let voice2 = state.getVoiceRecording(forKey: "step_20") else {
+                  let voice2 = state.getVoiceRecording(forKey: "step_23") else {
                 errorMessage = "No voice recordings found"
                 isCloning = false
                 return
@@ -131,11 +162,11 @@ struct CreatingFutureYouView: View {
             let goal = state.getResponse(forStepId: 5) ?? "your goal"
             let motivationLevel = Int(state.getResponse(forStepId: 7) ?? "5") ?? 5
 
-            Config.log("🎤 Cloning voice with recordings from steps 8 & 20", category: "VoiceClone")
+            Config.log("🎤 Cloning voice with recordings from steps 8 & 23", category: "VoiceClone")
 
-            // Clone voice using Cartesia
-            let voiceCloneID = try await VoiceCloneService.shared.cloneVoice(
-                from: [voice1, voice2],
+            // Clone voice using Backend
+            let voiceCloneID = try await ConversionOnboardingService.shared.cloneVoice(
+                audioURLs: [voice1, voice2],
                 userName: userName
             )
 
@@ -149,8 +180,8 @@ struct CreatingFutureYouView: View {
             // Generate demo call audio
             Config.log("🎬 Generating demo call", category: "DemoCall")
 
-            let demoAudio = try await DemoCallService.shared.generateDemoCall(
-                voiceCloneID: voiceCloneID,
+            let (audioURL, transcript) = try await ConversionOnboardingService.shared.generateDemoCall(
+                voiceId: voiceCloneID,
                 userName: userName,
                 goal: goal,
                 motivationLevel: motivationLevel
@@ -158,8 +189,8 @@ struct CreatingFutureYouView: View {
 
             // Store demo audio
             await MainActor.run {
-                state.demoCallAudioURL = demoAudio.audioURL
-                state.demoCallTranscript = demoAudio.transcript
+                state.demoCallAudioURL = audioURL
+                state.demoCallTranscript = transcript
             }
 
             Config.log("✅ Demo call generated", category: "DemoCall")
@@ -167,7 +198,7 @@ struct CreatingFutureYouView: View {
         } catch {
             Config.log("❌ Voice cloning/demo generation failed: \(error)", category: "VoiceClone")
             await MainActor.run {
-                errorMessage = "Failed to create voice clone"
+                errorMessage = "Failed to create voice clone. Please try again."
             }
         }
 
@@ -177,7 +208,13 @@ struct CreatingFutureYouView: View {
     private func waitForCloningCompletion() {
         // Check if cloning is complete every 0.5 seconds
         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
-            if !isCloning || errorMessage != nil {
+            // If error occurred, stop waiting and let user retry
+            if errorMessage != nil {
+                timer.invalidate()
+                return
+            }
+            
+            if !isCloning {
                 timer.invalidate()
 
                 // Complete after a short delay

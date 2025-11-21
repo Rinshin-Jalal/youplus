@@ -5,6 +5,7 @@ import { getCallEligibility, getScheduleSettings, updateScheduleSettings, update
 import { postUserPushToken } from "./handlers/token-init-push";
 import { testR2Upload, testR2Connection } from "./handlers/test-r2";
 import { postTestIdentityExtraction, deleteTestIdentityData } from "./handlers/debug/identity-test";
+import { postGuestToken } from "./handlers/auth"; // Added import for postGuestToken
 import identityRouter from "../identity/router";
 
 const router = new Hono();
@@ -13,6 +14,9 @@ const router = new Hono();
 router.get("/health", getHealth);
 router.get("/stats", getStats);
 router.get("/debug/schedules", getDebugSchedules);
+
+// Auth routes
+router.post("/auth/guest", postGuestToken); // Added guest token endpoint
 
 // API Settings endpoints
 router.get("/api/calls/eligibility", requireAuth, getCallEligibility);

@@ -1,6 +1,6 @@
-# BIG BRUH Backend Engine
+# YOU+ Backend Engine
 
-A comprehensive backend system that powers the BIG BRUH accountability app's core features: intelligent onboarding, daily promise tracking, consequence delivery, tone analysis, and AI-generated calls.
+A comprehensive backend system that powers the YOU+ accountability app's core features: intelligent onboarding, daily promise tracking, consequence delivery, tone analysis, and AI-generated calls.
 
 ## 🚀 System Overview
 
@@ -430,4 +430,4 @@ For questions about this system:
 
 ---
 
-**The BIG BRUH Backend Engine**: Transforming accountability through intelligent onboarding, personalized voice cloning, and consequence-driven growth.
+**The YOU+ Backend Engine**: Transforming accountability through intelligent onboarding, personalized voice cloning, and consequence-driven growth.

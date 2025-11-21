@@ -8,16 +8,16 @@ import { LiveKitWebhookEvent, RoomFinishedEvent } from "@/types/livekit";
 import * as crypto from "crypto";
 
 export interface WebhookConfig {
-  webhookSecret?: string;
-  apiKey?: string;
-  apiSecret?: string;
+  webhookSecret?: string | undefined;
+  apiKey?: string | undefined;
+  apiSecret?: string | undefined;
 }
 
 /**
  * Handles LiveKit webhook events and routes to appropriate processors
  */
 export class LiveKitWebhookProcessor {
-  private webhookSecret?: string;
+  private webhookSecret?: string | undefined;
 
   constructor(config: WebhookConfig) {
     this.webhookSecret = config.webhookSecret;

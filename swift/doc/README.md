@@ -99,7 +99,7 @@ bigbruhh/
 ## ✅ WHAT YOU SHOULD SEE
 
 ### On Launch:
-1. **Loading screen** (black background, "BIG BRUH" in red, pulsing)
+1. **Loading screen** (black background, "YOU+" in red, pulsing)
 2. **Auth screen** with "Sign in with Apple" button
 
 ### In Console (Xcode bottom panel):
@@ -194,7 +194,7 @@ Text("Hello")
     .background(Color.brutalBlack)
 
 // Typography
-Text("BIG BRUH")
+Text("YOU+")
     .font(.headline)
     .brutalStyle()  // uppercase + letter spacing
 

@@ -4,7 +4,7 @@ import { processUserCall } from "./call-trigger";
 import type { Env } from "@/index";
 
 /* ═══════════════════════════════════════════════════════════════════════════════
- * ⏰ BIG BRUH INTELLIGENT SCHEDULER ENGINE
+ * ⏰ YOU+ INTELLIGENT SCHEDULER ENGINE
  *
  * The precision timing system that orchestrates AI accountability calls across
  * global timezones. Handles first-day onboarding rules, duplicate prevention,
@@ -15,7 +15,7 @@ import type { Env } from "@/index";
 
 
 /**
- * BIG BRUH SCHEDULER ENGINE
+ * YOU+ SCHEDULER ENGINE
  *
  * Orchestrates AI accountability calls across global timezones.
  * - Runs every 17 minutes (Cloudflare Workers: "\*\/17 * * * *")

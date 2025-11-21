@@ -273,7 +273,7 @@ struct LoadingView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: Spacing.xl) {
-                Text("BIG BRUH")
+                Text("YOU+")
                     .font(.headline)
                     .foregroundColor(.brutalRedLight)
                     .brutalStyle()
@@ -361,7 +361,7 @@ struct HomeView: View {
 
 You should see:
 - ✅ Black background
-- ✅ "BIG BRUH" title in red
+- ✅ "YOU+" title in red
 - ✅ "Sign in with Apple" button
 - ✅ No build errors
 - ✅ No runtime crashes

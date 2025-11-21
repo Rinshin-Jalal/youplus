@@ -6,9 +6,9 @@ import {
 } from "@/types/database";
 
 /* ═══════════════════════════════════════════════════════════════════════════════
- * 🎭 BIG BRUH TONE ENGINE - PSYCHOLOGICAL MIRROR SYSTEM
+ * 🎭 YOU+ TONE ENGINE - PSYCHOLOGICAL MIRROR SYSTEM
  *
- * The heart of BIG BRUH AI accountability - analyzes user behavior patterns to
+ * The heart of YOU+ AI accountability - analyzes user behavior patterns to
  * determine optimal psychological tone for maximum impact. Based on
  * performance trends, streak health, and collapse risk to deliver precisely
  * calibrated interventions that drive behavioral change.
@@ -388,7 +388,7 @@ function generateToneRecommendation(
       "Insufficient data - starting with provocative challenge to establish baseline";
     confidence_score = 0.5;
   }
-  // Determine tone based on score, critical factors, and BIG BRUH taxonomy
+  // Determine tone based on score, critical factors, and YOU+ taxonomy
   else if (
     collapse.intervention_needed ||
     performance.consecutive_failures >= 5

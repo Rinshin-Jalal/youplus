@@ -20,7 +20,7 @@ final class CallKitManager: NSObject, ObservableObject {
     private let observer = CXCallObserver()
     private var cancellables = Set<AnyCancellable>()
 
-    init(configuration: CallKitConfiguration = CallKitConfiguration(appName: "BIG BRUH", supportsVideo: false, maximumCallsPerCallGroup: 1)) {
+    init(configuration: CallKitConfiguration = CallKitConfiguration(appName: "YOU+", supportsVideo: false, maximumCallsPerCallGroup: 1)) {
         let providerConfiguration = CXProviderConfiguration()
         providerConfiguration.maximumCallsPerCallGroup = configuration.maximumCallsPerCallGroup
         providerConfiguration.supportsVideo = configuration.supportsVideo

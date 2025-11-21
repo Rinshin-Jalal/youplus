@@ -508,7 +508,7 @@ func application(
 interface CelebrationMessages {
   starter: {
     headline: "Starter Plan Activated"
-    subtext: "Welcome to BIG BRUH"
+    subtext: "Welcome to YOU+"
     description: "Your accountability journey begins with basic enforcement calls."
     features: ["Morning accountability calls", "Basic enforcement", "Progress tracking"]
   },
@@ -648,7 +648,7 @@ struct CelebrationView: View {
         if isStarterUser {
             return CelebrationMessage(
                 headline: "Starter Plan Activated",
-                subtext: "Welcome to BIG BRUH",
+                subtext: "Welcome to YOU+",
                 description: "Your accountability journey begins with basic enforcement calls.",
                 callout: "Prepare for change",
                 features: [

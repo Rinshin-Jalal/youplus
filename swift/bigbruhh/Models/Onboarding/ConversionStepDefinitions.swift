@@ -16,65 +16,51 @@ let CONVERSION_ONBOARDING_STEPS: [ConversionOnboardingStep] = [
     // PHASE 1: THE HOOK (Steps 1-3) ✅ Keep as-is
     // ==========================================
 //
-//    ConversionOnboardingStep(
-//        id: 1,
-//        type: .aiCommentary(config: AICommentaryConfig(
-//            messages: [
-//                ChatMessage(text: "hey", delay: 0.5),
-//                ChatMessage(text: "it's me. you. from later.", delay: 1.0),
-//                ChatMessage(text: "remember that thing you started last month?", delay: 1.2),
-//                ChatMessage(text: "yeah. that one.", delay: 0.8),
-//                ChatMessage(text: "started strong. lasted a week. then... nothing.", delay: 1.0)
-//            ],
-//            persona: .futureYou,
-//            showAvatar: false
-//        ))
-//    ),
-//
-//    ConversionOnboardingStep(
-//        id: 2,
-//        type: .aiCommentary(config: AICommentaryConfig(
-//            messages: [
-//                ChatMessage(text: "here's what you don't want to hear", delay: 0.5),
-//                ChatMessage(text: "it's not motivation", delay: 0.8),
-//                ChatMessage(text: "it's not discipline", delay: 0.8),
-//                ChatMessage(text: "it's that no one actually holds you accountable", delay: 1.2),
-//                ChatMessage(text: "and you know it", delay: 0.6)
-//            ],
-//            persona: .futureYou,
-//            showAvatar: false
-//        ))
-//    ),
-//
-//    ConversionOnboardingStep(
-//        id: 3,
-//        type: .aiCommentary(config: AICommentaryConfig(
-//            messages: [
-//                ChatMessage(text: "what if someone did?", delay: 0.5),
-//                ChatMessage(text: "every day", delay: 0.8),
-//                ChatMessage(text: "real consequences", delay: 0.8),
-//                ChatMessage(text: "no escape", delay: 0.8),
-//                ChatMessage(text: "that's what this is", delay: 1.0)
-//            ],
-//            persona: .futureYou,
-//            showAvatar: false
-//        ))
-//    ),
+    ConversionOnboardingStep(
+        id: 1,
+        type: .aiCommentary(config: AICommentaryConfig(
+            messages: [
+                ChatMessage(text: "hey", delay: 0.5),
+                ChatMessage(text: "it's me. you. from later.", delay: 1.0),
+                ChatMessage(text: "remember that thing you started last month?", delay: 1.2),
+                ChatMessage(text: "yeah. that one.", delay: 0.8),
+                ChatMessage(text: "started strong. lasted a week. then... nothing.", delay: 1.0)
+            ],
+            persona: .futureYou,
+            showAvatar: false
+        ))
+    ),
+
+    ConversionOnboardingStep(
+        id: 2,
+        type: .aiCommentary(config: AICommentaryConfig(
+            messages: [
+                ChatMessage(text: "here's what you don't want to hear", delay: 0.5),
+                ChatMessage(text: "it's not motivation", delay: 0.8),
+                ChatMessage(text: "it's not discipline", delay: 0.8),
+                ChatMessage(text: "it's that no one actually holds you accountable", delay: 1.2),
+                ChatMessage(text: "and you know it", delay: 0.6)
+            ],
+            persona: .futureYou,
+            showAvatar: false
+        ))
+    ),
+
+    ConversionOnboardingStep(
+        id: 3,
+        type: .aiCommentary(config: AICommentaryConfig(
+            messages: [
+                ChatMessage(text: "what if someone did?", delay: 0.5),
+                ChatMessage(text: "every day", delay: 0.8),
+                ChatMessage(text: "real consequences", delay: 0.8),
+                ChatMessage(text: "no escape", delay: 0.8),
+                ChatMessage(text: "that's what this is", delay: 1.0)
+            ],
+            persona: .futureYou,
+            showAvatar: false
+        ))
+    ),
     
-    ConversionOnboardingStep(
-        id: 222,
-        type: .demoCall
-    ),
-
-    ConversionOnboardingStep(
-        id: 2222,
-        type: .permissionRequest(type: .notifications)
-    ),
-
-    ConversionOnboardingStep(
-        id: 3223,
-        type: .permissionRequest(type: .calls)
-    ),
     // ==========================================
     // PHASE 2: CORE IDENTITY + VOICE #1 (Steps 4-8)
     // ==========================================

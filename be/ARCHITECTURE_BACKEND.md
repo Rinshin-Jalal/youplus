@@ -1,4 +1,4 @@
-## BIG BRUH Backend Architecture and File-by-File Guide
+## YOU+ Backend Architecture and File-by-File Guide
 
 This document provides a comprehensive, skimmable, and technically detailed overview of the `backend-engine/` subsystem. It explains the architecture, use cases, routing, data models, storage, and behavior of each major file or module.
 
@@ -16,7 +16,7 @@ This document provides a comprehensive, skimmable, and technically detailed over
 
 ## Overview
 
-The backend engine is a Cloudflare Worker (Hono-based) that powers BIG BRUH core workflows: V3 onboarding, daily ritual calls (morning/evening), promise loop management, identity and psychological profiling, tone selection, prompt generation, and deep integration with 11labs Convo AI for post-call ingestion (transcripts/audio/analytics). It uses Supabase for database and R2 (S3-compatible) for file storage. A cron-triggered scheduler creates call batches by user time windows and manages retries for missed calls.
+The backend engine is a Cloudflare Worker (Hono-based) that powers YOU+ core workflows: V3 onboarding, daily ritual calls (morning/evening), promise loop management, identity and psychological profiling, tone selection, prompt generation, and deep integration with 11labs Convo AI for post-call ingestion (transcripts/audio/analytics). It uses Supabase for database and R2 (S3-compatible) for file storage. A cron-triggered scheduler creates call batches by user time windows and manages retries for missed calls.
 
 Key pillars:
 

@@ -315,7 +315,7 @@ extension AppDelegate: VoIPPushManagerDelegate {
         // Show CallKit UI
         let callUUID = UUID()
         let update = callKitManager.configureDefaultUpdate(
-            displayName: "BIG BRUH",
+            displayName: "YOU+",
             hasVideo: false
         )
         callKitManager.reportIncomingCall(uuid: callUUID, update: update)

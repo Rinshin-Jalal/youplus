@@ -1,7 +1,7 @@
 /**
  * Identity System - Current identity management and evolution tracking
  *
- * This module provides comprehensive identity management for the BIG BRUH accountability
+ * This module provides comprehensive identity management for the YOU+ accountability
  * system. It handles the user's current identity, psychological profile, performance
  * tracking, and behavioral statistics. The identity system is central to creating
  * personalized accountability experiences.

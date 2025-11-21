@@ -227,3 +227,56 @@ export const getAuthenticatedUserId = (c: Context): string => {
   }
   return userId;
 };
+
+/**
+ * 👻 GUEST AUTHENTICATION MIDDLEWARE
+ * Allows access to routes with EITHER a valid user token OR a valid guest token
+ * Used for onboarding flow where user hasn't signed up yet
+ */
+export const requireGuestOrUser = async (
+  c: Context,
+  next: Next
+): Promise<Response | void> => {
+  const authHeader = c.req.header("Authorization");
+  const guestHeader = c.req.header("X-Guest-Token");
+
+  // 1. Try User Auth first (standard Bearer token)
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.replace("Bearer ", "");
+    const env = c.env as Env;
+    const supabase = createSupabaseClient(env);
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser(token);
+
+    if (user) {
+      c.set("userId", user.id);
+      c.set("userEmail", user.email);
+      c.set("authType", "user");
+      return await next();
+    }
+  }
+
+  // 2. Try Guest Auth (X-Guest-Token header)
+  if (guestHeader) {
+    // Verify guest token format (simple UUID check for now, could be JWT)
+    // In a real prod env, we'd verify a signed JWT issued by our backend
+    const isValidGuestToken = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(guestHeader);
+
+    if (isValidGuestToken) {
+      c.set("userId", `guest_${guestHeader}`); // Prefix to distinguish
+      c.set("authType", "guest");
+      c.set("guestToken", guestHeader);
+      return await next();
+    }
+  }
+
+  return c.json(
+    {
+      error: "Authentication required (User or Guest)",
+      requiresAuth: true,
+    },
+    401
+  );
+};

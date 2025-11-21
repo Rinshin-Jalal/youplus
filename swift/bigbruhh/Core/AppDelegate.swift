@@ -81,7 +81,7 @@ extension AppDelegate: VoIPPushManagerDelegate {
         }
 
         let update = callKitManager.configureDefaultUpdate(
-            displayName: "BIG BRUH",
+            displayName: "YOU+",
             hasVideo: false
         )
         callKitManager.reportIncomingCall(uuid: uuid, update: update)

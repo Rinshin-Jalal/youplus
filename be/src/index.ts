@@ -6,8 +6,10 @@ import { combinedRouter } from "@/features";
 // Import individual route handlers from features (only for routes in index.ts)
 import { getHealth, getStats } from "@/features/core/handlers/health";
 import { postVoiceClone } from "@/features/voice/handlers/voice";
+import { postDemoCall } from "@/features/voice/handlers/demo-call";
+import { postCommitmentAudio } from "@/features/voice/handlers/commitment-audio";
 import { postTranscribeAudio } from "@/features/voice/handlers/transcription";
-import { requireActiveSubscription } from "@/middleware/auth";
+import { requireActiveSubscription, requireGuestOrUser } from "@/middleware/auth";
 import {
   corsMiddleware,
   debugProtection,
@@ -46,7 +48,9 @@ app.use("/trigger/*", debugProtection());
 
 // Voice & Audio Routes - Mounted directly (no router)
 // These endpoints don't fit well in a feature router since they're used standalone
-app.post("/voice/clone", requireActiveSubscription, postVoiceClone);
+app.post("/voice/clone", requireGuestOrUser, postVoiceClone);
+app.post("/voice/demo", requireGuestOrUser, postDemoCall);
+app.post("/voice/commitment", requireGuestOrUser, postCommitmentAudio);
 app.post("/transcribe/audio", requireActiveSubscription, postTranscribeAudio);
 
 // Note: Most routes moved to feature routers:

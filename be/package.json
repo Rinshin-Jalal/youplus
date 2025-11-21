@@ -1,7 +1,7 @@
 {
   "name": "you-plus-consequence-engine",
   "version": "1.0.0",
-  "description": "Backend consequence engine for BIG BRUH daily accountability system",
+  "description": "Backend consequence engine for YOU+ daily accountability system",
   "main": "src/index.ts",
   "scripts": {
     "dev": "wrangler dev",
@@ -15,6 +15,7 @@
     "@supabase/supabase-js": "^2.39.0",
     "date-fns": "^3.0.6",
     "hono": "^4.10.4",
+    "jose": "^6.1.2",
     "openai": "^4.24.1",
     "zod": "^3.22.4"
   },
@@ -33,6 +34,6 @@
     "cloudflare",
     "consequence-engine"
   ],
-  "author": "BIG BRUH Team",
+  "author": "YOU+ Team",
   "license": "MIT"
 }

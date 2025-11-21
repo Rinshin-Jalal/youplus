@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
- * 🎤 BIG BRUH VOICE CLONING SERVICE - ELEVENLABS INTEGRATION
+ * 🎤 YOU+ VOICE CLONING SERVICE - ELEVENLABS INTEGRATION
  *
  * Creates personalized AI voices for users during onboarding using ElevenLabs
  * advanced voice synthesis technology. The cloned voice becomes the user's
@@ -8,11 +8,17 @@
  * Core Philosophy: "Your voice, your accountability - maximizing psychological impact"
  * ═══════════════════════════════════════════════════════════════════════════════ */
 
+import { Env } from "@/index";
+
 // 📝 Voice cloning request structure
+// 🏷️ Supported voice providers
+export type VoiceProvider = "elevenlabs" | "cartesia";
+
 interface VoiceCloneRequest {
   audio_url: string; // 🔗 URL to user's audio sample (onboarding recording)
   voice_name: string; // 🏷️ Friendly name for the cloned voice
   user_id: string; // 👤 User identifier for tracking and cleanup
+  provider?: VoiceProvider; // 🏭 AI provider to use (default: cartesia)
 }
 
 // 📋 Voice cloning operation result
@@ -25,6 +31,7 @@ interface VoiceCloneResponse {
 // 🔧 Environment configuration for ElevenLabs API
 interface VoiceCloneEnv {
   ELEVENLABS_API_KEY: string; // 🔑 ElevenLabs API authentication key
+  CARTESIA_API_KEY: string;   // 🔑 Cartesia API authentication key
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -42,9 +49,9 @@ interface VoiceCloneEnv {
  *    effectiveness - the brain recognizes it as "self-talk" rather than external
  * ═══════════════════════════════════════════════════════════════════════════════ */
 export class VoiceCloneService {
-  private env: VoiceCloneEnv; // 🔧 ElevenLabs API configuration
+  private env: Env; // 🔧 Global environment configuration
 
-  constructor(env: VoiceCloneEnv) {
+  constructor(env: Env) {
     this.env = env;
   }
 
@@ -60,10 +67,89 @@ export class VoiceCloneService {
   async cloneUserVoice(
     request: VoiceCloneRequest
   ): Promise<VoiceCloneResponse> {
+    const provider = request.provider || "cartesia"; // Default to Cartesia
+
+    if (provider === "cartesia") {
+      return this.cloneWithCartesia(request);
+    } else {
+      return this.cloneWithElevenLabs(request);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════════
+   * 🔵 CARTESIA VOICE CLONING (Primary)
+   * ═══════════════════════════════════════════════════════════════════════════════ */
+  private async cloneWithCartesia(
+    request: VoiceCloneRequest
+  ): Promise<VoiceCloneResponse> {
+    try {
+      console.log(`🎤 [Cartesia] Cloning voice for user ${request.user_id}...`);
+
+      if (!this.env.CARTESIA_API_KEY) {
+        throw new Error("Cartesia API key not configured");
+      }
+
+      // 1. Download audio
+      const audioResponse = await fetch(request.audio_url);
+      if (!audioResponse.ok) {
+        throw new Error(`Audio download failed: ${audioResponse.status}`);
+      }
+      const audioBuffer = await audioResponse.arrayBuffer();
+
+      // 2. Prepare FormData
+      const formData = new FormData();
+      formData.append("clip", new Blob([audioBuffer], { type: "audio/m4a" }), "voice.m4a");
+      formData.append("name", request.voice_name);
+      formData.append("description", `YOU+ clone for ${request.user_id}`);
+      formData.append("language", "en");
+
+      // 3. Call Cartesia API
+      const response = await fetch("https://api.cartesia.ai/voices/clone", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${this.env.CARTESIA_API_KEY}`,
+          "Cartesia-Version": "2024-06-10",
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ Cartesia API error:", errorText);
+        throw new Error(`Cartesia cloning failed: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log(`✅ [Cartesia] Voice cloned: ${result.id}`);
+
+      return {
+        voice_id: result.id,
+        success: true,
+      };
+    } catch (error) {
+      console.error("💥 Cartesia cloning error:", error);
+      return {
+        voice_id: "",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════════
+   * 🟠 ELEVENLABS VOICE CLONING (Legacy/Fallback)
+   * ═══════════════════════════════════════════════════════════════════════════════ */
+  private async cloneWithElevenLabs(
+    request: VoiceCloneRequest
+  ): Promise<VoiceCloneResponse> {
     try {
       console.log(
         `🎤 Initiating voice clone pipeline for user ${request.user_id}...`
       );
+
+      if (!this.env.ELEVENLABS_API_KEY) {
+        throw new Error("ElevenLabs API key not configured");
+      }
 
       // 📥 STEP 1: Download and validate audio file from secure storage
       const audioResponse = await fetch(request.audio_url);
@@ -87,7 +173,7 @@ export class VoiceCloneService {
       formData.append("name", request.voice_name); // 🏷️ Voice display name
       formData.append(
         "description",
-        `BIG BRUH AI voice clone for user ${request.user_id}`
+        `YOU+ AI voice clone for user ${request.user_id}`
       );
       formData.append(
         "files",
@@ -99,7 +185,7 @@ export class VoiceCloneService {
       const response = await fetch("https://api.elevenlabs.io/v1/voices/add", {
         method: "POST",
         headers: {
-          "xi-api-key": this.env.ELEVENLABS_API_KEY, // 🔑 API authentication
+          "xi-api-key": this.env.ELEVENLABS_API_KEY,
         },
         body: formData,
       });
@@ -145,6 +231,11 @@ export class VoiceCloneService {
    * ═══════════════════════════════════════════════════════════════════════════════ */
   async getVoices(): Promise<any[]> {
     try {
+      if (!this.env.ELEVENLABS_API_KEY) {
+        console.warn("⚠️ ElevenLabs API key missing for getVoices");
+        return [];
+      }
+
       const response = await fetch("https://api.elevenlabs.io/v1/voices", {
         headers: {
           "xi-api-key": this.env.ELEVENLABS_API_KEY,
@@ -169,6 +260,11 @@ export class VoiceCloneService {
    * ═══════════════════════════════════════════════════════════════════════════════ */
   async deleteVoice(voiceId: string): Promise<boolean> {
     try {
+      if (!this.env.ELEVENLABS_API_KEY) {
+        console.warn("⚠️ ElevenLabs API key missing for deleteVoice");
+        return false;
+      }
+
       const response = await fetch(
         `https://api.elevenlabs.io/v1/voices/${voiceId}`,
         {
@@ -198,6 +294,11 @@ export class VoiceCloneService {
    * ═══════════════════════════════════════════════════════════════════════════════ */
   async getVoiceInfo(voiceId: string): Promise<any | null> {
     try {
+      if (!this.env.ELEVENLABS_API_KEY) {
+        console.warn("⚠️ ElevenLabs API key missing for getVoiceInfo");
+        return null;
+      }
+
       const response = await fetch(
         `https://api.elevenlabs.io/v1/voices/${voiceId}`,
         {
@@ -227,7 +328,7 @@ export class VoiceCloneService {
 /**
  * 🏗️ Voice cloning service factory - creates configured service instance
  */
-export function createVoiceCloneService(env: VoiceCloneEnv): VoiceCloneService {
+export function createVoiceCloneService(env: Env): VoiceCloneService {
   return new VoiceCloneService(env);
 }
 
@@ -237,7 +338,7 @@ export function createVoiceCloneService(env: VoiceCloneEnv): VoiceCloneService {
  */
 export async function cloneVoice(
   request: VoiceCloneRequest,
-  env: VoiceCloneEnv
+  env: Env
 ): Promise<VoiceCloneResponse> {
   const service = createVoiceCloneService(env);
   return service.cloneUserVoice(request);
