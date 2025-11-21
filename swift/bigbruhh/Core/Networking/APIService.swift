@@ -82,9 +82,12 @@ class APIService {
         // Add auth token if available
         if let session = SupabaseManager.shared.currentSession {
             request.setValue("Bearer \(session.accessToken)", forHTTPHeaderField: "Authorization")
-            Config.log("🔑 Added auth token to request: \(endpoint)", category: "API")
+            Config.log("🔑 Added user auth token to request: \(endpoint)", category: "API")
+        } else if let guestToken = AuthService.shared.guestToken {
+            request.setValue("Bearer \(guestToken)", forHTTPHeaderField: "Authorization")
+            Config.log("🔑 Added guest token to request: \(endpoint)", category: "API")
         } else {
-            Config.log("❌ No auth session available for request: \(endpoint)", category: "API")
+            Config.log("❌ No auth session or guest token available for request: \(endpoint)", category: "API")
         }
 
         // Add body if present
@@ -313,3 +316,9 @@ enum HTTPMethod: String {
 
 // MARK: - Empty Response
 struct EmptyResponse: Codable {}
+
+// MARK: - Guest Token Response
+struct GuestTokenResponse: Codable {
+    let token: String
+}
+
