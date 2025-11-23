@@ -58,15 +58,6 @@ final class CallSessionController: NSObject, ObservableObject {
         fetchPrompts(callUUID: callUUID, token: userToken)
     }
 
-    func startStreaming(callUUID: String, sessionToken: String) {
-        guard let promptResponse else { return }
-        state = .preparing
-        delegate?.callSessionControllerDidStart(self)
-        // LiveKit connection is handled by LiveKitManager
-        // This method is kept for compatibility but actual streaming happens via WebRTC
-        state = .streaming
-    }
-
     func endSession() {
         // LiveKit connection cleanup is handled by LiveKitManager
         state = .completed

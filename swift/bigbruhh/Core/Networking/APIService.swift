@@ -132,6 +132,88 @@ class APIService {
         }
     }
 
+    // MARK: - Multipart Request
+    func multipartRequest<T: Codable>(
+        _ endpoint: String,
+        method: HTTPMethod = .post,
+        parameters: [String: String],
+        data: Data,
+        mimeType: String,
+        filename: String,
+        fileKey: String
+    ) async throws -> APIResponse<T> {
+        let full = "\(baseURL)\(endpoint)"
+        Config.log("Multipart Request → \(full)", category: "API")
+        guard let url = URL(string: full) else {
+            throw APIError.invalidURL
+        }
+
+        let boundary = UUID().uuidString
+        var request = URLRequest(url: url)
+        request.httpMethod = method.rawValue
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+        // Add auth token
+        if let session = SupabaseManager.shared.currentSession {
+            request.setValue("Bearer \(session.accessToken)", forHTTPHeaderField: "Authorization")
+        } else if let guestToken = AuthService.shared.guestToken {
+            request.setValue("Bearer \(guestToken)", forHTTPHeaderField: "Authorization")
+        }
+
+        var body = Data()
+
+        // Add parameters
+        for (key, value) in parameters {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
+            body.append("\(value)\r\n".data(using: .utf8)!)
+        }
+
+        // Add file data
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"\(fileKey)\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
+        body.append(data)
+        body.append("\r\n".data(using: .utf8)!)
+
+        // End boundary
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+
+        request.httpBody = body
+
+        do {
+            let (data, response) = try await session.data(for: request)
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw APIError.serverError("Invalid response")
+            }
+
+            if httpResponse.statusCode == 401 {
+                throw APIError.unauthorized
+            }
+
+            if httpResponse.statusCode >= 400 {
+                // Try to decode error message
+                if let errorResponse = try? JSONDecoder().decode(APIResponse<T>.self, from: data), let errorMessage = errorResponse.error {
+                     throw APIError.serverError(errorMessage)
+                }
+                throw APIError.serverError("HTTP \(httpResponse.statusCode)")
+            }
+
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            decoder.dateDecodingStrategy = .iso8601
+
+            let apiResponse = try decoder.decode(APIResponse<T>.self, from: data)
+            return apiResponse
+
+        } catch let error as APIError {
+            throw error
+        } catch {
+            throw APIError.networkError(error)
+        }
+    }
+
     // MARK: - Convenience Methods
     func get<T: Codable>(_ endpoint: String) async throws -> APIResponse<T> {
         try await request(endpoint, method: .get)

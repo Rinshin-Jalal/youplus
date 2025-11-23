@@ -22,11 +22,8 @@ export const postVoiceClone = async (c: Context) => {
   try {
     console.log(`🎤 Cloning voice for ${userId} using ${provider}`);
 
-    // 1. Combine audio files if multiple (Cartesia expects single file usually, but we'll handle first one for now or combine)
-    // For MVP, let's take the first file or assume client sends one combined file
-    // If client sends multiple, we should ideally combine them. 
+    // 1. Combine audio files if multiple
     // Swift client sends "clip" which is already combined.
-    // Let's assume the client sends a single "voice.m4a" in the "audio" field or "clip" field.
 
     // Check for "clip" field (Cartesia style) or "audio" (our internal style)
     const audioFile = (formData.get("clip") as File) || audioFiles[0];
@@ -35,12 +32,7 @@ export const postVoiceClone = async (c: Context) => {
       return c.json({ error: "No audio file found" }, 400);
     }
 
-    // Create a temporary URL for the service (or refactor service to accept Blob/Buffer)
-    // The service currently expects a URL. This is a mismatch. 
-    // I should update the service to accept Buffer/Blob or upload to R2 first.
-    // The plan said: "Swift uploads audio to Backend -> Cloning".
-    // Let's upload to R2 first to get a URL, then pass to service.
-
+    // Upload to R2 to get a URL for the voice cloning service
     const audioBuffer = await audioFile.arrayBuffer();
     const { uploadAudioToR2 } = await import("@/features/voice/services/r2-upload");
     const fileName = `${userId}_clone_source_${Date.now()}.m4a`;
@@ -100,7 +92,7 @@ export const postOnboardingAnalyzeVoice = async (c: Context) => {
   }
 
   // Use sessionId as temporary identifier for pre-auth onboarding
-  // TODO: After user authenticates, migrate this analysis to their actual user ID
+  // Note: Migration to actual user ID happens during account creation
   const userId = sessionId;
 
   const env = c.env as Env;

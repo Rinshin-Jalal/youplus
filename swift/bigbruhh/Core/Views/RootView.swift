@@ -132,7 +132,7 @@ struct RootView: View {
 
             case .secretPlan:
                 SecretPlanPaywallView(
-                    userName: "BigBruh", // TODO: Get from context
+                    userName: AuthService.shared.user?.name ?? "User",
                     source: "quick_action"
                 )
                 .environmentObject(navigator)

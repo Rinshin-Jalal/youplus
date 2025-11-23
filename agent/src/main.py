@@ -44,7 +44,6 @@ from livekit.plugins import openai, cartesia, silero
 # Import You+ modules
 from memory import MemoryManager, init_memory_manager
 from assistant import AssistantPersonality, ConversationManager
-from tools import execute_device_tool
 from post_call import PostCallProcessor
 
 # Load environment variables
@@ -258,34 +257,11 @@ async def entrypoint(ctx: JobContext):
     )
 
     # ============================================================================
-    # 7. REGISTER DEVICE TOOLS
+    # 7. REGISTER DEVICE TOOLS (Removed - Mock tools deleted)
     # ============================================================================
-
-    logger.info("🔧 Registering device tools...")
-
-    # Device tools that can be called by the agent via data channel
-    device_tools = {
-        "get_battery_level": lambda params: execute_device_tool(
-            "battery_level", params
-        ),
-        "flash_screen": lambda params: execute_device_tool(
-            "flash_screen", params
-        ),
-        "vibrate": lambda params: execute_device_tool("vibrate", params),
-        "get_location": lambda params: execute_device_tool(
-            "get_location", params
-        ),
-        "capture_screenshot": lambda params: execute_device_tool(
-            "capture_screenshot", params
-        ),
-    }
-
-    # Register tools with agent
-    for tool_name, tool_fn in device_tools.items():
-        agent.add_tool(tool_name, tool_fn)
-        logger.info(f"   ✓ Registered: {tool_name}")
-
-    logger.info("✅ Device tools registered")
+    
+    # logger.info("🔧 Registering device tools...")
+    # Device tools removed to eliminate bloat until WebRTC data channel is implemented
 
     # ============================================================================
     # 8. SETUP TRANSCRIPTION TRACKING

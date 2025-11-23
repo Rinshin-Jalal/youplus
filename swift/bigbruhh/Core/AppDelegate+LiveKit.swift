@@ -44,7 +44,10 @@ extension AppDelegate {
         callStateStore.updateSupermemoryUserId(payload.supermemoryUserId)
 
         // Get LiveKit URL from config (should be set in environment/Config)
-        let liveKitURL = Config.liveKitURL ?? "wss://livekit.example.com" // TODO: Set in Config
+        guard let liveKitURL = Config.liveKitURL else {
+            Config.log("❌ Missing LiveKit URL in Config", category: "LiveKit")
+            return
+        }
 
         // When user answers, start LiveKit connection
         // This will be triggered by CallScreen when user taps Answer button

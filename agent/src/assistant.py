@@ -72,38 +72,10 @@ class AssistantPersonality:
                 "Same pattern. Same result. What's different tomorrow?",
             ],
         },
-        # Legacy compatibility - map to Future You tones
-        "supportive": {
-            "tone": "wise, encouraging, pushing forward",
-            "approach": "Binary questions. Reference potential. Push greatness.",
-            "examples": [
-                "You got this. Did you do it? YES or NO.",
-            ],
-        },
-        "accountability": {
-            "tone": "direct, accountable, no-nonsense",
-            "approach": "Binary verification. Acknowledge patterns. Push forward.",
-            "examples": [
-                "Binary question. Did you keep your promise?",
-            ],
-        },
-        "celebration": {
-            "tone": "brief acknowledgment, then push forward",
-            "approach": "Good. That's who you're supposed to be. Now tomorrow.",
-            "examples": [
-                "Good. That's what I thought.",
-            ],
-        },
     }
 
     def __init__(self, mood: str = "Confrontational"):
-        # Map legacy moods to Future You moods
-        mood_mapping = {
-            "supportive": "Encouraging",
-            "accountability": "Confrontational",
-            "celebration": "Encouraging",
-        }
-        self.mood = mood_mapping.get(mood, mood)
+        self.mood = mood
         self.prompt_config = self.MOOD_PROMPTS.get(self.mood, self.MOOD_PROMPTS["Confrontational"])
 
     def get_system_prompt(
@@ -192,10 +164,6 @@ You are Future You, their older self who succeeded. Wise accountability mentor w
             "Confrontational": '<emotion value="confident" />Future You calling.<break time="500ms"/>Binary question. Did you keep your promise?',
             "Ruthless": '<emotion value="determined" /><speed ratio="1.1"/>Time for accountability.<break time="1s"/>Did you do what you said or not?',
             "ColdMirror": '<emotion value="contemplative" />Future You here.<break time="1s"/>Truth time. Did you do it?',
-            # Legacy compatibility
-            "supportive": '<emotion value="determined" />You got this.<break time="1s"/>Did you do it? YES or NO.',
-            "accountability": '<emotion value="confident" />Future You calling.<break time="500ms"/>Binary question. Did you keep your promise?',
-            "celebration": 'Good. That\'s what I thought.<break time="500ms"/>Now tomorrow.',
         }
         return openings.get(self.mood, '<emotion value="determined" />Future You here. Did you do it? YES or NO.')
 

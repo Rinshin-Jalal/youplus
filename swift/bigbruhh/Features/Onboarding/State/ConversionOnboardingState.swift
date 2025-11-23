@@ -187,28 +187,6 @@ class ConversionOnboardingState: ObservableObject {
         // Always start at index 0 (step 1)
         currentStepIndex = 0
         return
-        
-        // OLD CODE BELOW - DISABLED TO FORCE FRESH START
-        /*
-        guard let state = UserDefaults.standard.dictionary(forKey: userDefaultsKey) else {
-            return
-        }
-
-        if let index = state["currentStepIndex"] as? Int {
-            currentStepIndex = index
-        }
-
-        if let savedResponses = state["responses"] as? [Int: String] {
-            responses = savedResponses
-        }
-
-        if let savedVoiceURLs = state["voiceRecordings"] as? [String: String] {
-            voiceRecordings = savedVoiceURLs.compactMapValues { URL(string: $0) }
-        }
-
-        if let savedPermissions = state["permissionsGranted"] as? [String: Bool] {
-            var permissionsDict: [PermissionType: Bool] = [:]
-            for (key, value) in savedPermissions {
                 if let permissionType = PermissionType(rawValue: key) {
                     permissionsDict[permissionType] = value
                 }

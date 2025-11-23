@@ -111,124 +111,12 @@ export const postOnboardingV3Complete = async (c: Context) => {
     return c.json({ error: "Missing onboarding state" }, 400);
   }
 
-  // 📝 LOG RECEIVED ONBOARDING DATA
+  // 📝 LOG RECEIVED ONBOARDING DATA (Simplified)
   console.log(`\n📨 === BACKEND RECEIVED ONBOARDING DATA ===`);
   console.log(`👤 User ID: ${userId}`);
   console.log(`📊 Total responses: ${Object.keys(state.responses).length}`);
   console.log(`📈 Progress: ${state.progressPercentage || 0}%`);
   console.log(`👤 User: ${state.userName || "N/A"}`);
-
-  console.log(`\n📋 === RECEIVED RESPONSE BREAKDOWN ===`);
-  Object.entries(state.responses).forEach(
-    ([stepId, response]: [string, any]) => {
-      console.log(`\n🔢 Step ${stepId}:`);
-
-      if (response.type === "voice") {
-        console.log(`  🎙️  VOICE RESPONSE:`);
-        console.log(`     📁 Voice URI: ${response.voiceUri || "N/A"}`);
-        console.log(`     🎵 Duration: ${response.duration || 0} seconds`);
-        if (response.value && typeof response.value === "string") {
-          if (response.value.startsWith("data:audio/")) {
-            console.log(
-              `     📦 Base64 audio data: ✅ (${response.value.length} chars)`
-            );
-            console.log(
-              `     📦 Preview: ${response.value.substring(0, 80)}...`
-            );
-          } else {
-            console.error(
-              `     ❌ Unexpected voice format (expected base64): ${response.value.substring(
-                0,
-                100
-              )}...`
-            );
-          }
-        } else {
-          console.error(`     ❌ Missing or invalid voice value`);
-        }
-        if (response.db_field && response.db_field.length > 0) {
-          console.log(`     🗂️  DB Field: ${response.db_field.join(', ')}`);
-        }
-      } else if (response.type === "text") {
-        console.log(`  📝 TEXT RESPONSE:`);
-        console.log(`     ✍️  Text: "${response.value || "N/A"}"`);
-        if (response.db_field && response.db_field.length > 0) {
-          console.log(`     🗂️  DB Field: ${response.db_field.join(', ')}`);
-        }
-      } else if (response.type === "choice") {
-        console.log(`  🎯 CHOICE RESPONSE:`);
-        console.log(
-          `     🎯 Selected: ${JSON.stringify(response.value, null, 2)}`
-        );
-        if ((response as any).selected_option) {
-          console.log(`     📋 Option: "${(response as any).selected_option}"`);
-        }
-        if (response.db_field && response.db_field.length > 0) {
-          console.log(`     🗂️  DB Field: ${response.db_field.join(', ')}`);
-        }
-      } else if (response.type === "dual_sliders") {
-        console.log(`  📊 DUAL SLIDERS RESPONSE:`);
-        // 🔧 FIX: Swift sends comma-separated string "7,9" instead of array
-        if (
-          (response as any).sliders &&
-          Array.isArray((response as any).sliders)
-        ) {
-          (response as any).sliders.forEach((slider: any, index: number) => {
-            console.log(`     📊 Slider ${index + 1}: ${slider} / 10`);
-          });
-        } else if (response.value && typeof response.value === 'string') {
-          // Parse comma-separated string from Swift
-          const sliderValues = response.value.split(',').map((v: string) => parseFloat(v.trim()));
-          sliderValues.forEach((slider: number, index: number) => {
-            console.log(`     📊 Slider ${index + 1}: ${slider} / 10`);
-          });
-        } else {
-          console.error(
-            `     ❌ Unexpected dual_sliders format: ${JSON.stringify(response.value, null, 2)}`
-          );
-        }
-        if (response.db_field && response.db_field.length > 0) {
-          console.log(`     🗂️  DB Field: ${response.db_field.join(', ')}`);
-        }
-      } else if (response.type === "timezone_selection") {
-        console.log(`  🌍 TIMEZONE RESPONSE:`);
-        console.log(
-          `     🌍 Timezone: ${JSON.stringify(response.value, null, 2)}`
-        );
-      } else if (response.type === "long_press_activate") {
-        console.log(`  👆 LONG PRESS RESPONSE:`);
-        console.log(`     👆 Duration: ${response.duration || 0}ms`);
-        console.log(`     ✅ Activated: ${response.value ? "Yes" : "No"}`);
-      } else if (response.type === "time_window_picker") {
-        console.log(`  ⏰ TIME WINDOW RESPONSE:`);
-        console.log(
-          `     ⏰ Selected: ${JSON.stringify(response.value, null, 2)}`
-        );
-        if (response.db_field && response.db_field.length > 0) {
-          console.log(`     🗂️  DB Field: ${response.db_field.join(', ')}`);
-        }
-      } else if (response.type === "time_picker") {
-        console.log(`  🕐 TIME PICKER RESPONSE:`);
-        console.log(
-          `     🕐 Selected: ${JSON.stringify(response.value, null, 2)}`
-        );
-        if (response.db_field && response.db_field.length > 0) {
-          console.log(`     🗂️  DB Field: ${response.db_field.join(', ')}`);
-        }
-      } else {
-        console.log(`  ❓ ${response.type.toUpperCase()} RESPONSE:`);
-        console.log(
-          `     📝 Value: ${JSON.stringify(response.value, null, 2)}`
-        );
-        if (response.db_field && response.db_field.length > 0) {
-          console.log(`     🗂️  DB Field: ${response.db_field.join(', ')}`);
-        }
-      }
-
-      console.log(`  ⏰ Timestamp: ${response.timestamp}`);
-    }
-  );
-  console.log(`\n📋 === END RECEIVED RESPONSE BREAKDOWN ===\n`);
 
   const env = c.env as Env;
   const supabase = createSupabaseClient(env);

@@ -67,69 +67,36 @@ class ConversionOnboardingService {
         
         Config.log("🎤 Cloning voice for \(userName) via backend")
         
-        // Create multipart request manually since APIService doesn't support it yet
-        // Or better, implement multipart in APIService. 
-        // For now, let's use a helper here or assume APIService has upload support.
-        // APIService doesn't seem to have multipart support in the viewed file.
-        // I'll implement a simple multipart upload here or add it to APIService.
-        // Given the complexity, I'll add a helper method here.
-        
-        let boundary = UUID().uuidString
-        let url = URL(string: "\(Config.backendURL ?? "")/voice/clone")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        
-        if let token = AuthService.shared.guestToken {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        let audioData: Data
+        if let firstURL = audioURLs.first, let data = try? Data(contentsOf: firstURL) {
+            audioData = data
+        } else {
+            throw ConversionOnboardingError.voiceConversionFailed("No audio data found")
         }
-        
-        var body = Data()
-        
-        // Add audio files
-        // Backend expects "audio" or "clip"
-        // Let's combine them first using AVFoundation if needed, or send the first one.
-        // The backend handles multiple files or single "clip".
-        // Let's send the first file as "clip" for now, or better, combine them.
-        // Since VoiceCloneService (local) combined them, we should probably do that too.
-        // But for now, let's just send the first valid recording (step 8 usually).
-        
-        if let firstURL = audioURLs.first, let audioData = try? Data(contentsOf: firstURL) {
-            body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"clip\"; filename=\"voice.m4a\"\r\n".data(using: .utf8)!)
-            body.append("Content-Type: audio/m4a\r\n\r\n".data(using: .utf8)!)
-            body.append(audioData)
-            body.append("\r\n".data(using: .utf8)!)
-        }
-        
-        // Add voiceName
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"voiceName\"\r\n\r\n".data(using: .utf8)!)
-        body.append("\(userName)'s Voice\r\n".data(using: .utf8)!)
-        
-        // Add provider
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"provider\"\r\n\r\n".data(using: .utf8)!)
-        body.append("cartesia\r\n".data(using: .utf8)!)
-        
-        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
-        
-        request.httpBody = body
-        
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            let errorMsg = String(data: data, encoding: .utf8) ?? "Unknown error"
-            throw ConversionOnboardingError.voiceConversionFailed(errorMsg)
-        }
-        
-        struct CloneResponse: Codable {
+
+        struct VoiceCloneResponse: Codable {
             let success: Bool
-            let voice_id: String
+            let voiceId: String
+            let provider: String
+        }
+
+        let response: APIResponse<VoiceCloneResponse> = try await APIService.shared.multipartRequest(
+            "/voice/clone",
+            parameters: [
+                "voiceName": "voice_\(userName)",
+                "provider": "cartesia"
+            ],
+            data: audioData,
+            mimeType: "audio/m4a",
+            filename: "voice.m4a",
+            fileKey: "clip"
+        )
+        
+        guard response.success, let data = response.data else {
+            throw ConversionOnboardingError.voiceConversionFailed(response.error ?? "Unknown error")
         }
         
-        let result = try JSONDecoder().decode(CloneResponse.self, from: data)
-        return result.voice_id
+        return data.voiceId
     }
 
     /// Generate demo call using backend
